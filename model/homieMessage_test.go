@@ -58,7 +58,7 @@ func TestDeviceId(t *testing.T) {
 		if err != nil {
 			t.Error("Error thrown: ", err)
 		}
-		if id := homieMessage.DeviceId(); id != message.deviceId {
+		if id := homieMessage.Id; id != message.deviceId {
 			t.Error("Expected ", message.deviceId, ", got ", id)
 		}
 	}
