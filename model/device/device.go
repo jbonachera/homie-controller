@@ -2,6 +2,7 @@ package device
 
 import (
 	"strconv"
+	"strings"
 )
 
 type DeviceStats struct {
@@ -18,7 +19,7 @@ type DeviceFirmware struct {
 
 type DeviceNode struct {
 	Type       string
-	Properties [][]string
+	Properties map[string]string
 }
 
 type Device struct {
@@ -30,11 +31,11 @@ type Device struct {
 	Stats          DeviceStats
 	Fw             DeviceFirmware
 	Implementation string
-	Nodes          []DeviceNode
+	Nodes          map[string]DeviceNode
 }
 
 func New(id string) Device {
-	return Device{id, false, "", "", "", DeviceStats{0, 0, 0}, DeviceFirmware{"", "", ""}, "", []DeviceNode{}}
+	return Device{id, false, "", "", "", DeviceStats{0, 0, 0}, DeviceFirmware{"", "", ""}, "", map[string]DeviceNode{}}
 }
 func (d *Device) Set(prop string, value string) {
 	switch prop {
@@ -60,5 +61,26 @@ func (d *Device) Set(prop string, value string) {
 		d.Fw.Checksum = value
 	case "$implementation":
 		d.Implementation = value
+	default:
+		// We suppose we are dealing with a Node
+		splitted_path := strings.Split(prop, "/")
+		if len(splitted_path) != 2 {
+			// invalid request
+			return
+		}
+		nodeName, path := splitted_path[0], splitted_path[1]
+		_, exists := d.Nodes[nodeName]
+		if !exists {
+			if path == "$properties" {
+				d.addNode(nodeName, value)
+			}
+		} else {
+			d.Nodes[nodeName].Properties[path] = value
+		}
+
 	}
+}
+
+func (d *Device) addNode(node string, properties string) {
+	d.Nodes[node] = DeviceNode{node, map[string]string{}}
 }
