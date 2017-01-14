@@ -25,6 +25,6 @@ func NewHomieMessage(m HomieExtractableMessage, baseTopic string) (HomieMessage,
 		return HomieMessage{}, errors.New("Topic does not start with BaseTopic")
 	}
 	message.Id = strings.Split(strippedPrefix, "/")[0]
-	message.Path = strings.Split(strippedPrefix, "/")[0]
+	message.Path = strings.SplitN(strippedPrefix, "/", 2)[1]
 	return message, nil
 }
