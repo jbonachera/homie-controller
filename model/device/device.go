@@ -16,6 +16,11 @@ type DeviceFirmware struct {
 	Checksum string
 }
 
+type DeviceNode struct {
+	Type       string
+	Properties [][]string
+}
+
 type Device struct {
 	Id             string
 	Online         bool
@@ -25,10 +30,11 @@ type Device struct {
 	Stats          DeviceStats
 	Fw             DeviceFirmware
 	Implementation string
+	Nodes          []DeviceNode
 }
 
 func New(id string) Device {
-	return Device{id, false, "", "", "", DeviceStats{0, 0, 0}, DeviceFirmware{"", "", ""}, ""}
+	return Device{id, false, "", "", "", DeviceStats{0, 0, 0}, DeviceFirmware{"", "", ""}, "", []DeviceNode{}}
 }
 func (d *Device) Set(prop string, value string) {
 	switch prop {
