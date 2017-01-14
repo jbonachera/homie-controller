@@ -21,6 +21,8 @@ func (m MessageMock) Payload() []byte {
 var messages []MessageMock = []MessageMock{
 	MessageMock{"u1234", "devices/u1234/$online", "true", "devices/"},
 	MessageMock{"u123", "devices/u123/$online", "true", "devices/"},
+	MessageMock{"u123", "homie/u123/$online", "true", "homie/"},
+	MessageMock{"u123", "devices/foo/bar/u123/$online", "true", "devices/foo/bar/"},
 }
 
 func TestNew(t *testing.T) {
