@@ -9,6 +9,7 @@ type MessageMock struct {
 	topic     string
 	payload   string
 	baseTopic string
+	path      string
 }
 
 func (m MessageMock) Topic() string {
@@ -19,14 +20,14 @@ func (m MessageMock) Payload() []byte {
 }
 
 var messages []MessageMock = []MessageMock{
-	MessageMock{"u1234", "devices/u1234/$online", "true", "devices/"},
-	MessageMock{"u123", "devices/u123/$online", "true", "devices/"},
-	MessageMock{"u123", "homie/u123/$online", "true", "homie/"},
-	MessageMock{"u123", "devices/foo/bar/u123/$online", "true", "devices/foo/bar/"},
+	MessageMock{"u1234", "devices/u1234/$online", "true", "devices/", "$online"},
+	MessageMock{"u123", "devices/u123/$online", "true", "devices/", "$online"},
+	MessageMock{"u123", "homie/u123/$online", "true", "homie/", "$online"},
+	MessageMock{"u123", "devices/foo/bar/u123/$online", "true", "devices/foo/bar/", "$online"},
 }
 var invalidMessages []MessageMock = []MessageMock{
-	MessageMock{"", "devices", "true", "devices/foo/bar/"},
-	MessageMock{"", "devices/foor/bar/", "true", "devices/foo/bar/"},
+	MessageMock{"", "devices", "true", "devices/foo/bar/", ""},
+	MessageMock{"", "devices/foor/bar/", "true", "devices/foo/bar/", ""},
 }
 
 func TestNew(t *testing.T) {
