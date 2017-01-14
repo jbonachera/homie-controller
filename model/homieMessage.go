@@ -15,14 +15,16 @@ type HomieMessage struct {
 	Payload   string
 	BaseTopic string
 	Id        string
+	Path      string
 }
 
 func NewHomieMessage(m HomieExtractableMessage, baseTopic string) (HomieMessage, error) {
-	message := HomieMessage{m.Topic(), string(m.Payload()), baseTopic, ""}
+	message := HomieMessage{m.Topic(), string(m.Payload()), baseTopic, "", ""}
 	strippedPrefix := strings.TrimPrefix(message.Topic, message.BaseTopic)
 	if strippedPrefix == message.Topic {
 		return HomieMessage{}, errors.New("Topic does not start with BaseTopic")
 	}
 	message.Id = strings.Split(strippedPrefix, "/")[0]
+	message.Path = strings.Split(strippedPrefix, "/")[0]
 	return message, nil
 }

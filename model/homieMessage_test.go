@@ -43,6 +43,10 @@ func TestNew(t *testing.T) {
 		if homieMessage.Payload != message.payload {
 			t.Error("Expected ", message.payload, ", got ", homieMessage.Payload)
 		}
+
+		if homieMessage.Path != message.path {
+			t.Error("Expected ", message.path, ", got ", homieMessage.Path)
+		}
 	}
 
 	for _, message := range invalidMessages {
