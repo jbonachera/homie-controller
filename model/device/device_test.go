@@ -32,3 +32,13 @@ func TestSet(t *testing.T) {
 		t.Error("Setting temperature/ failed")
 	}
 }
+func TestSetNodePropertyRemoval(t *testing.T) {
+	device := New("azertyuip")
+	device.Set("temperature/$properties", "degrees,unit,killMe")
+	device.Nodes["temperature"].Properties["killMe"] = "bar"
+	device.Set("temperature/$properties", "degrees,unit")
+
+	if device.Nodes["temperature"].Properties["killMe"] == "bar" {
+		t.Error("Node properties update failed")
+	}
+}
