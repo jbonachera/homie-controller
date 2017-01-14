@@ -28,4 +28,7 @@ func TestSet(t *testing.T) {
 	if device.Nodes["temperature"].Properties["degrees"] != "24.3" {
 		t.Error("Setting temperature/ failed")
 	}
+	if device.Nodes["temperature"].Properties["unit"] != "c" {
+		t.Error("Setting temperature/ failed")
+	}
 }
