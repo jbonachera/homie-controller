@@ -22,4 +22,10 @@ func TestSet(t *testing.T) {
 	if device.Stats.Signal != 80 {
 		t.Error("Setting $stats/signal failed")
 	}
+	device.Set("temperature/$properties", "degrees,unit")
+	device.Set("temperature/degrees", "24.3")
+	device.Set("temperature/unit", "c")
+	if device.Nodes["temperature"].Properties["degrees"] != "24.3" {
+		t.Error("Setting temperature/ failed")
+	}
 }
