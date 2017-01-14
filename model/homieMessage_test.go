@@ -23,6 +23,8 @@ var messages []MessageMock = []MessageMock{
 	MessageMock{"u123", "devices/u123/$online", "true", "devices/"},
 	MessageMock{"u123", "homie/u123/$online", "true", "homie/"},
 	MessageMock{"u123", "devices/foo/bar/u123/$online", "true", "devices/foo/bar/"},
+}
+var invalidMessages []MessageMock = []MessageMock{
 	MessageMock{"", "devices", "true", "devices/foo/bar/"},
 	MessageMock{"", "devices/foor/bar/", "true", "devices/foo/bar/"},
 }
@@ -39,6 +41,13 @@ func TestNew(t *testing.T) {
 		}
 		if homieMessage.Payload != message.payload {
 			t.Error("Expected ", message.payload, ", got ", homieMessage.Payload)
+		}
+	}
+
+	for _, message := range invalidMessages {
+		_, err := NewHomieMessage(message, message.baseTopic)
+		if err == nil {
+			t.Error("Error not thrown")
 		}
 	}
 }
