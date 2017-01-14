@@ -1,6 +1,9 @@
 package model
 
-import "strings"
+import (
+	"errors"
+	"strings"
+)
 
 type HomieExtractableMessage interface {
 	Topic() string
@@ -14,7 +17,11 @@ type HomieMessage struct {
 }
 
 func NewHomieMessage(m HomieExtractableMessage, baseTopic string) (HomieMessage, error) {
-	return HomieMessage{m.Topic(), string(m.Payload()), baseTopic}, nil
+	message := HomieMessage{m.Topic(), string(m.Payload()), baseTopic}
+	if !strings.HasPrefix(message.Topic, message.BaseTopic) {
+		return HomieMessage{}, errors.New("Topic does not start with BaseTopic")
+	}
+	return message, nil
 }
 
 func (m HomieMessage) DeviceId() string {
