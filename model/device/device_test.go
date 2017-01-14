@@ -18,4 +18,8 @@ func TestSet(t *testing.T) {
 	if device.Online != true {
 		t.Error("Setting $online failed")
 	}
+	device.Set("$stats/signal", "80")
+	if device.Stats.Signal != 80 {
+		t.Error("Setting $stats/signal failed")
+	}
 }
