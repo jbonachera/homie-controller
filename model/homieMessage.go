@@ -5,6 +5,22 @@ import (
 	"strings"
 )
 
+var Properties []string = []string{
+	"$homie",
+	"$onine",
+	"$name",
+	"$localip",
+	"$mac",
+	"$stats/uptime",
+	"$stats/signal",
+	"$stats/interval",
+	"$fw/name",
+	"$fw/version",
+	"$fw/checksum",
+	"$implementation",
+	"$implementation/+",
+}
+
 type HomieExtractableMessage interface {
 	Topic() string
 	Payload() []byte
