@@ -5,9 +5,10 @@ import (
 )
 
 type MessageMock struct {
-	deviceId string
-	topic    string
-	payload  string
+	deviceId  string
+	topic     string
+	payload   string
+	baseTopic string
 }
 
 func (m MessageMock) Topic() string {
@@ -18,8 +19,8 @@ func (m MessageMock) Payload() []byte {
 }
 
 var messages []MessageMock = []MessageMock{
-	MessageMock{"u1234", "devices/u1234/$online", "true"},
-	MessageMock{"u123", "devices/u123/$online", "true"},
+	MessageMock{"u1234", "devices/u1234/$online", "true", "devices/"},
+	MessageMock{"u123", "devices/u123/$online", "true", "devices/"},
 }
 
 func TestNew(t *testing.T) {
