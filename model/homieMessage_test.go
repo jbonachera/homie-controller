@@ -23,6 +23,8 @@ var messages []MessageMock = []MessageMock{
 	MessageMock{"u123", "devices/u123/$online", "true", "devices/"},
 	MessageMock{"u123", "homie/u123/$online", "true", "homie/"},
 	MessageMock{"u123", "devices/foo/bar/u123/$online", "true", "devices/foo/bar/"},
+	MessageMock{"", "devices", "true", "devices/foo/bar/"},
+	MessageMock{"", "devices/foor/bar/", "true", "devices/foo/bar/"},
 }
 
 func TestNew(t *testing.T) {
@@ -45,5 +47,4 @@ func TestDeviceId(t *testing.T) {
 			t.Error("Expected ", message.deviceId, ", got ", id)
 		}
 	}
-
 }
