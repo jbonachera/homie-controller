@@ -1,4 +1,4 @@
-package model
+package device
 
 type DeviceStats struct {
 	uptime   int
