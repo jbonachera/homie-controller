@@ -26,13 +26,3 @@ func NewHomieMessage(m HomieExtractableMessage, baseTopic string) (HomieMessage,
 	message.Id = strings.Split(strippedPrefix, "/")[0]
 	return message, nil
 }
-
-func (m HomieMessage) DeviceId() string {
-	// Remove the baseTopic from the topic by reading the string
-	// juste after it.
-	if strings.Contains(m.Topic, m.BaseTopic) {
-		strippedBase := m.Topic[len(m.BaseTopic):]
-		return strings.Split(strippedBase, "/")[0]
-	}
-	return ""
-}
