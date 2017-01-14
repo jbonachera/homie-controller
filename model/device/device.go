@@ -1,24 +1,28 @@
 package device
 
 type DeviceStats struct {
-	uptime   int
-	signal   int
-	interval int
+	Uptime   int
+	Signal   int
+	Interval int
 }
 
 type DeviceFirmware struct {
-	name     string
-	version  string
-	checksum string
+	Name     string
+	Version  string
+	Checksum string
 }
 
 type Device struct {
-	id             string
-	online         bool
-	name           string
-	localip        string
-	mac            string
-	stats          DeviceStats
-	fw             DeviceFirmware
-	implementation string
+	Id             string
+	Online         bool
+	Name           string
+	Localip        string
+	Mac            string
+	Stats          DeviceStats
+	Fw             DeviceFirmware
+	Implementation string
+}
+
+func New(id string) Device {
+	return Device{id, false, "", "", "", DeviceStats{0, 0, 0}, DeviceFirmware{"", "", ""}, ""}
 }
