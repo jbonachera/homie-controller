@@ -75,6 +75,10 @@ func (d *Device) Set(prop string, value string) {
 				d.addNode(nodeName, value)
 			}
 		} else {
+			if path == "$properties" {
+				delete(d.Nodes, nodeName)
+				d.addNode(nodeName, value)
+			}
 			d.Nodes[nodeName].Properties[path] = value
 		}
 
