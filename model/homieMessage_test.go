@@ -5,8 +5,9 @@ import (
 )
 
 type MessageMock struct {
-	topic   string
-	payload string
+	deviceId string
+	topic    string
+	payload  string
 }
 
 func (m MessageMock) Topic() string {
@@ -16,12 +17,15 @@ func (m MessageMock) Payload() []byte {
 	return []byte(m.payload)
 }
 
+var messages []MessageMock = []MessageMock{
+	MessageMock{"u1234", "devices/u1234/$online", "true"},
+	MessageMock{"u123", "devices/u123/$online", "true"},
+}
+
 func TestNew(t *testing.T) {
-	messages := []MessageMock{
-		MessageMock{"devices/u1234/$online", "true"},
-	}
+
 	for _, message := range messages {
-		homieMessage := NewHomieMessage(message)
+		homieMessage := NewHomieMessage(message, "devices/")
 		if homieMessage.Topic != message.topic {
 			t.Error("Expected ", message.topic, ", got ", homieMessage.Topic)
 		}
@@ -29,4 +33,14 @@ func TestNew(t *testing.T) {
 			t.Error("Expected ", message.payload, ", got ", homieMessage.Payload)
 		}
 	}
+}
+
+func TestDeviceId(t *testing.T) {
+	for _, message := range messages {
+		homieMessage := NewHomieMessage(message, "devices/")
+		if id := homieMessage.DeviceId(); id != message.deviceId {
+			t.Error("Expected ", message.deviceId, ", got ", id)
+		}
+	}
+
 }
