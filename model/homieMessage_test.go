@@ -12,6 +12,11 @@ type MessageMock struct {
 	path      string
 }
 
+type TestIsPropertyStruct struct {
+	name   string
+	result bool
+}
+
 func (m MessageMock) Topic() string {
 	return m.topic
 }
@@ -65,6 +70,20 @@ func TestDeviceId(t *testing.T) {
 		}
 		if id := homieMessage.Id; id != message.deviceId {
 			t.Error("Expected ", message.deviceId, ", got ", id)
+		}
+	}
+}
+
+func TestIsProperty(t *testing.T) {
+	properties := []TestIsPropertyStruct{
+		{"$stats/uptime", true},
+		{"internet", false},
+		{"$internet", false},
+		{"$implementation/config", true},
+	}
+	for _, testProp := range properties {
+		if IsProperty(testProp.name) != testProp.result {
+			t.Error("Invalid property matching : ", testProp.name)
 		}
 	}
 }
