@@ -28,3 +28,24 @@ func NewHomieMessage(m HomieExtractableMessage, baseTopic string) (HomieMessage,
 	message.Path = strings.SplitN(strippedPrefix, "/", 2)[1]
 	return message, nil
 }
+
+func IsProperty(prop string) bool {
+	// https://github.com/marvinroger/homie#device-properties
+	switch prop {
+	case
+		"$homie",
+		"$onine",
+		"$name",
+		"$localip",
+		"$mac",
+		"$stats/uptime",
+		"$stats/signal",
+		"$stats/interval",
+		"$fw/name",
+		"$fw/version",
+		"$fw/checksum",
+		"$implementation":
+		return true
+	}
+	return strings.HasPrefix(prop, "$implementation/")
+}
