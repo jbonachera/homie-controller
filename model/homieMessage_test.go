@@ -26,7 +26,7 @@ var messages []MessageMock = []MessageMock{
 func TestNew(t *testing.T) {
 
 	for _, message := range messages {
-		homieMessage := NewHomieMessage(message, "devices/")
+		homieMessage := NewHomieMessage(message, message.baseTopic)
 		if homieMessage.Topic != message.topic {
 			t.Error("Expected ", message.topic, ", got ", homieMessage.Topic)
 		}
@@ -38,7 +38,7 @@ func TestNew(t *testing.T) {
 
 func TestDeviceId(t *testing.T) {
 	for _, message := range messages {
-		homieMessage := NewHomieMessage(message, "devices/")
+		homieMessage := NewHomieMessage(message, message.baseTopic)
 		if id := homieMessage.DeviceId(); id != message.deviceId {
 			t.Error("Expected ", message.deviceId, ", got ", id)
 		}
