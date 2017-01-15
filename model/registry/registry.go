@@ -7,7 +7,12 @@ import (
 
 type Registry struct {
 	sync.Mutex
-	devices []device.Device
+	devices      []device.Device
+	devicesIndex map[string]int
+}
+
+func New() Registry {
+	return Registry{sync.Mutex{}, []device.Device{}, map[string]int{}}
 }
 
 func (d *Registry) Append(device device.Device) {
@@ -33,6 +38,7 @@ func (d *Registry) Set(id string, path string, value string) {
 	for idx, device := range d.devices {
 		if device.Id == id {
 			d.devices[idx].Set(path, value)
+			break
 		}
 	}
 	d.Unlock()

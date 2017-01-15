@@ -8,7 +8,7 @@ import (
 )
 
 func TestAppend(t *testing.T) {
-	registry := Registry{}
+	registry := New()
 	registry.Append(device.New("u1"))
 	if registry.devices[0].Id != "u1" {
 		t.Error("didn't get the device we just inserted")
@@ -33,7 +33,7 @@ func appendList(count int, r *Registry, wg *sync.WaitGroup) {
 func TestParralellAppend(t *testing.T) {
 	var wg sync.WaitGroup
 	count := 100
-	registry := Registry{}
+	registry := New()
 	wg.Add(count)
 	i := 0
 	for i < count {
@@ -47,7 +47,7 @@ func TestParralellAppend(t *testing.T) {
 }
 
 func populate(count int) *Registry {
-	registry := Registry{}
+	registry := New()
 	i := 0
 	for i < 30 {
 		registry.Append(device.New("u" + strconv.Itoa(i)))
@@ -94,5 +94,25 @@ func TestParrallelSet(t *testing.T) {
 	device := r.Get("u17")
 	if device.Stats.Signal != 87 {
 		t.Error("could not set property: wanted 87, got", device.Stats.Signal)
+	}
+}
+
+func BenchmarkSet10(b *testing.B) {
+	benchmarkSet(10, b)
+}
+
+func BenchmarkSet100(b *testing.B) {
+	benchmarkSet(100, b)
+}
+func BenchmarkSet1000(b *testing.B) {
+	benchmarkSet(1000, b)
+}
+func BenchmarkSet10000(b *testing.B) {
+	benchmarkSet(10000, b)
+}
+func benchmarkSet(j int, b *testing.B) {
+	r := populate(j)
+	for i := 0; i < b.N; i++ {
+		r.Set("u988", "$online", "true")
 	}
 }
