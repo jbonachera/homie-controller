@@ -24,21 +24,21 @@ func (d *Registry) Append(device device.Device) {
 
 func (d Registry) Get(id string) device.Device {
 	d.Lock()
+	defer d.Unlock()
 	for _, device := range d.devices {
 		if device.Id == id {
 			return device
 		}
 	}
-	d.Unlock()
 	return device.Device{}
 
 }
 
 func (d *Registry) Set(id string, path string, value string) {
 	d.Lock()
+	defer d.Unlock()
 	offset, ok := d.devicesIndex[id]
 	if ok {
 		d.devices[offset].Set(path, value)
 	}
-	d.Unlock()
 }
