@@ -9,11 +9,11 @@ import (
 
 func TestAppend(t *testing.T) {
 	registry := New()
-	registry.Append(device.New("u1"))
+	registry.Append(device.New("u1", "devices/"))
 	if registry.devices[0].Id != "u1" {
 		t.Error("didn't get the device we just inserted")
 	}
-	registry.Append(device.New("u2"))
+	registry.Append(device.New("u2", "devices/"))
 	if registry.devices[0].Id != "u1" {
 		t.Error("existing device disapeared after insertion")
 	}
@@ -26,7 +26,7 @@ func appendList(count int, r *Registry, wg *sync.WaitGroup) {
 	defer wg.Done()
 	i := 0
 	for i < count {
-		r.Append(device.New("u" + strconv.Itoa(i)))
+		r.Append(device.New("u"+strconv.Itoa(i), "devices/"))
 		i += 1
 	}
 }
@@ -50,7 +50,7 @@ func populate(count int) *Registry {
 	registry := New()
 	i := 0
 	for i < 30 {
-		registry.Append(device.New("u" + strconv.Itoa(i)))
+		registry.Append(device.New("u"+strconv.Itoa(i), "devices/"))
 		i += 1
 	}
 	return &registry
