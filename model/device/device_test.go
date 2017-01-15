@@ -46,3 +46,15 @@ func TestSetNodePropertyRemoval(t *testing.T) {
 		t.Error("Node properties update failed")
 	}
 }
+
+func TestListTypes(t *testing.T) {
+	device := New("azertyuip")
+	device.Set("temperature/$properties", "degrees")
+	device.Set("temperature/degrees", "24.3")
+	device.Set("temperature/$type", "temperature")
+
+	types := device.ListTypes()
+	if types[0] != "temperature" {
+		t.Error("could not list exposed types")
+	}
+}
