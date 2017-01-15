@@ -72,14 +72,16 @@ func (d *Device) Set(prop string, value string) {
 		nodeName, path := splitted_path[0], splitted_path[1]
 		_, exists := d.Nodes[nodeName]
 		if !exists {
-			if path == "$properties" {
-				d.addNode(nodeName, value)
-			}
-		} else {
-			if path == "$properties" {
-				d.deleteNode(nodeName)
-				d.addNode(nodeName, value)
-			}
+			d.addNode(nodeName)
+		}
+		node := d.Nodes[nodeName]
+
+		switch path {
+		case "$properties":
+			node.setProperties(strings.Split(value, ","))
+		case "$type":
+			node.Type = value
+		default:
 			d.Nodes[nodeName].Properties[path] = value
 		}
 
@@ -90,6 +92,25 @@ func (d *Device) deleteNode(name string) {
 	delete(d.Nodes, name)
 }
 
-func (d *Device) addNode(node string, properties string) {
-	d.Nodes[node] = DeviceNode{node, "", map[string]string{}}
+func (d *Device) addNode(nodeName string) {
+	d.Nodes[nodeName] = DeviceNode{nodeName, "", map[string]string{}}
+}
+
+func (n *DeviceNode) setProperties(properties []string) {
+	// Handles deletion of already-present properties we don't want
+	for property, _ := range n.Properties {
+		for _, wantedProperty := range properties {
+			if wantedProperty == property {
+				break
+			}
+		}
+		delete(n.Properties, property)
+	}
+	// Handles creation of new properties
+	for _, wantedProperty := range properties {
+		_, ok := n.Properties[wantedProperty]
+		if !ok {
+			n.Properties[wantedProperty] = ""
+		}
+	}
 }
