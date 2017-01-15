@@ -1,9 +1,29 @@
 package device
 
-import "testing"
+import (
+	_ "github.com/jbonachera/homie-controller/model/device/nodetype/temperature"
+	"testing"
+)
+
+type MessageMock struct {
+	topic   string
+	payload string
+}
+
+func (m MessageMock) Topic() string {
+	return m.topic
+}
+func (m MessageMock) Payload() []byte {
+	return []byte(m.payload)
+}
+
+var message MessageMock = MessageMock{
+	"devices/u1234/temperature/$type",
+	"temperature",
+}
 
 func TestNew(t *testing.T) {
-	device := New("azertyuip")
+	device := New("azertyuip", "devices/")
 	if device.Id != "azertyuip" {
 		t.Error("Wrong device id: expected azertyuip, got ", device.Id)
 	}
@@ -13,7 +33,7 @@ func TestNew(t *testing.T) {
 }
 
 func TestSet(t *testing.T) {
-	device := New("azertyuip")
+	device := New("azertyuip", "devices/")
 	device.Set("$online", "true")
 	if device.Online != true {
 		t.Error("Setting $online failed")
@@ -21,5 +41,13 @@ func TestSet(t *testing.T) {
 	device.Set("$stats/signal", "80")
 	if device.Stats.Signal != 80 {
 		t.Error("Setting $stats/signal failed")
+	}
+}
+
+func TestAddNode(t *testing.T) {
+	device := New("azertyuip", "devices/")
+	device.MQTTNodeHandler(nil, message)
+	if len(device.Nodes) != 1 {
+		t.Error("adding node failed")
 	}
 }

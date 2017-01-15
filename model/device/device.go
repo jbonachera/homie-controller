@@ -1,8 +1,11 @@
 package device
 
 import (
+	"fmt"
 	"github.com/jbonachera/homie-controller/model/device/nodetype"
+	"github.com/jbonachera/homie-controller/model/homieMessage"
 	"strconv"
+	"strings"
 )
 
 type DeviceStats struct {
@@ -27,10 +30,11 @@ type Device struct {
 	Fw             DeviceFirmware
 	Implementation string
 	Nodes          map[string]nodetype.NodeType
+	BaseTopic      string
 }
 
-func New(id string) Device {
-	return Device{id, false, "", "", "", DeviceStats{0, 0, 0}, DeviceFirmware{"", "", ""}, "", map[string]nodetype.NodeType{}}
+func New(id string, baseTopic string) Device {
+	return Device{id, false, "", "", "", DeviceStats{0, 0, 0}, DeviceFirmware{"", "", ""}, "", map[string]nodetype.NodeType{}, baseTopic}
 }
 func (d *Device) Set(prop string, value string) {
 	switch prop {
@@ -56,5 +60,26 @@ func (d *Device) Set(prop string, value string) {
 		d.Fw.Checksum = value
 	case "$implementation":
 		d.Implementation = value
+	}
+}
+
+func (d *Device) MQTTNodeHandler(mqttClient interface{}, mqttMessage homieMessage.HomieExtractableMessage) {
+	// Will be bound to devices/<id/>+/$type
+	message, err := homieMessage.New(mqttMessage, d.BaseTopic)
+	if err != nil {
+		return
+	}
+	topicComponents := strings.Split(message.Path, "/")
+	if len(topicComponents) != 2 {
+		return
+	}
+	node, property := topicComponents[0], topicComponents[1]
+	if property == "$type" {
+		newNode, err := nodetype.New(message.Payload, d.BaseTopic)
+		if err == nil {
+			d.Nodes[node] = newNode
+		} else {
+			fmt.Println("adding node failed: ", err)
+		}
 	}
 }
