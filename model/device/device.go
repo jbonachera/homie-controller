@@ -69,6 +69,7 @@ func (d *Device) MQTTNodeHandler(mqttClient homieMessage.SubscriptibleClient, mq
 	if err != nil {
 		return
 	}
+	fmt.Println("Handling message for ", mqttMessage.Topic())
 	topicComponents := strings.Split(message.Path, "/")
 	if len(topicComponents) != 2 {
 		return
