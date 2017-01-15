@@ -18,6 +18,7 @@ type DeviceFirmware struct {
 }
 
 type DeviceNode struct {
+	Name       string
 	Type       string
 	Properties map[string]string
 }
@@ -86,5 +87,5 @@ func (d *Device) Set(prop string, value string) {
 }
 
 func (d *Device) addNode(node string, properties string) {
-	d.Nodes[node] = DeviceNode{node, map[string]string{}}
+	d.Nodes[node] = DeviceNode{node, "", map[string]string{}}
 }
