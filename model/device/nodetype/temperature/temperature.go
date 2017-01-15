@@ -17,13 +17,13 @@ type TemperatureNode struct {
 	room      string
 }
 
-func (t *TemperatureNode) GetName() string {
+func (t TemperatureNode) GetName() string {
 	return t.name
 }
-func (t *TemperatureNode) GetType() string {
+func (t TemperatureNode) GetType() string {
 	return nodeType
 }
-func (t *TemperatureNode) GetPoint() metric.Metric {
+func (t TemperatureNode) GetPoint() metric.Metric {
 	return metric.New("temperature", map[string]string{"room": t.room, "sensor": t.name}, map[string]interface{}{"degrees": t.degrees})
 }
 func (t *TemperatureNode) MQTTHandler(mqttClient interface{}, mqttMessage homieMessage.HomieExtractableMessage) {
