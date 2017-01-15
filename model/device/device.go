@@ -63,7 +63,7 @@ func (d *Device) Set(prop string, value string) {
 	}
 }
 
-func (d *Device) MQTTNodeHandler(mqttClient interface{}, mqttMessage homieMessage.HomieExtractableMessage) {
+func (d *Device) MQTTNodeHandler(mqttClient homieMessage.SubscriptibleClient, mqttMessage homieMessage.HomieExtractableMessage) {
 	// Will be bound to devices/<id/>+/$type
 	message, err := homieMessage.New(mqttMessage, d.BaseTopic)
 	if err != nil {
