@@ -19,7 +19,7 @@ func (d dummyNodeType) GetType() string {
 	return d.nodeType
 }
 func (d dummyNodeType) GetPoint() metric.Metric {
-	return metric.New("temperature", map[string]string{"room": "living", "sensor": "sensor01"}, map[string]string{"degrees": "24.0"})
+	return metric.New("temperature", map[string]string{"room": "living", "sensor": "sensor01"}, map[string]interface{}{"degrees": 24.0})
 }
 func (d dummyNodeType) MQTTHandler(message homieMessage.HomieMessage) {
 }
