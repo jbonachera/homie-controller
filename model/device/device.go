@@ -77,13 +77,17 @@ func (d *Device) Set(prop string, value string) {
 			}
 		} else {
 			if path == "$properties" {
-				delete(d.Nodes, nodeName)
+				d.deleteNode(nodeName)
 				d.addNode(nodeName, value)
 			}
 			d.Nodes[nodeName].Properties[path] = value
 		}
 
 	}
+}
+
+func (d *Device) deleteNode(name string) {
+	delete(d.Nodes, name)
 }
 
 func (d *Device) addNode(node string, properties string) {
