@@ -15,11 +15,15 @@ func New() Registry {
 	return Registry{sync.Mutex{}, []device.Device{}, map[string]int{}}
 }
 
+func addToIndex(index map[string]int, key string, offset int) {
+	index[key] = offset
+}
+
 func (d *Registry) Append(device device.Device) {
 	d.Lock()
 	defer d.Unlock()
 	d.devices = append(d.devices, device)
-	d.devicesIndex[device.Id] = len(d.devices) - 1
+	addToIndex(d.devicesIndex, device.Id, len(d.devices)-1)
 }
 
 func (d Registry) Get(id string) device.Device {
