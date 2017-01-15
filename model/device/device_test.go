@@ -23,19 +23,23 @@ func TestSet(t *testing.T) {
 		t.Error("Setting $stats/signal failed")
 	}
 	device.Set("temperature/$properties", "degrees,unit")
+	device.Set("temperature/$type", "temperature")
 	device.Set("temperature/degrees", "24.3")
 	device.Set("temperature/unit", "c")
 	if device.Nodes["temperature"].Properties["degrees"] != "24.3" {
 		t.Error("Setting temperature/ failed")
 	}
 	if device.Nodes["temperature"].Properties["unit"] != "c" {
-		t.Error("Setting temperature/ failed")
+		t.Error("Setting temperature/unit failed")
+	}
+	if device.Nodes["temperature"].Type != "temperature" {
+		t.Error("Setting temperature/$type failed; wanted temperature, got", device.Nodes)
 	}
 }
 func TestSetNodePropertyRemoval(t *testing.T) {
 	device := New("azertyuip")
 	device.Set("temperature/$properties", "degrees,unit,killMe")
-	device.Nodes["temperature"].Properties["killMe"] = "bar"
+	device.Set("temperature/killMe", "bar")
 	device.Set("temperature/$properties", "degrees,unit")
 
 	if device.Nodes["temperature"].Properties["killMe"] == "bar" {
