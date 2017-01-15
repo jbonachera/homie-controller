@@ -15,7 +15,7 @@ type NodeType interface {
 }
 
 type NodeTypeFactory interface {
-	New() NodeType
+	New(name string, baseTopic string) NodeType
 }
 
 func RegisterNodeTypeFactory(name string, nodeType NodeTypeFactory) {
@@ -25,6 +25,6 @@ func RegisterNodeTypeFactory(name string, nodeType NodeTypeFactory) {
 	}
 }
 
-func New(nodeType string) NodeType {
-	return nodeTypeFactories[nodeType].New()
+func New(nodeType string, baseTopic string) NodeType {
+	return nodeTypeFactories[nodeType].New(nodeType, baseTopic)
 }

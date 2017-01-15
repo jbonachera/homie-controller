@@ -26,8 +26,8 @@ func (d dummyNodeType) MQTTHandler(mqttClient interface{}, message homieMessage.
 
 type dummyFactory struct{}
 
-func (dummyFactory) New() NodeType {
-	return dummyNodeType{"dummyName", "dummyType"}
+func (dummyFactory) New(name string, baseTopic string) NodeType {
+	return dummyNodeType{name, "dummyType"}
 }
 
 func TestRegisterNodeTypeFactory(t *testing.T) {
@@ -36,8 +36,8 @@ func TestRegisterNodeTypeFactory(t *testing.T) {
 
 func TestNew(t *testing.T) {
 	RegisterNodeTypeFactory("dummy", dummyFactory{})
-	node := New("dummy")
-	if node.GetName() != "dummyName" {
+	node := New("dummy", "devices/")
+	if node.GetName() != "dummy" {
 		t.Error("could not create a node")
 	}
 }
