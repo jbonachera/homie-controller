@@ -122,6 +122,7 @@ func (d *Device) ListTypes() []string {
 		_, present := dedup[node.Type]
 		if !present {
 			types = append(types, node.Type)
+			dedup[node.Type] = struct{}{}
 		}
 	}
 	return types
