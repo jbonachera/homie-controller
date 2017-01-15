@@ -1,6 +1,7 @@
 package device
 
 import (
+	"fmt"
 	"strconv"
 	"strings"
 )
@@ -74,17 +75,18 @@ func (d *Device) Set(prop string, value string) {
 		if !exists {
 			d.addNode(nodeName)
 		}
-		node := d.Nodes[nodeName]
 
+		node := d.Nodes[nodeName]
 		switch path {
 		case "$properties":
 			node.setProperties(strings.Split(value, ","))
 		case "$type":
 			node.Type = value
+			d.Nodes[nodeName] = node
+			fmt.Println(d.Nodes[nodeName])
 		default:
 			d.Nodes[nodeName].Properties[path] = value
 		}
-
 	}
 }
 
