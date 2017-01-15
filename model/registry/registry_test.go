@@ -116,3 +116,24 @@ func benchmarkSet(j int, b *testing.B) {
 		r.Set("u988", "$online", "true")
 	}
 }
+
+func BenchmarkGet10(b *testing.B) {
+	benchmarkGet(10, b)
+}
+
+func BenchmarkGet100(b *testing.B) {
+	benchmarkGet(100, b)
+}
+func BenchmarkGet1000(b *testing.B) {
+	benchmarkGet(1000, b)
+}
+func BenchmarkGet10000(b *testing.B) {
+	benchmarkGet(10000, b)
+}
+
+func benchmarkGet(j int, b *testing.B) {
+	r := populate(j)
+	for i := 0; i < b.N; i++ {
+		r.Get("u988")
+	}
+}
