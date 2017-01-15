@@ -58,3 +58,19 @@ func TestListTypes(t *testing.T) {
 		t.Error("could not list exposed types")
 	}
 }
+
+func TestListTypesDedup(t *testing.T) {
+	device := New("azertyuip")
+	device.Set("temperature/$properties", "degrees")
+	device.Set("temperature/degrees", "24.3")
+	device.Set("temperature/$type", "temperature")
+
+	device.Set("temperature2/$properties", "degrees")
+	device.Set("temperature2/degrees", "24.3")
+	device.Set("temperature2/$type", "temperature")
+
+	types := device.ListTypes()
+	if len(types) != 1 {
+		t.Error("got duplicates types")
+	}
+}
