@@ -1,7 +1,6 @@
 package device
 
 import (
-	"fmt"
 	"strconv"
 	"strings"
 )
@@ -83,7 +82,6 @@ func (d *Device) Set(prop string, value string) {
 		case "$type":
 			node.Type = value
 			d.Nodes[nodeName] = node
-			fmt.Println(d.Nodes[nodeName])
 		default:
 			d.Nodes[nodeName].Properties[path] = value
 		}
