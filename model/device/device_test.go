@@ -2,6 +2,7 @@ package device
 
 import (
 	_ "github.com/jbonachera/homie-controller/model/device/nodetype/temperature"
+	"github.com/jbonachera/homie-controller/model/homieMessage"
 	"testing"
 )
 
@@ -20,6 +21,12 @@ func (m MessageMock) Payload() []byte {
 var message MessageMock = MessageMock{
 	"devices/u1234/temperature/$type",
 	"temperature",
+}
+
+type dummyClient struct{}
+
+func (d dummyClient) Subscribe(topic string, qos byte, callback func(homieMessage.SubscriptibleClient, homieMessage.HomieExtractableMessage)) interface{} {
+	return nil
 }
 
 func TestNew(t *testing.T) {
@@ -46,7 +53,7 @@ func TestSet(t *testing.T) {
 
 func TestAddNode(t *testing.T) {
 	device := New("azertyuip", "devices/")
-	device.MQTTNodeHandler(nil, message)
+	device.MQTTNodeHandler(dummyClient{}, message)
 	if len(device.Nodes) != 1 {
 		t.Error("adding node failed")
 	}
