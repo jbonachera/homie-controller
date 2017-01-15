@@ -21,6 +21,9 @@ var Properties []string = []string{
 	"$implementation/+",
 }
 
+type SubscriptibleClient interface {
+	Subscribe(topic string, qos byte, callback func(SubscriptibleClient, HomieExtractableMessage))
+}
 type HomieExtractableMessage interface {
 	Topic() string
 	Payload() []byte
