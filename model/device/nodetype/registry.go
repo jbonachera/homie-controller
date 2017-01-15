@@ -1,6 +1,7 @@
 package nodetype
 
 import (
+	"errors"
 	"github.com/jbonachera/homie-controller/model/homieMessage"
 	"github.com/jbonachera/homie-controller/model/metric"
 )
@@ -25,6 +26,10 @@ func RegisterNodeTypeFactory(name string, nodeType NodeTypeFactory) {
 	}
 }
 
-func New(nodeType string, baseTopic string) NodeType {
-	return nodeTypeFactories[nodeType].New(nodeType, baseTopic)
+func New(nodeType string, baseTopic string) (NodeType, error) {
+	if _, exist := nodeTypeFactories[nodeType]; exist {
+		node := nodeTypeFactories[nodeType].New(nodeType, baseTopic)
+		return node, nil
+	}
+	return nil, errors.New("Invalid type requested")
 }

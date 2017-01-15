@@ -36,8 +36,18 @@ func TestRegisterNodeTypeFactory(t *testing.T) {
 
 func TestNew(t *testing.T) {
 	RegisterNodeTypeFactory("dummy", dummyFactory{})
-	node := New("dummy", "devices/")
+	node, err := New("dummy", "devices/")
+	if err != nil {
+		t.Error("error occured:", err)
+	}
 	if node.GetName() != "dummy" {
 		t.Error("could not create a node")
+	}
+}
+
+func TestAbsentNodeType(t *testing.T) {
+	_, err := New("invalid", "devices/")
+	if err == nil {
+		t.Error("could create an invalid node")
 	}
 }
