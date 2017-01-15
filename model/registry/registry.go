@@ -25,10 +25,9 @@ func (d *Registry) Append(device device.Device) {
 func (d Registry) Get(id string) device.Device {
 	d.Lock()
 	defer d.Unlock()
-	for _, device := range d.devices {
-		if device.Id == id {
-			return device
-		}
+	offset, ok := d.devicesIndex[id]
+	if ok {
+		return d.devices[offset]
 	}
 	return device.Device{}
 
