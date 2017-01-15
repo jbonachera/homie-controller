@@ -23,9 +23,12 @@ var message MessageMock = MessageMock{
 	"temperature",
 }
 
-type dummyClient struct{}
+type dummyClient struct {
+	topic string
+}
 
-func (d dummyClient) Subscribe(topic string, qos byte, callback func(homieMessage.SubscriptibleClient, homieMessage.HomieExtractableMessage)) interface{} {
+func (d *dummyClient) Subscribe(topic string, qos byte, callback func(homieMessage.SubscriptibleClient, homieMessage.HomieExtractableMessage)) interface{} {
+	d.topic = topic
 	return nil
 }
 
@@ -53,8 +56,12 @@ func TestSet(t *testing.T) {
 
 func TestAddNode(t *testing.T) {
 	device := New("azertyuip", "devices/")
-	device.MQTTNodeHandler(dummyClient{}, message)
+	client := &dummyClient{""}
+	device.MQTTNodeHandler(client, message)
 	if len(device.Nodes) != 1 {
 		t.Error("adding node failed")
+	}
+	if client.topic != "devices/azertyuip/temperature/+" {
+		t.Error("subscription to wrong topic: want devices/azertyuip/temperature/+, got ", client.topic)
 	}
 }

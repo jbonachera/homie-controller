@@ -78,7 +78,7 @@ func (d *Device) MQTTNodeHandler(mqttClient homieMessage.SubscriptibleClient, mq
 		newNode, err := nodetype.New(message.Payload, d.BaseTopic)
 		if err == nil {
 			d.Nodes[node] = newNode
-			mqttClient.Subscribe(d.BaseTopic+"/"+d.Id+"/"+node+"+", 1, d.Nodes[node].MQTTHandler)
+			mqttClient.Subscribe(d.BaseTopic+d.Id+"/"+node+"/+", 1, d.Nodes[node].MQTTHandler)
 		} else {
 			fmt.Println("adding node failed: ", err)
 		}
