@@ -21,7 +21,14 @@ func (d dummyNodeType) GetType() string {
 func (d dummyNodeType) GetPoint() metric.Metric {
 	return metric.New("temperature", map[string]string{"room": "living", "sensor": "sensor01"}, map[string]interface{}{"degrees": 24.0})
 }
-func (d dummyNodeType) MQTTHandler(mqttClient interface{}, message homieMessage.HomieExtractableMessage) {
+
+type dummyClient struct{}
+
+func (d dummyClient) Subscribe(topic string, qos byte, callback interface{}) interface{} {
+	return nil
+}
+
+func (d dummyNodeType) MQTTHandler(mqttClient homieMessage.SubscriptibleClient, message homieMessage.HomieExtractableMessage) {
 }
 
 type dummyFactory struct{}

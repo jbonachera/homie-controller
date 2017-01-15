@@ -12,7 +12,7 @@ type NodeType interface {
 	GetName() string
 	GetType() string
 	GetPoint() metric.Metric
-	MQTTHandler(mqttClient interface{}, message homieMessage.HomieExtractableMessage)
+	MQTTHandler(mqttClient homieMessage.SubscriptibleClient, message homieMessage.HomieExtractableMessage)
 }
 
 type NodeTypeFactory interface {

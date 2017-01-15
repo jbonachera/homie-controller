@@ -26,7 +26,7 @@ func (t HumidityNode) GetType() string {
 func (t HumidityNode) GetPoint() metric.Metric {
 	return metric.New("humidity", map[string]string{"room": t.room, "sensor": t.name}, map[string]interface{}{"percent": t.percent})
 }
-func (t *HumidityNode) MQTTHandler(mqttClient interface{}, mqttMessage homieMessage.HomieExtractableMessage) {
+func (t *HumidityNode) MQTTHandler(mqttClient homieMessage.SubscriptibleClient, mqttMessage homieMessage.HomieExtractableMessage) {
 	message, err := homieMessage.New(mqttMessage, t.baseTopic)
 	if err != nil {
 		return
