@@ -116,3 +116,15 @@ func (n *DeviceNode) setProperties(properties []string) {
 		}
 	}
 }
+
+func (d *Device) ListTypes() []string {
+	types := []string{}
+	dedup := make(map[string]struct{})
+	for _, node := range d.Nodes {
+		_, present := dedup[node.Type]
+		if !present {
+			types = append(types, node.Type)
+		}
+	}
+	return types
+}
