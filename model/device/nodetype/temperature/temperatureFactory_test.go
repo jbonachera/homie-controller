@@ -6,7 +6,7 @@ import (
 )
 
 func TestNew(t *testing.T) {
-	temperature := nodetype.New("temperature", "devices/")
+	temperature, _ := nodetype.New("temperature", "devices/")
 	if temperature.GetType() != "temperature" {
 		t.Error("could not get a tempetature node type")
 	}
