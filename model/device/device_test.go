@@ -58,6 +58,29 @@ func TestListTypes(t *testing.T) {
 		t.Error("could not list exposed types")
 	}
 }
+func TestListTypesMultiple(t *testing.T) {
+	device := New("azertyuip")
+	device.Set("temperature/$properties", "degrees")
+	device.Set("temperature/degrees", "24.3")
+	device.Set("temperature/$type", "temperature")
+
+	device.Set("humidity/$properties", "percent")
+	device.Set("humidity/percent", "49")
+	device.Set("humiduty/$type", "humidity")
+
+	types := device.ListTypes()
+	for _, wantedString := range []string{"humidity", "temperature"} {
+		found := false
+		for _, presentType := range types {
+			if presentType == wantedString {
+				found = true
+			}
+		}
+		if !found {
+			t.Error("could not find type ", wantedString)
+		}
+	}
+}
 
 func TestListTypesDedup(t *testing.T) {
 	device := New("azertyuip")
