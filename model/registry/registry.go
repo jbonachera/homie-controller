@@ -17,9 +17,9 @@ func New() Registry {
 
 func (d *Registry) Append(device device.Device) {
 	d.Lock()
+	defer d.Unlock()
 	d.devices = append(d.devices, device)
 	d.devicesIndex[device.Id] = len(d.devices) - 1
-	d.Unlock()
 }
 
 func (d Registry) Get(id string) device.Device {
