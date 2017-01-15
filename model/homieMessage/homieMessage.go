@@ -22,7 +22,7 @@ var Properties []string = []string{
 }
 
 type SubscriptibleClient interface {
-	Subscribe(topic string, qos byte, callback func(SubscriptibleClient, HomieExtractableMessage))
+	Subscribe(topic string, qos byte, callback func(SubscriptibleClient, HomieExtractableMessage)) interface{}
 }
 type HomieExtractableMessage interface {
 	Topic() string
