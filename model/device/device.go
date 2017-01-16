@@ -1,8 +1,8 @@
 package device
 
 import (
-	"fmt"
 	MQTT "github.com/eclipse/paho.mqtt.golang"
+	"github.com/jbonachera/homie-controller/log"
 	"github.com/jbonachera/homie-controller/model/device/nodetype"
 	"github.com/jbonachera/homie-controller/model/homieMessage"
 	"strconv"
@@ -70,7 +70,6 @@ func (d *Device) MQTTNodeHandler(mqttClient MQTT.Client, mqttMessage MQTT.Messag
 	if err != nil {
 		return
 	}
-	fmt.Println("Handling message for ", mqttMessage.Topic())
 	topicComponents := strings.Split(message.Path, "/")
 	if len(topicComponents) != 2 {
 		return
@@ -81,11 +80,13 @@ func (d *Device) MQTTNodeHandler(mqttClient MQTT.Client, mqttMessage MQTT.Messag
 		if err == nil {
 			d.Nodes[node] = newNode
 			properties := newNode.GetProperties()
+			log.Debug("adding node " + node + " for device " + message.Id)
 			for _, property := range properties {
+				log.Debug("adding property " + property + " to node " + node + " for device " + message.Id)
 				mqttClient.Subscribe(d.BaseTopic+d.Id+"/"+node+"/"+property, 1, d.Nodes[node].MQTTHandler)
 			}
 		} else {
-			fmt.Println("adding node failed: ", err)
+			log.Warn("adding node failed: " + err.Error())
 		}
 	}
 }
