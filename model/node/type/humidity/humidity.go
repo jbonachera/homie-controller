@@ -12,11 +12,11 @@ import (
 var nodeType string = "humidity"
 
 type HumidityNode struct {
-	name      string
-	baseTopic string
-	unit      string
-	percent   float64
-	room      string
+	name      string `json:"name"`
+	baseTopic string `json:"base_topic"`
+	unit      string `json:"unit"`
+	percent   float64 `json:"percent"`
+	room      string `json:"room"`
 }
 
 func (t HumidityNode) GetName() string {

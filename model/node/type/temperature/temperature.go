@@ -12,11 +12,11 @@ import (
 var nodeType string = "temperature"
 
 type TemperatureNode struct {
-	name      string
-	baseTopic string
-	unit      string
-	degrees   float64
-	room      string
+	name      string `json:"name"`
+	baseTopic string `json:"base_topic"`
+	unit      string `json:"unit"`
+	degrees   float64 `json:"degrees"`
+	room      string `json:"room"`
 }
 
 func (t TemperatureNode) GetName() string {

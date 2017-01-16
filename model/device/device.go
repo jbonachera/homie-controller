@@ -10,28 +10,28 @@ import (
 )
 
 type DeviceStats struct {
-	Uptime   int
-	Signal   int
-	Interval int
+	Uptime   int `json:"uptime"`
+	Signal   int `json:"signal"`
+	Interval int `json:"interval"`
 }
 
 type DeviceFirmware struct {
-	Name     string
-	Version  string
-	Checksum string
+	Name     string `json:"name"`
+	Version  string `json:"version"`
+	Checksum string `json:"checksum"`
 }
 
 type Device struct {
-	Id             string
-	Online         bool
-	Name           string
-	Localip        string
-	Mac            string
-	Stats          DeviceStats
-	Fw             DeviceFirmware
-	Implementation string
-	Nodes          map[string]node.Type
-	BaseTopic      string
+	Id             string               `json:"id"`
+	Online         bool                 `json:"online"`
+	Name           string               `json:"name"`
+	Localip        string               `json:"localip"`
+	Mac            string               `json:"mac"`
+	Stats          DeviceStats          `json:"stats"`
+	Fw             DeviceFirmware       `json:"fw"`
+	Implementation string               `json:"implementation"`
+	Nodes          map[string]node.Type `json:"nodes"`
+	BaseTopic      string               `json:"base_topic"`
 }
 
 func New(id string, baseTopic string) Device {
