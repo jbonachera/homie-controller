@@ -58,13 +58,13 @@ func OnlineCallback(client MQTT.Client, mqttMessage MQTT.Message) {
 		return
 	}
 	if message.Payload == "true" {
-		log.Debug("discovered a new device: " + message.Id)
-		device := New(message.Id, registry.baseTopic)
-		Append(device)
+		log.Debug("discovered a new newDevice: " + message.Id)
+		newDevice := New(message.Id, registry.baseTopic)
+		Append(newDevice)
 		for _, prop := range homieMessage.Properties {
-			client.Subscribe(registry.baseTopic+message.Id+"/"+prop, 1, device.MQTTNodeHandler)
+			client.Subscribe(registry.baseTopic+message.Id+"/"+prop, 1, newDevice.MQTTNodeHandler)
 		}
-		client.Subscribe(registry.baseTopic+message.Id+"/+/$type", 1, device.MQTTNodeHandler)
+		client.Subscribe(registry.baseTopic+message.Id+"/+/$type", 1, newDevice.MQTTNodeHandler)
 	} else {
 		log.Debug("a device has disconnected: " + message.Id)
 		for _, prop := range homieMessage.Properties {
