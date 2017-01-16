@@ -1,12 +1,13 @@
 package mqtt
 
 import (
-	"os"
 	MQTT "github.com/eclipse/paho.mqtt.golang"
 	"github.com/jbonachera/homie-controller/log"
-	"time"
 	"github.com/jbonachera/homie-controller/model/device"
+	"os"
+	"time"
 )
+
 var baseTopic string = "devices/"
 var devices device.Registry = device.NewRegistry(baseTopic)
 var c MQTT.Client
@@ -33,6 +34,6 @@ func Start() {
 
 }
 
-func Client() MQTT.Client{
+func Client() MQTT.Client {
 	return c
 }

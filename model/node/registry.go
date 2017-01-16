@@ -10,7 +10,6 @@ type Factory interface {
 	New(name string, baseTopic string) Type
 }
 
-
 func RegisterNodeTypeFactory(name string, nodeType Factory) {
 	_, exist := Factories[name]
 	if !exist {

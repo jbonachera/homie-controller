@@ -5,7 +5,6 @@ import (
 	"github.com/jbonachera/homie-controller/model/metric"
 )
 
-
 type Type interface {
 	GetName() string
 	GetType() string
@@ -13,4 +12,3 @@ type Type interface {
 	GetPoint() metric.Metric
 	MQTTHandler(mqttClient MQTT.Client, message MQTT.Message)
 }
-

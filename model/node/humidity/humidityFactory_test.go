@@ -1,8 +1,8 @@
 package humidity
 
 import (
-	"testing"
 	"github.com/jbonachera/homie-controller/model/node"
+	"testing"
 )
 
 func TestNew(t *testing.T) {

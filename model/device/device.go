@@ -3,8 +3,8 @@ package device
 import (
 	MQTT "github.com/eclipse/paho.mqtt.golang"
 	"github.com/jbonachera/homie-controller/log"
-	"github.com/jbonachera/homie-controller/model/node"
 	"github.com/jbonachera/homie-controller/model/homieMessage"
+	"github.com/jbonachera/homie-controller/model/node"
 	"strconv"
 	"strings"
 )
