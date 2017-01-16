@@ -17,6 +17,9 @@ func (d dummyNodeType) GetName() string {
 func (d dummyNodeType) GetType() string {
 	return d.nodeType
 }
+func (d dummyNodeType) GetProperties() []string {
+	return []string{"temperature"}
+}
 func (d dummyNodeType) GetPoint() metric.Metric {
 	return metric.New("temperature", map[string]string{"room": "living", "sensor": "sensor01"}, map[string]interface{}{"degrees": 24.0})
 }

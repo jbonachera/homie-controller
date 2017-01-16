@@ -11,6 +11,7 @@ var nodeTypeFactories = make(map[string]NodeTypeFactory)
 type NodeType interface {
 	GetName() string
 	GetType() string
+	GetProperties() []string
 	GetPoint() metric.Metric
 	MQTTHandler(mqttClient MQTT.Client, message MQTT.Message)
 }
