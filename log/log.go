@@ -38,7 +38,7 @@ func (c *customLogger) getLogLevel() int {
 func (c *customLogger) setLogLevel(level int) {
 	c.Lock()
 	defer c.Unlock()
-	if level < ERROR && level > DEBUG {
+	if level >= ERROR && level <= DEBUG {
 		c.logLevel = level
 	}
 }
