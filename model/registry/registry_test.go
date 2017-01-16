@@ -51,7 +51,7 @@ func TestParralellAppend(t *testing.T) {
 func populate(count int) *Registry {
 	registry := New(baseTopic)
 	i := 0
-	for i < 30 {
+	for i < count {
 		registry.Append(device.New("u"+strconv.Itoa(i), "devices/"))
 		i += 1
 	}
