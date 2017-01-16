@@ -19,8 +19,7 @@ func RegisterNodeTypeFactory(name string, nodeType Factory) {
 
 func New(nodeType string, baseTopic string) (Type, error) {
 	if _, exist := Factories[nodeType]; exist {
-		node := Factories[nodeType].New(nodeType, baseTopic)
-		return node, nil
+		return Factories[nodeType].New(nodeType, baseTopic), nil
 	}
 	return nil, errors.New("Invalid type requested: " + nodeType)
 }
