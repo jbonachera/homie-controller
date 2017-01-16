@@ -51,7 +51,7 @@ func Set(id string, path string, value string) {
 		registry.devices[offset].Set(path, value)
 	}
 }
-func DeviceOnlineCallback(client MQTT.Client, mqttMessage MQTT.Message) {
+func OnlineCallback(client MQTT.Client, mqttMessage MQTT.Message) {
 	message, err := homieMessage.New(mqttMessage, registry.baseTopic)
 	if err != nil {
 		log.Warn("received an invalid message")
