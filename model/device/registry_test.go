@@ -80,7 +80,7 @@ func setProp(count int, prop string, id string, value string, wg *sync.WaitGroup
 		i += 1
 	}
 }
-func TestParrallelSet(t *testing.T) {
+func TestParallelSet(t *testing.T) {
 	populate(30)
 	var wg sync.WaitGroup
 	i := 0
