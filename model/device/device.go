@@ -3,7 +3,7 @@ package device
 import (
 	MQTT "github.com/eclipse/paho.mqtt.golang"
 	"github.com/jbonachera/homie-controller/log"
-	"github.com/jbonachera/homie-controller/model/device/nodetype"
+	"github.com/jbonachera/homie-controller/model/node"
 	"github.com/jbonachera/homie-controller/model/homieMessage"
 	"strconv"
 	"strings"
@@ -30,12 +30,12 @@ type Device struct {
 	Stats          DeviceStats
 	Fw             DeviceFirmware
 	Implementation string
-	Nodes          map[string]nodetype.NodeType
+	Nodes          map[string]node.Type
 	BaseTopic      string
 }
 
 func New(id string, baseTopic string) Device {
-	return Device{id, false, "", "", "", DeviceStats{0, 0, 0}, DeviceFirmware{"", "", ""}, "", map[string]nodetype.NodeType{}, baseTopic}
+	return Device{id, false, "", "", "", DeviceStats{0, 0, 0}, DeviceFirmware{"", "", ""}, "", map[string]node.Type{}, baseTopic}
 }
 func (d *Device) Set(prop string, value string) {
 	switch prop {
@@ -74,16 +74,16 @@ func (d *Device) MQTTNodeHandler(mqttClient MQTT.Client, mqttMessage MQTT.Messag
 	if len(topicComponents) != 2 {
 		return
 	}
-	node, property := topicComponents[0], topicComponents[1]
+	nodeName, property := topicComponents[0], topicComponents[1]
 	if property == "$type" {
-		newNode, err := nodetype.New(message.Payload, d.BaseTopic)
+		newNode, err := node.New(message.Payload, d.BaseTopic)
 		if err == nil {
-			d.Nodes[node] = newNode
+			d.Nodes[nodeName] = newNode
 			properties := newNode.GetProperties()
-			log.Debug("adding node " + node + " for device " + message.Id)
+			log.Debug("adding node " + nodeName + " for device " + message.Id)
 			for _, property := range properties {
-				log.Debug("adding property " + property + " to node " + node + " for device " + message.Id)
-				mqttClient.Subscribe(d.BaseTopic+d.Id+"/"+node+"/"+property, 1, d.Nodes[node].MQTTHandler)
+				log.Debug("adding property " + property + " to node " + nodeName + " for device " + message.Id)
+				mqttClient.Subscribe(d.BaseTopic+d.Id+"/"+nodeName+"/"+property, 1, d.Nodes[nodeName].MQTTHandler)
 			}
 		} else {
 			log.Warn("adding node failed: " + err.Error())

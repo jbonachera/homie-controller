@@ -1,12 +1,12 @@
 package temperature
 
 import (
-	"github.com/jbonachera/homie-controller/model/device/nodetype"
 	"testing"
+	"github.com/jbonachera/homie-controller/model/node"
 )
 
 func TestNew(t *testing.T) {
-	temperature, _ := nodetype.New("temperature", "devices/")
+	temperature, _ := node.New("temperature", "devices/")
 	if temperature.GetType() != "temperature" {
 		t.Error("could not get a tempetature node type")
 	}

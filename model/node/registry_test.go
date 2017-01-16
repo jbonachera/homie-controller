@@ -1,4 +1,4 @@
-package nodetype
+package node
 
 import (
 	MQTT "github.com/eclipse/paho.mqtt.golang"
@@ -35,7 +35,7 @@ func (d dummyNodeType) MQTTHandler(client MQTT.Client, message MQTT.Message) {
 
 type dummyFactory struct{}
 
-func (dummyFactory) New(name string, baseTopic string) NodeType {
+func (dummyFactory) New(name string, baseTopic string) Type {
 	return dummyNodeType{name, "dummyType"}
 }
 

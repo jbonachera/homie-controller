@@ -2,7 +2,7 @@ package device
 
 import (
 	"github.com/jbonachera/homie-controller/mocks/mqtt"
-	_ "github.com/jbonachera/homie-controller/model/device/nodetype/temperature"
+	_ "github.com/jbonachera/homie-controller/model/node/temperature"
 	"testing"
 )
 
