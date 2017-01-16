@@ -7,13 +7,15 @@ import (
 	"testing"
 )
 
+var baseTopic string = "devices/"
+
 func TestAppend(t *testing.T) {
-	registry := New()
-	registry.Append(device.New("u1", "devices/"))
+	registry := New(baseTopic)
+	registry.Append(device.New("u1", baseTopic))
 	if registry.devices[0].Id != "u1" {
 		t.Error("didn't get the device we just inserted")
 	}
-	registry.Append(device.New("u2", "devices/"))
+	registry.Append(device.New("u2", baseTopic))
 	if registry.devices[0].Id != "u1" {
 		t.Error("existing device disapeared after insertion")
 	}
@@ -26,14 +28,14 @@ func appendList(count int, r *Registry, wg *sync.WaitGroup) {
 	defer wg.Done()
 	i := 0
 	for i < count {
-		r.Append(device.New("u"+strconv.Itoa(i), "devices/"))
+		r.Append(device.New("u"+strconv.Itoa(i), baseTopic))
 		i += 1
 	}
 }
 func TestParralellAppend(t *testing.T) {
 	var wg sync.WaitGroup
 	count := 100
-	registry := New()
+	registry := New(baseTopic)
 	wg.Add(count)
 	i := 0
 	for i < count {
@@ -47,7 +49,7 @@ func TestParralellAppend(t *testing.T) {
 }
 
 func populate(count int) *Registry {
-	registry := New()
+	registry := New(baseTopic)
 	i := 0
 	for i < 30 {
 		registry.Append(device.New("u"+strconv.Itoa(i), "devices/"))
