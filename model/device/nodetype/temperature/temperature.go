@@ -1,6 +1,7 @@
 package temperature
 
 import (
+	"fmt"
 	MQTT "github.com/eclipse/paho.mqtt.golang"
 	"github.com/jbonachera/homie-controller/model/homieMessage"
 	"github.com/jbonachera/homie-controller/model/metric"
@@ -25,7 +26,7 @@ func (t TemperatureNode) GetType() string {
 	return nodeType
 }
 func (t TemperatureNode) GetProperties() []string {
-	return []string{"degres", "unit", "room"}
+	return []string{"degrees", "unit", "room"}
 }
 func (t TemperatureNode) GetPoint() metric.Metric {
 	return metric.New("temperature", map[string]string{"room": t.room, "sensor": t.name}, map[string]interface{}{"degrees": t.degrees})
@@ -35,6 +36,7 @@ func (t *TemperatureNode) MQTTHandler(mqttClient MQTT.Client, mqttMessage MQTT.M
 	if err != nil {
 		return
 	}
+	fmt.Println("Handling message for ", mqttMessage.Topic())
 	topicComponents := strings.Split(message.Path, "/")
 	node, property := topicComponents[0], topicComponents[1]
 	if node != t.name {
