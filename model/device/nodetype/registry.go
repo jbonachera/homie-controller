@@ -2,7 +2,7 @@ package nodetype
 
 import (
 	"errors"
-	"github.com/jbonachera/homie-controller/model/homieMessage"
+	MQTT "github.com/eclipse/paho.mqtt.golang"
 	"github.com/jbonachera/homie-controller/model/metric"
 )
 
@@ -12,7 +12,7 @@ type NodeType interface {
 	GetName() string
 	GetType() string
 	GetPoint() metric.Metric
-	MQTTHandler(mqttClient homieMessage.SubscriptibleClient, message homieMessage.HomieExtractableMessage)
+	MQTTHandler(mqttClient MQTT.Client, message MQTT.Message)
 }
 
 type NodeTypeFactory interface {

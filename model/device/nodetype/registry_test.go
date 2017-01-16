@@ -1,9 +1,8 @@
 package nodetype
 
 import (
-	"github.com/jbonachera/homie-controller/model/homieMessage"
+	MQTT "github.com/eclipse/paho.mqtt.golang"
 	"github.com/jbonachera/homie-controller/model/metric"
-
 	"testing"
 )
 
@@ -28,7 +27,7 @@ func (d dummyClient) Subscribe(topic string, qos byte, callback interface{}) int
 	return nil
 }
 
-func (d dummyNodeType) MQTTHandler(mqttClient homieMessage.SubscriptibleClient, message homieMessage.HomieExtractableMessage) {
+func (d dummyNodeType) MQTTHandler(client MQTT.Client, message MQTT.Message) {
 }
 
 type dummyFactory struct{}
