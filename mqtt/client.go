@@ -9,11 +9,10 @@ import (
 )
 
 var baseTopic string = "devices/"
-var devices device.Registry = device.NewRegistry(baseTopic)
 var c MQTT.Client
 
 func Start(broker string) {
-
+	device.NewRegistry(baseTopic)
 	opts := MQTT.NewClientOptions().AddBroker("tcp://" + broker + ":1883")
 	opts.SetClientID("homie-controller")
 	c = MQTT.NewClient(opts)
@@ -27,7 +26,7 @@ func Start(broker string) {
 			connected = true
 		}
 	}
-	if token := c.Subscribe("devices/+/$online", 1, devices.DeviceOnlineCallback); token.Wait() && token.Error() != nil {
+	if token := c.Subscribe("devices/+/$online", 1, device.DeviceOnlineCallback); token.Wait() && token.Error() != nil {
 		log.Error("Could not subscribe to devices/+/$online")
 		os.Exit(1)
 	}
