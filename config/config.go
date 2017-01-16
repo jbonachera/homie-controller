@@ -16,6 +16,7 @@ func start() {
 }
 
 func Get(key string) string {
+	// Priority: storage > env
 	value, exist := storage[key]
 	if !exist {
 		return os.Getenv(strings.ToUpper(key))
