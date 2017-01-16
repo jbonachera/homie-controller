@@ -1,25 +1,14 @@
 package humidity
 
 import (
+	"github.com/jbonachera/homie-controller/mocks/mqtt"
 	"testing"
 )
 
-type MessageMock struct {
-	topic   string
-	payload string
-}
-
-func (m MessageMock) Topic() string {
-	return m.topic
-}
-func (m MessageMock) Payload() []byte {
-	return []byte(m.payload)
-}
-
-var message MessageMock = MessageMock{
+var message mqtt.MessageMock = mqtt.NewMessage(
 	"devices/u1234/humidity/percent",
 	"23.0",
-}
+)
 
 func TestMQTTHandler(t *testing.T) {
 	humidity := HumidityNode{"humidity", "devices/", "%", 21, "living"}
