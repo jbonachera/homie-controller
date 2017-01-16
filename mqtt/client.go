@@ -27,13 +27,9 @@ func Start(broker string) {
 			connected = true
 		}
 	}
-	if token := c.Subscribe("devices/+/$online", 0, devices.DeviceOnlineCallback); token.Wait() && token.Error() != nil {
+	if token := c.Subscribe("devices/+/$online", 1, devices.DeviceOnlineCallback); token.Wait() && token.Error() != nil {
 		log.Error("Could not subscribe to devices/+/$online")
 		os.Exit(1)
 	}
 
-}
-
-func Client() MQTT.Client {
-	return c
 }
