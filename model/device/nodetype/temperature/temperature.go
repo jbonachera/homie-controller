@@ -24,6 +24,9 @@ func (t TemperatureNode) GetName() string {
 func (t TemperatureNode) GetType() string {
 	return nodeType
 }
+func (t TemperatureNode) GetProperties() []string {
+	return []string{"degres", "unit", "room"}
+}
 func (t TemperatureNode) GetPoint() metric.Metric {
 	return metric.New("temperature", map[string]string{"room": t.room, "sensor": t.name}, map[string]interface{}{"degrees": t.degrees})
 }

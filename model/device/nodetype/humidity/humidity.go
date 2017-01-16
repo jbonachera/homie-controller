@@ -24,6 +24,9 @@ func (t HumidityNode) GetName() string {
 func (t HumidityNode) GetType() string {
 	return nodeType
 }
+func (t HumidityNode) GetProperties() []string {
+	return []string{"percent", "unit", "room"}
+}
 func (t HumidityNode) GetPoint() metric.Metric {
 	return metric.New("humidity", map[string]string{"room": t.room, "sensor": t.name}, map[string]interface{}{"percent": t.percent})
 }
