@@ -1,36 +1,15 @@
 package device
 
 import (
+	"github.com/jbonachera/homie-controller/mocks/mqtt"
 	_ "github.com/jbonachera/homie-controller/model/device/nodetype/temperature"
-	"github.com/jbonachera/homie-controller/model/homieMessage"
 	"testing"
 )
 
-type MessageMock struct {
-	topic   string
-	payload string
-}
-
-func (m MessageMock) Topic() string {
-	return m.topic
-}
-func (m MessageMock) Payload() []byte {
-	return []byte(m.payload)
-}
-
-var message MessageMock = MessageMock{
+var message mqtt.MessageMock = mqtt.NewMessage(
 	"devices/u1234/temperature/$type",
 	"temperature",
-}
-
-type dummyClient struct {
-	topic string
-}
-
-func (d *dummyClient) Subscribe(topic string, qos byte, callback func(homieMessage.SubscriptibleClient, homieMessage.HomieExtractableMessage)) interface{} {
-	d.topic = topic
-	return nil
-}
+)
 
 func TestNew(t *testing.T) {
 	device := New("azertyuip", "devices/")
@@ -56,12 +35,12 @@ func TestSet(t *testing.T) {
 
 func TestAddNode(t *testing.T) {
 	device := New("azertyuip", "devices/")
-	client := &dummyClient{""}
+	client := mqtt.NewMockClient(true, "old/topic")
 	device.MQTTNodeHandler(client, message)
 	if len(device.Nodes) != 1 {
 		t.Error("adding node failed")
 	}
-	if client.topic != "devices/azertyuip/temperature/+" {
-		t.Error("subscription to wrong topic: want devices/azertyuip/temperature/+, got ", client.topic)
+	if client.Topic != "devices/azertyuip/temperature/room" {
+		t.Error("subscription to wrong topic: want devices/azertyuip/temperature/room, got ", client.Topic)
 	}
 }
