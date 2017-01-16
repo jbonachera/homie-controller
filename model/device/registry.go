@@ -1,8 +1,7 @@
-package registry
+package device
 
 import (
 	MQTT "github.com/eclipse/paho.mqtt.golang"
-	"github.com/jbonachera/homie-controller/model/device"
 	"github.com/jbonachera/homie-controller/log"
 	"github.com/jbonachera/homie-controller/model/homieMessage"
 	"sync"
@@ -10,34 +9,34 @@ import (
 
 type Registry struct {
 	sync.Mutex
-	devices      []device.Device
+	devices      []Device
 	devicesIndex map[string]int
 	baseTopic    string
 }
 
-func New(baseTopic string) Registry {
-	return Registry{sync.Mutex{}, []device.Device{}, map[string]int{}, baseTopic}
+func NewRegistry(baseTopic string) Registry {
+	return Registry{sync.Mutex{}, []Device{}, map[string]int{}, baseTopic}
 }
 
 func addToIndex(index map[string]int, key string, offset int) {
 	index[key] = offset
 }
 
-func (d *Registry) Append(device device.Device) {
+func (d *Registry) Append(device Device) {
 	d.Lock()
 	defer d.Unlock()
 	d.devices = append(d.devices, device)
 	addToIndex(d.devicesIndex, device.Id, len(d.devices)-1)
 }
 
-func (d Registry) Get(id string) device.Device {
+func (d Registry) Get(id string) Device {
 	d.Lock()
 	defer d.Unlock()
 	offset, ok := d.devicesIndex[id]
 	if ok {
 		return d.devices[offset]
 	}
-	return device.Device{}
+	return Device{}
 
 }
 
@@ -57,7 +56,7 @@ func (d *Registry) DeviceOnlineCallback(client MQTT.Client, mqttMessage MQTT.Mes
 	}
 	if message.Payload == "true" {
 		log.Debug("discovered a new device: " + message.Id)
-		device := device.New(message.Id, d.baseTopic)
+		device := New(message.Id, d.baseTopic)
 		d.Append(device)
 		for _, prop := range homieMessage.Properties {
 			client.Subscribe(d.baseTopic+message.Id+"/"+prop, 1, device.MQTTNodeHandler)

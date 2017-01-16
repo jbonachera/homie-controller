@@ -1,7 +1,6 @@
-package registry
+package device
 
 import (
-	"github.com/jbonachera/homie-controller/model/device"
 	"strconv"
 	"sync"
 	"testing"
@@ -10,12 +9,12 @@ import (
 var baseTopic string = "devices/"
 
 func TestAppend(t *testing.T) {
-	registry := New(baseTopic)
-	registry.Append(device.New("u1", baseTopic))
+	registry := NewRegistry(baseTopic)
+	registry.Append(New("u1", baseTopic))
 	if registry.devices[0].Id != "u1" {
 		t.Error("didn't get the device we just inserted")
 	}
-	registry.Append(device.New("u2", baseTopic))
+	registry.Append(New("u2", baseTopic))
 	if registry.devices[0].Id != "u1" {
 		t.Error("existing device disapeared after insertion")
 	}
@@ -28,14 +27,14 @@ func appendList(count int, r *Registry, wg *sync.WaitGroup) {
 	defer wg.Done()
 	i := 0
 	for i < count {
-		r.Append(device.New("u"+strconv.Itoa(i), baseTopic))
+		r.Append(New("u"+strconv.Itoa(i), baseTopic))
 		i += 1
 	}
 }
 func TestParralellAppend(t *testing.T) {
 	var wg sync.WaitGroup
 	count := 100
-	registry := New(baseTopic)
+	registry := NewRegistry(baseTopic)
 	wg.Add(count)
 	i := 0
 	for i < count {
@@ -49,10 +48,10 @@ func TestParralellAppend(t *testing.T) {
 }
 
 func populate(count int) *Registry {
-	registry := New(baseTopic)
+	registry := NewRegistry(baseTopic)
 	i := 0
 	for i < count {
-		registry.Append(device.New("u"+strconv.Itoa(i), "devices/"))
+		registry.Append(New("u"+strconv.Itoa(i), "devices/"))
 		i += 1
 	}
 	return &registry
@@ -65,7 +64,7 @@ func TestGet(t *testing.T) {
 	}
 
 }
-func TestSet(t *testing.T) {
+func TestRegistrySet(t *testing.T) {
 	registry := populate(30)
 	registry.Set("u17", "$online", "true")
 	if registry.devices[17].Online != true {
