@@ -16,6 +16,9 @@ type Registry struct {
 
 var registry Registry
 
+func List() []Device{
+	return registry.devices
+}
 
 func NewRegistry(baseTopic string) {
 	registry = Registry{sync.Mutex{}, []Device{}, map[string]int{}, baseTopic}

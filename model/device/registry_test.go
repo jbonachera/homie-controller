@@ -138,3 +138,11 @@ func benchmarkGet(j int, b *testing.B) {
 		Get("u988")
 	}
 }
+
+func TestList(t *testing.T) {
+	populate(30)
+	list := List()
+	if len(list) != 30 {
+		t.Error("could not get a list of devices")
+	}
+}
