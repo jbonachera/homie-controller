@@ -24,3 +24,7 @@ func Get(key string) string {
 		return value
 	}
 }
+
+func Set(key string, value string){
+	storage[key] = value
+}

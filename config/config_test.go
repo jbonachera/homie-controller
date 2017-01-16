@@ -31,3 +31,11 @@ func TestGetEnvOverride(t *testing.T) {
 		t.Error("did not get a valid value: got ", testKey, ", wanted value")
 	}
 }
+
+func TestSet(t *testing.T) {
+	start()
+	Set("key", "value")
+	if Get("key") != "value"{
+		t.Error("could not set a confguration key value")
+	}
+}
