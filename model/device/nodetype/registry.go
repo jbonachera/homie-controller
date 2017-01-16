@@ -32,5 +32,5 @@ func New(nodeType string, baseTopic string) (NodeType, error) {
 		node := nodeTypeFactories[nodeType].New(nodeType, baseTopic)
 		return node, nil
 	}
-	return nil, errors.New("Invalid type requested")
+	return nil, errors.New("Invalid type requested: " + nodeType)
 }
