@@ -12,9 +12,9 @@ var baseTopic string = "devices/"
 var devices device.Registry = device.NewRegistry(baseTopic)
 var c MQTT.Client
 
-func Start() {
+func Start(broker string) {
 
-	opts := MQTT.NewClientOptions().AddBroker("tcp://" + os.Getenv("MQTT_BROKER") + ":1883")
+	opts := MQTT.NewClientOptions().AddBroker("tcp://" + broker + ":1883")
 	opts.SetClientID("homie-controller")
 	c = MQTT.NewClient(opts)
 	connected := false
