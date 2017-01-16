@@ -1,6 +1,7 @@
 package humidity
 
 import (
+	"fmt"
 	MQTT "github.com/eclipse/paho.mqtt.golang"
 	"github.com/jbonachera/homie-controller/model/homieMessage"
 	"github.com/jbonachera/homie-controller/model/metric"
@@ -35,6 +36,7 @@ func (t *HumidityNode) MQTTHandler(mqttClient MQTT.Client, mqttMessage MQTT.Mess
 	if err != nil {
 		return
 	}
+	fmt.Println("Handling message for ", mqttMessage.Topic())
 	topicComponents := strings.Split(message.Path, "/")
 	node, property := topicComponents[0], topicComponents[1]
 	if node != t.name {
