@@ -6,10 +6,10 @@ import (
 )
 
 const (
-	DEBUG = iota
-	INFO  = iota
-	WARN  = iota
 	ERROR = iota
+	WARN  = iota
+	INFO  = iota
+	DEBUG = iota
 )
 
 type customLogger struct {
