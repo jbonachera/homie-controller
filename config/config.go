@@ -8,6 +8,9 @@ import (
 var storage map[string]string
 
 func init() {
+	start()
+}
+func start() {
 	storage = map[string]string{}
 	// We may load storage from file later
 }
