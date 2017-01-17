@@ -77,3 +77,7 @@ func OnlineCallback(client MQTT.Client, mqttMessage MQTT.Message) {
 		client.Unsubscribe(registry.baseTopic + message.Id + "/+/$type")
 	}
 }
+
+func GetAll() map[string]*Device{
+	return registry.devices
+}
