@@ -181,8 +181,15 @@ func TestOnlineCallback(t *testing.T) {
 		"devices/u0/$online",
 		"true",
 	))
-	_, err := Get("u0")
+	device, err := Get("u0")
 	if err != nil {
 		t.Error("test device was not created")
+	}
+	device.MQTTNodeHandler(client, mqtt.NewMessage(
+		"devices/u0/$name",
+		"sensor-test",
+	))
+	if registry.devices["u0"].Name != "sensor-test"{
+		t.Error("test device was not updated")
 	}
 }
