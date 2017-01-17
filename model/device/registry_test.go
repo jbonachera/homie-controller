@@ -181,9 +181,9 @@ func TestOnlineCallback(t *testing.T) {
 		"devices/u0/$name",
 		"test-sensor",
 	))
-	name := registry.devices["u0"].Name
-	if name != "test-sensor" {
-		t.Error("MQTT message did not update node name: wanted 'test-sensor', got ", name)
+	myDevice, _ := Get("u0")
+	if myDevice.Name != "test-sensor" {
+		t.Error("MQTT message did not update node name: wanted 'test-sensor', got ", myDevice.Name)
 	}
 
 }
