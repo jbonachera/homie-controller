@@ -34,8 +34,8 @@ type Device struct {
 	BaseTopic      string               `json:"base_topic"`
 }
 
-func New(id string, baseTopic string) Device {
-	return Device{id, false, "", "", "", DeviceStats{0, 0, 0}, DeviceFirmware{"", "", ""}, "", map[string]node.Type{}, baseTopic}
+func New(id string, baseTopic string) *Device {
+	return &Device{id, false, "", "", "", DeviceStats{0, 0, 0}, DeviceFirmware{"", "", ""}, "", map[string]node.Type{}, baseTopic}
 }
 func (d *Device) Set(prop string, value string) {
 	switch prop {

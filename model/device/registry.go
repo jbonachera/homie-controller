@@ -10,7 +10,7 @@ import (
 
 type Registry struct {
 	sync.Mutex
-	devices      map[string]Device
+	devices      map[string]*Device
 	baseTopic    string
 }
 
@@ -26,23 +26,23 @@ func List() []string{
 }
 
 func NewRegistry(baseTopic string) {
-	registry = Registry{sync.Mutex{}, map[string]Device{}, baseTopic}
+	registry = Registry{sync.Mutex{}, map[string]*Device{}, baseTopic}
 }
 
-func Append(device Device) {
+func Append(device *Device) {
 	registry.Lock()
 	defer registry.Unlock()
 	registry.devices[device.Id] = device
 }
 
-func Get(id string) (Device, error) {
+func Get(id string) (*Device, error) {
 	registry.Lock()
 	defer registry.Unlock()
 	wantedDevice, ok := registry.devices[id]
 	if ok {
 		return wantedDevice, nil
 	}
-	return Device{}, errors.New("device not found")
+	return nil, errors.New("device not found")
 
 }
 
