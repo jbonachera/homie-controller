@@ -175,15 +175,14 @@ func benchmarkList(j int, b *testing.B) {
 }
 
 func TestOnlineCallback(t *testing.T) {
-	populate(30)
+	NewRegistry(baseTopic)
 	client := mqtt.NewMockClient(true, "old/topic")
 	OnlineCallback(client, mqtt.NewMessage(
-		"devices/u0/$name",
-		"test-sensor",
+		"devices/u0/$online",
+		"true",
 	))
-	myDevice, _ := Get("u0")
-	if myDevice.Name != "test-sensor" {
-		t.Error("MQTT message did not update node name: wanted 'test-sensor', got ", myDevice.Name)
+	_, err := Get("u0")
+	if err != nil {
+		t.Error("test device was not created")
 	}
-
 }
