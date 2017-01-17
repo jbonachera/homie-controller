@@ -14,9 +14,9 @@ var nodeType string = "humidity"
 type HumidityNode struct {
 	name      string `json:"name"`
 	baseTopic string `json:"base_topic"`
-	unit      string `json:"unit"`
-	percent   float64 `json:"percent"`
-	room      string `json:"room"`
+	Unit      string `json:"unit"`
+	Percent   float64 `json:"percent"`
+	Room      string `json:"room"`
 }
 
 func (t HumidityNode) GetName() string {
@@ -29,7 +29,7 @@ func (t HumidityNode) GetProperties() []string {
 	return []string{"percent", "unit", "room"}
 }
 func (t HumidityNode) GetPoint() metric.Metric {
-	return metric.New("humidity", map[string]string{"room": t.room, "sensor": t.name}, map[string]interface{}{"percent": t.percent})
+	return metric.New("humidity", map[string]string{"room": t.Room, "sensor": t.name}, map[string]interface{}{"percent": t.Percent})
 }
 func (t *HumidityNode) MQTTHandler(mqttClient MQTT.Client, mqttMessage MQTT.Message) {
 	message, err := homieMessage.New(mqttMessage, t.baseTopic)
@@ -45,13 +45,13 @@ func (t *HumidityNode) MQTTHandler(mqttClient MQTT.Client, mqttMessage MQTT.Mess
 	log.Debug("set property " + property + " to " + message.Payload + " for node" + t.name)
 	switch property {
 	case "unit":
-		t.unit = message.Payload
+		t.Unit = message.Payload
 	case "room":
-		t.room = message.Payload
+		t.Room = message.Payload
 	case "percent":
 		percent, err := strconv.ParseFloat(message.Payload, 64)
 		if err == nil {
-			t.percent = percent
+			t.Percent = percent
 		}
 	}
 
