@@ -155,3 +155,21 @@ func TestList(t *testing.T) {
 		t.Error("item 0 sould be u0, got", list[0])
 	}
 }
+func BenchmarkList(b *testing.B) {
+	benchmarkList(5, b)
+}
+func BenchmarkList10(b *testing.B) {
+	benchmarkList(10, b)
+}
+func BenchmarkList100(b *testing.B) {
+	benchmarkList(100, b)
+}
+func BenchmarkList1000(b *testing.B) {
+	benchmarkList(1000, b)
+}
+func benchmarkList(j int, b *testing.B) {
+	populate(j)
+	for i := 0; i < b.N; i++ {
+		List()
+	}
+}
