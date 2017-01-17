@@ -13,8 +13,8 @@ var message mqtt.MessageMock = mqtt.NewMessage(
 func TestMQTTHandler(t *testing.T) {
 	temperature := TemperatureNode{"temperature", "devices/", "c", 21.0, "living"}
 	temperature.MQTTHandler(nil, message)
-	if temperature.degrees != 23.9 {
-		t.Error("setting temperature via MQTTHandler failed: wanted 23.9, got", temperature.degrees)
+	if temperature.Degrees != 23.9 {
+		t.Error("setting temperature via MQTTHandler failed: wanted 23.9, got", temperature.Degrees)
 	}
 }
 

@@ -12,15 +12,15 @@ import (
 var nodeType string = "temperature"
 
 type TemperatureNode struct {
-	name      string `json:"name"`
-	baseTopic string `json:"base_topic"`
-	unit      string `json:"unit"`
-	degrees   float64 `json:"degrees"`
-	room      string `json:"room"`
+	Name      string `json:"name"`
+	BaseTopic string `json:"base_topic"`
+	Unit      string `json:"unit"`
+	Degrees   float64 `json:"degrees"`
+	Room      string `json:"room"`
 }
 
 func (t TemperatureNode) GetName() string {
-	return t.name
+	return t.Name
 }
 func (t TemperatureNode) GetType() string {
 	return nodeType
@@ -29,29 +29,29 @@ func (t TemperatureNode) GetProperties() []string {
 	return []string{"degrees", "unit", "room"}
 }
 func (t TemperatureNode) GetPoint() metric.Metric {
-	return metric.New("temperature", map[string]string{"room": t.room, "sensor": t.name}, map[string]interface{}{"degrees": t.degrees})
+	return metric.New("temperature", map[string]string{"room": t.Room, "sensor": t.Name}, map[string]interface{}{"degrees": t.Degrees})
 }
 func (t *TemperatureNode) MQTTHandler(mqttClient MQTT.Client, mqttMessage MQTT.Message) {
-	message, err := homieMessage.New(mqttMessage, t.baseTopic)
+	message, err := homieMessage.New(mqttMessage, t.BaseTopic)
 	if err != nil {
 		return
 	}
 	topicComponents := strings.Split(message.Path, "/")
 	node, property := topicComponents[0], topicComponents[1]
-	if node != t.name {
+	if node != t.Name {
 		// Message was not for us
 		return
 	}
-	log.Debug("set property " + property + " to " + message.Payload + " for node" + t.name)
+	log.Debug("set property " + property + " to " + message.Payload + " for node" + t.Name)
 	switch property {
 	case "unit":
-		t.unit = message.Payload
+		t.Unit = message.Payload
 	case "room":
-		t.room = message.Payload
+		t.Room = message.Payload
 	case "degrees":
 		degrees, err := strconv.ParseFloat(message.Payload, 64)
 		if err == nil {
-			t.degrees = degrees
+			t.Degrees = degrees
 		}
 	}
 
