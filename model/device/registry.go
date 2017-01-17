@@ -17,8 +17,13 @@ type Registry struct {
 
 var registry Registry
 
-func List() []Device{
-	return registry.devices
+func List() []string{
+	keys := make([]string, 0, len(registry.devicesIndex))
+	for k := range registry.devicesIndex {
+		keys = append(keys, k)
+	}
+
+	return keys
 }
 
 func NewRegistry(baseTopic string) {

@@ -151,4 +151,7 @@ func TestList(t *testing.T) {
 	if len(list) != 30 {
 		t.Error("could not get a list of devices")
 	}
+	if list[0] != "u0"{
+		t.Error("item 0 sould be u0, got", list[0])
+	}
 }
