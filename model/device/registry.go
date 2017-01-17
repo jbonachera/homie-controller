@@ -5,6 +5,7 @@ import (
 	"github.com/jbonachera/homie-controller/log"
 	"github.com/jbonachera/homie-controller/model/homieMessage"
 	"sync"
+	"errors"
 )
 
 type Registry struct {
@@ -35,14 +36,14 @@ func Append(device Device) {
 	addToIndex(registry.devicesIndex, device.Id, len(registry.devices)-1)
 }
 
-func Get(id string) Device {
+func Get(id string) (Device, error) {
 	registry.Lock()
 	defer registry.Unlock()
 	offset, ok := registry.devicesIndex[id]
 	if ok {
-		return registry.devices[offset]
+		return registry.devices[offset], nil
 	}
-	return Device{}
+	return Device{}, errors.New("device not found")
 
 }
 

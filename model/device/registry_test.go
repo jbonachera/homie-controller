@@ -58,7 +58,10 @@ func populate(count int) *Registry {
 }
 func TestGet(t *testing.T) {
 	populate(30)
-	device := Get("u17")
+	device, err := Get("u17")
+	if err != nil {
+		t.Error("got error when calling Get():", err)
+	}
 	if device.Id != "u17" {
 		t.Error("could not Get() a created device: got ", device.Id, " , wanted u17")
 	}
@@ -92,7 +95,10 @@ func TestParallelSet(t *testing.T) {
 		i += 1
 	}
 	wg.Wait()
-	myDevice := Get("u17")
+	myDevice, err := Get("u17")
+	if err != nil {
+		t.Error("got error when calling Get():", err)
+	}
 	if myDevice.Stats.Signal != 87 {
 		t.Error("could not set property: wanted 87, got", myDevice.Stats.Signal)
 	}
