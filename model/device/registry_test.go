@@ -1,6 +1,7 @@
 package device
 
 import (
+	"github.com/jbonachera/homie-controller/mocks/mqtt"
 	"strconv"
 	"sync"
 	"testing"
@@ -19,7 +20,7 @@ func TestAppend(t *testing.T) {
 func appendList(count int, start int, wg *sync.WaitGroup) {
 	defer wg.Done()
 	i := start
-	for i < count +start {
+	for i < count+start {
 		Append(New("u"+strconv.Itoa(i), baseTopic))
 		i += 1
 	}
@@ -146,11 +147,11 @@ func TestList(t *testing.T) {
 	}
 	found := false
 	for _, item := range list {
-		if item == "u0"{
+		if item == "u0" {
 			found = true
 		}
 	}
-	if !found{
+	if !found {
 		t.Error("item 0 sould be u0, got", list[0])
 	}
 }
@@ -171,4 +172,18 @@ func benchmarkList(j int, b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		List()
 	}
+}
+
+func TestOnlineCallback(t *testing.T) {
+	populate(30)
+	client := mqtt.NewMockClient(true, "old/topic")
+	OnlineCallback(client, mqtt.NewMessage(
+		"devices/u0/$name",
+		"test-sensor",
+	))
+	name := registry.devices["u0"].Name
+	if name != "test-sensor" {
+		t.Error("MQTT message did not update node name: wanted 'test-sensor', got ", name)
+	}
+
 }
