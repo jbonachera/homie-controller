@@ -10,8 +10,7 @@ import (
 
 type Registry struct {
 	sync.Mutex
-	devices      []Device
-	devicesIndex map[string]int
+	devices      map[string]Device
 	baseTopic    string
 }
 
@@ -19,15 +18,15 @@ var registry Registry
 
 func List() []string{
 	keys := make([]string, 0, len(registry.devices))
-	for _, k := range registry.devices {
-		keys = append(keys, k.Id)
+	for k := range registry.devices {
+		keys = append(keys, k)
 	}
 
 	return keys
 }
 
 func NewRegistry(baseTopic string) {
-	registry = Registry{sync.Mutex{}, []Device{}, map[string]int{}, baseTopic}
+	registry = Registry{sync.Mutex{}, map[string]Device{}, baseTopic}
 }
 
 func addToIndex(index map[string]int, key string, offset int) {
@@ -37,16 +36,15 @@ func addToIndex(index map[string]int, key string, offset int) {
 func Append(device Device) {
 	registry.Lock()
 	defer registry.Unlock()
-	registry.devices = append(registry.devices, device)
-	addToIndex(registry.devicesIndex, device.Id, len(registry.devices)-1)
+	registry.devices[device.Id] = device
 }
 
 func Get(id string) (Device, error) {
 	registry.Lock()
 	defer registry.Unlock()
-	offset, ok := registry.devicesIndex[id]
+	wantedDevice, ok := registry.devices[id]
 	if ok {
-		return registry.devices[offset], nil
+		return wantedDevice, nil
 	}
 	return Device{}, errors.New("device not found")
 
@@ -55,9 +53,10 @@ func Get(id string) (Device, error) {
 func Set(id string, path string, value string) {
 	registry.Lock()
 	defer registry.Unlock()
-	offset, ok := registry.devicesIndex[id]
+	wantedDevice, ok := registry.devices[id]
 	if ok {
-		registry.devices[offset].Set(path, value)
+		wantedDevice.Set(path, value)
+		registry.devices[id] = wantedDevice
 	}
 }
 func OnlineCallback(client MQTT.Client, mqttMessage MQTT.Message) {

@@ -11,22 +11,15 @@ var baseTopic string = "devices/"
 func TestAppend(t *testing.T) {
 	NewRegistry(baseTopic)
 	Append(New("u1", baseTopic))
-	if registry.devices[0].Id != "u1" {
+	if registry.devices["u1"].Id != "u1" {
 		t.Error("didn't get the device we just inserted")
-	}
-	Append(New("u2", baseTopic))
-	if registry.devices[0].Id != "u1" {
-		t.Error("existing device disapeared after insertion")
-	}
-	if registry.devices[1].Id != "u2" {
-		t.Error("second device were not inserted")
 	}
 }
 
-func appendList(count int, wg *sync.WaitGroup) {
+func appendList(count int, start int, wg *sync.WaitGroup) {
 	defer wg.Done()
-	i := 0
-	for i < count {
+	i := start
+	for i < count +start {
 		Append(New("u"+strconv.Itoa(i), baseTopic))
 		i += 1
 	}
@@ -38,7 +31,7 @@ func TestParralellAppend(t *testing.T) {
 	wg.Add(count)
 	i := 0
 	for i < count {
-		go appendList(200, &wg)
+		go appendList(200, i*200, &wg)
 		i += 1
 	}
 	wg.Wait()
@@ -70,8 +63,8 @@ func TestGet(t *testing.T) {
 func TestRegistrySet(t *testing.T) {
 	populate(30)
 	Set("u17", "$online", "true")
-	if registry.devices[17].Online != true {
-		t.Error("could not Set() a property: wanted true, got", registry.devices[17].Online)
+	if registry.devices["u17"].Online != true {
+		t.Error("could not Set() a property: wanted true, got", registry.devices["u17"].Online)
 	}
 }
 
@@ -151,7 +144,13 @@ func TestList(t *testing.T) {
 	if len(list) != 30 {
 		t.Error("could not get a list of devices")
 	}
-	if list[0] != "u0"{
+	found := false
+	for _, item := range list {
+		if item == "u0"{
+			found = true
+		}
+	}
+	if !found{
 		t.Error("item 0 sould be u0, got", list[0])
 	}
 }
