@@ -44,3 +44,18 @@ func TestAddNode(t *testing.T) {
 		t.Error("subscription to wrong topic: want devices/azertyuip/temperature/room, got ", client.Topic)
 	}
 }
+
+func TestDevice_MQTTNodeHandler(t *testing.T) {
+	updateMessage := mqtt.NewMessage(
+		"devices/u1234/$localip",
+		"127.0.0.1",
+	)
+	client := mqtt.NewMockClient(true, "old/topic")
+	device := New("u1234", "devices/")
+
+	device.MQTTNodeHandler(client, updateMessage)
+	if device.Localip != "127.0.0.1"{
+		t.Error("mqtt message did not update property LocalIP: wanted 127.0.0.1, got", device.Localip)
+	}
+
+}
