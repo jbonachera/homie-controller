@@ -29,10 +29,6 @@ func NewRegistry(baseTopic string) {
 	registry = Registry{sync.Mutex{}, map[string]Device{}, baseTopic}
 }
 
-func addToIndex(index map[string]int, key string, offset int) {
-	index[key] = offset
-}
-
 func Append(device Device) {
 	registry.Lock()
 	defer registry.Unlock()
