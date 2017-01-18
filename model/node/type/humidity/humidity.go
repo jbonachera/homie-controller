@@ -44,7 +44,7 @@ func (t *HumidityNode) MQTTHandler(mqttClient MQTT.Client, mqttMessage MQTT.Mess
 		// Message was not for us
 		return
 	}
-	log.Debug("set property " + property + " to " + message.Payload + " for node" + t.name)
+	log.Debug("set property " + property + " to " + message.Payload + " for node " + t.name)
 	switch property {
 	case "unit":
 		t.Unit = message.Payload

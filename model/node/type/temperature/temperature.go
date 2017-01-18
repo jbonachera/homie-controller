@@ -31,7 +31,7 @@ func (t TemperatureNode) GetProperties() []string {
 	return []string{"degrees", "unit", "room"}
 }
 func (t TemperatureNode) GetPoint() *client.Point {
-	return metric.New("temperature", map[string]string{"room": t.Room, "sensor": t.name}, map[string]interface{}{"degrees": t.Degrees})
+	return metric.New(t.name, map[string]string{"room": t.Room, "sensor": t.name}, map[string]interface{}{"degrees": t.Degrees})
 }
 func (t *TemperatureNode) MQTTHandler(mqttClient MQTT.Client, mqttMessage MQTT.Message) {
 	message, err := homieMessage.New(mqttMessage, t.baseTopic)
@@ -44,7 +44,7 @@ func (t *TemperatureNode) MQTTHandler(mqttClient MQTT.Client, mqttMessage MQTT.M
 		// Message was not for us
 		return
 	}
-	log.Debug("set property " + property + " to " + message.Payload + " for node" + t.name)
+	log.Debug("set property " + property + " to " + message.Payload + " for node " + t.name)
 	switch property {
 	case "unit":
 		t.Unit = message.Payload
