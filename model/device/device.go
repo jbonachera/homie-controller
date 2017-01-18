@@ -75,9 +75,15 @@ func (d *Device) MQTTNodeHandler(mqttClient MQTT.Client, mqttMessage MQTT.Messag
 	}
 	topicComponents := strings.Split(message.Path, "/")
 	if len(topicComponents) == 1 {
-		log.Debug("updating "+ topicComponents[0]+" for "+d.Id)
-		d.Set(topicComponents[0], message.Payload)
-		log.Debug(topicComponents[0]+" for "+d.Id + " set to "+message.Payload)
+		if topicComponents[0] == "$implementation" {
+			d.Implementation, err = implementation.New(message.Payload, d.BaseTopic)
+			mqttClient.Subscribe(d.BaseTopic+d.Id+"/implementation/+", 1, d.Implementation.MQTTHandler)
+
+		} else {
+			log.Debug("updating " + topicComponents[0] + " for " + d.Id)
+			d.Set(topicComponents[0], message.Payload)
+			log.Debug(topicComponents[0] + " for " + d.Id + " set to " + message.Payload)
+		}
 	} else if len(topicComponents) == 2 {
 		nodeName, property := topicComponents[0], topicComponents[1]
 		switch nodeName {
@@ -88,8 +94,6 @@ func (d *Device) MQTTNodeHandler(mqttClient MQTT.Client, mqttMessage MQTT.Messag
 			}
 		case "$fw":
 			d.Set(message.Path, message.Payload)
-		case "$implementation":
-			d.Implementation, err = implementation.New(message.Payload, d.BaseTopic)
 		default:
 			if property == "$type" {
 				newNode, err := node.New(message.Payload, nodeName, d.BaseTopic)
