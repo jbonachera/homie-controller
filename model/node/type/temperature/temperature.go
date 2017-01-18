@@ -16,6 +16,7 @@ var nodeType string = "temperature"
 type TemperatureNode struct {
 	name      string `json:"name"`
 	baseTopic string `json:"base_topic"`
+	Nodetype  string `json:"type"`
 	Unit      string `json:"unit"`
 	Degrees   float64 `json:"degrees"`
 	Room      string `json:"room"`

@@ -11,7 +11,7 @@ var message mqtt.MessageMock = mqtt.NewMessage(
 )
 
 func TestMQTTHandler(t *testing.T) {
-	humidity := HumidityNode{"humidity", "devices/", "%", 21, "living"}
+	humidity := HumidityNode{"humidity", "devices/", "humidity",  "%", 21, "living"}
 	humidity.MQTTHandler(nil, message)
 	if humidity.Percent != 23.0 {
 		t.Error("setting humidity via MQTTHandler failed: wanted 23, got", humidity.Percent)
@@ -19,7 +19,7 @@ func TestMQTTHandler(t *testing.T) {
 }
 
 func TestGetPoint(t *testing.T) {
-	humidity := HumidityNode{"humidity", "devices/", "%", 21.0, "living"}
+	humidity := HumidityNode{"humidity", "devices/", "humidity", "%", 21.0, "living"}
 	point := humidity.GetPoint()
 	fields, err := point.Fields()
 	if err != nil{

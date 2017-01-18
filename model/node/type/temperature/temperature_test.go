@@ -11,7 +11,7 @@ var message mqtt.MessageMock = mqtt.NewMessage(
 )
 
 func TestMQTTHandler(t *testing.T) {
-	temperature := TemperatureNode{"temperature", "devices/", "c", 21.0, "living"}
+	temperature := TemperatureNode{"temperature", "devices/", "temperature", "c", 21.0, "living"}
 	temperature.MQTTHandler(nil, message)
 	if temperature.Degrees != 23.9 {
 		t.Error("setting temperature via MQTTHandler failed: wanted 23.9, got", temperature.Degrees)
@@ -19,7 +19,7 @@ func TestMQTTHandler(t *testing.T) {
 }
 
 func TestGetPoint(t *testing.T) {
-	temperature := TemperatureNode{"temperature", "devices/", "c", 21.0, "living"}
+	temperature := TemperatureNode{"temperature", "devices/", "temperature", "c", 21.0, "living"}
 	point := temperature.GetPoint()
 	fields, err := point.Fields()
 	if err != nil{
