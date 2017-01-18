@@ -77,23 +77,29 @@ func (d *Device) MQTTNodeHandler(mqttClient MQTT.Client, mqttMessage MQTT.Messag
 		log.Debug(topicComponents[0]+" for "+d.Id + "set to "+message.Payload)
 	} else if len(topicComponents) == 2 {
 		nodeName, property := topicComponents[0], topicComponents[1]
-		if property == "$type" {
-			newNode, err := node.New(message.Payload, nodeName, d.BaseTopic)
-			if err == nil {
-				d.Nodes[nodeName] = newNode
-				properties := newNode.GetProperties()
-				log.Debug("adding node " + nodeName + " for device " + message.Id)
-				for _, property := range properties {
-					log.Debug("adding property " + property + " to node " + nodeName + " for device " + message.Id)
-					mqttClient.Subscribe(d.BaseTopic+d.Id+"/"+nodeName+"/"+property, 1, d.Nodes[nodeName].MQTTHandler)
+		switch nodeName {
+		case "$stats":
+			d.Set(message.Path, message.Payload)
+		case "$fw":
+			d.Set(message.Path, message.Payload)
+		default:
+			if property == "$type" {
+				newNode, err := node.New(message.Payload, nodeName, d.BaseTopic)
+				if err == nil {
+					d.Nodes[nodeName] = newNode
+					properties := newNode.GetProperties()
+					log.Debug("adding node " + nodeName + " for device " + message.Id)
+					for _, property := range properties {
+						log.Debug("adding property " + property + " to node " + nodeName + " for device " + message.Id)
+						mqttClient.Subscribe(d.BaseTopic+d.Id+"/"+nodeName+"/"+property, 1, d.Nodes[nodeName].MQTTHandler)
+					}
+				} else {
+					log.Warn("adding node failed: " + err.Error())
 				}
-			} else {
-				log.Warn("adding node failed: " + err.Error())
 			}
 		}
 	} else {
 		return
 	}
-
 
 }
