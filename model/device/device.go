@@ -77,7 +77,7 @@ func (d *Device) MQTTNodeHandler(mqttClient MQTT.Client, mqttMessage MQTT.Messag
 	if len(topicComponents) == 1 {
 		if topicComponents[0] == "$implementation" {
 			d.Implementation, err = implementation.New(message.Payload, d.BaseTopic)
-			mqttClient.Subscribe(d.BaseTopic+d.Id+"/implementation/+", 1, d.Implementation.MQTTHandler)
+			mqttClient.Subscribe(d.BaseTopic+d.Id+"/$implementation/+", 1, d.Implementation.MQTTHandler)
 
 		} else {
 			log.Debug("updating " + topicComponents[0] + " for " + d.Id)

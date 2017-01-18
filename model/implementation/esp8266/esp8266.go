@@ -5,6 +5,7 @@ import (
 	MQTT "github.com/eclipse/paho.mqtt.golang"
 	"github.com/jbonachera/homie-controller/model/homieMessage"
 	"strings"
+	"github.com/jbonachera/homie-controller/log"
 )
 type esp8266 struct {
 	version string
@@ -45,6 +46,7 @@ func (e *esp8266) MQTTHandler(mqttClient MQTT.Client, mqttMessage MQTT.Message){
 	if len(topicComponents) < 2 {
 		return
 	}
+	log.Debug("received update: " + topicComponents[1] + " to "+message.Payload)
 	propertyName := topicComponents[1]
 	e.Set(propertyName, message.Payload)
 }
