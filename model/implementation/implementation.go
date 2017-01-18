@@ -3,6 +3,7 @@ package implementation
 import (
 	MQTT "github.com/eclipse/paho.mqtt.golang"
 
+	"errors"
 )
 
 var implementations = make(map[string]Factory)
@@ -23,4 +24,11 @@ func RegisterImplementation(name string, constructor Factory) {
 	if !exist {
 		implementations[name] = constructor
 	}
+}
+
+func New(name string, baseTopic string) (Implementation, error) {
+	if _, exist := implementations[name]; exist {
+		return implementations[name].New(baseTopic), nil
+	}
+	return nil, errors.New("Invalid type requested: " + name)
 }
