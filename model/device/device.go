@@ -11,7 +11,7 @@ import (
 	"github.com/influxdata/influxdb/client/v2"
 	"github.com/jbonachera/homie-controller/influxdb"
 
-
+	"github.com/jbonachera/homie-controller/model/implementation"
 )
 
 type DeviceStats struct {
@@ -34,13 +34,13 @@ type Device struct {
 	Mac            string               `json:"mac"`
 	Stats          DeviceStats          `json:"stats"`
 	Fw             DeviceFirmware       `json:"fw"`
-	Implementation string               `json:"implementation"`
+	Implementation implementation.Implementation `json: implementation`
 	Nodes          map[string]node.Type `json:"nodes"`
 	BaseTopic      string               `json:"base_topic"`
 }
 
 func New(id string, baseTopic string) *Device {
-	return &Device{id, false, "", "", "", DeviceStats{0, 0, 0}, DeviceFirmware{"", "", ""}, "", map[string]node.Type{}, baseTopic}
+	return &Device{id, false, "", "", "", DeviceStats{0, 0, 0}, DeviceFirmware{"", "", ""}, nil, map[string]node.Type{}, baseTopic}
 }
 func (d *Device) Set(prop string, value string) {
 	switch prop {
@@ -64,8 +64,6 @@ func (d *Device) Set(prop string, value string) {
 		d.Fw.Version = value
 	case "$fw/checksum":
 		d.Fw.Checksum = value
-	case "$implementation":
-		d.Implementation = value
 	}
 }
 
@@ -79,7 +77,7 @@ func (d *Device) MQTTNodeHandler(mqttClient MQTT.Client, mqttMessage MQTT.Messag
 	if len(topicComponents) == 1 {
 		log.Debug("updating "+ topicComponents[0]+" for "+d.Id)
 		d.Set(topicComponents[0], message.Payload)
-		log.Debug(topicComponents[0]+" for "+d.Id + "set to "+message.Payload)
+		log.Debug(topicComponents[0]+" for "+d.Id + " set to "+message.Payload)
 	} else if len(topicComponents) == 2 {
 		nodeName, property := topicComponents[0], topicComponents[1]
 		switch nodeName {
@@ -90,6 +88,8 @@ func (d *Device) MQTTNodeHandler(mqttClient MQTT.Client, mqttMessage MQTT.Messag
 			}
 		case "$fw":
 			d.Set(message.Path, message.Payload)
+		case "$implementation":
+			d.Implementation, err = implementation.New(message.Payload, d.BaseTopic)
 		default:
 			if property == "$type" {
 				newNode, err := node.New(message.Payload, nodeName, d.BaseTopic)
