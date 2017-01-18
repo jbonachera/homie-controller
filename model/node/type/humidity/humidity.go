@@ -7,6 +7,8 @@ import (
 	"github.com/jbonachera/homie-controller/model/metric"
 	"strconv"
 	"strings"
+	"github.com/jbonachera/homie-controller/influxdb"
+	"github.com/influxdata/influxdb/client/v2"
 )
 
 var nodeType string = "humidity"
@@ -28,7 +30,7 @@ func (t HumidityNode) GetType() string {
 func (t HumidityNode) GetProperties() []string {
 	return []string{"percent", "unit", "room"}
 }
-func (t HumidityNode) GetPoint() metric.Metric {
+func (t HumidityNode) GetPoint() *client.Point {
 	return metric.New("humidity", map[string]string{"room": t.Room, "sensor": t.name}, map[string]interface{}{"percent": t.Percent})
 }
 func (t *HumidityNode) MQTTHandler(mqttClient MQTT.Client, mqttMessage MQTT.Message) {
@@ -52,6 +54,9 @@ func (t *HumidityNode) MQTTHandler(mqttClient MQTT.Client, mqttMessage MQTT.Mess
 		percent, err := strconv.ParseFloat(message.Payload, 64)
 		if err == nil {
 			t.Percent = percent
+			if influxdb.Ready() {
+				influxdb.PublishPoint(t.GetPoint())
+			}
 		}
 	}
 

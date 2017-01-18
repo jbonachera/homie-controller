@@ -5,8 +5,10 @@ import (
 	"github.com/jbonachera/homie-controller/log"
 	"github.com/jbonachera/homie-controller/model/homieMessage"
 	"github.com/jbonachera/homie-controller/model/metric"
+	"github.com/jbonachera/homie-controller/influxdb"
 	"strconv"
 	"strings"
+	"github.com/influxdata/influxdb/client/v2"
 )
 
 var nodeType string = "temperature"
@@ -28,7 +30,7 @@ func (t TemperatureNode) GetType() string {
 func (t TemperatureNode) GetProperties() []string {
 	return []string{"degrees", "unit", "room"}
 }
-func (t TemperatureNode) GetPoint() metric.Metric {
+func (t TemperatureNode) GetPoint() *client.Point {
 	return metric.New("temperature", map[string]string{"room": t.Room, "sensor": t.name}, map[string]interface{}{"degrees": t.Degrees})
 }
 func (t *TemperatureNode) MQTTHandler(mqttClient MQTT.Client, mqttMessage MQTT.Message) {
@@ -52,6 +54,9 @@ func (t *TemperatureNode) MQTTHandler(mqttClient MQTT.Client, mqttMessage MQTT.M
 		degrees, err := strconv.ParseFloat(message.Payload, 64)
 		if err == nil {
 			t.Degrees = degrees
+			if influxdb.Ready() {
+				influxdb.PublishPoint(t.GetPoint())
+			}
 		}
 	}
 

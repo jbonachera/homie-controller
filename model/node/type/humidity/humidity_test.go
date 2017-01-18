@@ -21,7 +21,11 @@ func TestMQTTHandler(t *testing.T) {
 func TestGetPoint(t *testing.T) {
 	humidity := HumidityNode{"humidity", "devices/", "%", 21.0, "living"}
 	point := humidity.GetPoint()
-	if point.Fields["percent"] != 21.0 {
-		t.Error("Invalid point retrieved: wanted 21.0, got", point.Fields["percent"])
+	fields, err := point.Fields()
+	if err != nil{
+		t.Error("error while retrieving Point: ", err)
+	}
+	if fields["percent"] != 21.0 {
+		t.Error("Invalid point retrieved: wanted 21.0, got", fields["percent"])
 	}
 }

@@ -21,7 +21,11 @@ func TestMQTTHandler(t *testing.T) {
 func TestGetPoint(t *testing.T) {
 	temperature := TemperatureNode{"temperature", "devices/", "c", 21.0, "living"}
 	point := temperature.GetPoint()
-	if point.Fields["degrees"] != 21.0 {
-		t.Error("Invalid point retrieved: wanted 21.0, got", point.Fields["degrees"])
+	fields, err := point.Fields()
+	if err != nil{
+		t.Error("error while retrieving Point: ", err)
+	}
+	if fields["degrees"] != 21.0 {
+		t.Error("Invalid point retrieved: wanted 21.0, got", fields["degrees"])
 	}
 }
