@@ -78,7 +78,7 @@ func (d *Device) MQTTNodeHandler(mqttClient MQTT.Client, mqttMessage MQTT.Messag
 	} else if len(topicComponents) == 2 {
 		nodeName, property := topicComponents[0], topicComponents[1]
 		if property == "$type" {
-			newNode, err := node.New(message.Payload, d.BaseTopic)
+			newNode, err := node.New(message.Payload, nodeName, d.BaseTopic)
 			if err == nil {
 				d.Nodes[nodeName] = newNode
 				properties := newNode.GetProperties()

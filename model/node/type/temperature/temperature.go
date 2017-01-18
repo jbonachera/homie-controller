@@ -42,7 +42,7 @@ func (t *TemperatureNode) MQTTHandler(mqttClient MQTT.Client, mqttMessage MQTT.M
 	topicComponents := strings.Split(message.Path, "/")
 	node, property := topicComponents[0], topicComponents[1]
 	if node != t.name {
-		// Message was not for us
+		log.Debug("received message for "+ node+ " but we are "+t.name)
 		return
 	}
 	log.Debug("set property " + property + " to " + message.Payload + " for node " + t.name)
