@@ -34,7 +34,7 @@ type Device struct {
 	Mac            string               `json:"mac"`
 	Stats          DeviceStats          `json:"stats"`
 	Fw             DeviceFirmware       `json:"fw"`
-	Implementation implementation.Implementation `json: implementation`
+	Implementation implementation.Implementation `json:"implementation"`
 	Nodes          map[string]node.Type `json:"nodes"`
 	BaseTopic      string               `json:"base_topic"`
 }
@@ -68,6 +68,7 @@ func (d *Device) Set(prop string, value string) {
 }
 
 func (d *Device) MQTTNodeHandler(mqttClient MQTT.Client, mqttMessage MQTT.Message) {
+	// TODO: split this into a map of handler functions, and call handler[topic](payload), then default to Set()
 	// Will be bound to devices/<id/>+/$type
 	message, err := homieMessage.New(mqttMessage, d.BaseTopic)
 	if err != nil {
