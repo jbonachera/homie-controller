@@ -4,7 +4,6 @@ import (
 	MQTT "github.com/eclipse/paho.mqtt.golang"
 	"github.com/jbonachera/homie-controller/log"
 	"github.com/jbonachera/homie-controller/model/device"
-	"os"
 	"time"
 )
 
@@ -26,9 +25,9 @@ func Start(broker string, client_id string) {
 			connected = true
 		}
 	}
-	if token := c.Subscribe("devices/+/$online", 1, device.OnlineCallback); token.Wait() && token.Error() != nil {
-		log.Error("Could not subscribe to devices/+/$online")
-		os.Exit(1)
-	}
+	AddSubscription("devices/+/$online", 1, device.OnlineCallback)
+}
 
+func AddSubscription(topic string, qos byte, callback MQTT.MessageHandler){
+	c.Subscribe(topic, qos, callback)
 }
