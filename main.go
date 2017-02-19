@@ -13,8 +13,11 @@ import (
 	"github.com/jbonachera/homie-controller/influxdb"
 	"github.com/influxdata/influxdb/client/v2"
 
+	"github.com/jbonachera/homie-controller/model/device"
 )
 var VERSION = "0.1"
+var baseTopic string = "devices/"
+
 
 func main() {
 	log.SetLogLevel("DEBUG")
@@ -32,8 +35,10 @@ func main() {
 	}
 	if broker != "" {
 		log.Debug("starting connection to MQTT broker at "+broker)
-		go mqtt.Start(broker, config.Get("mqtt_client_id"))
+		go mqtt.Start(broker, config.Get("mqtt_client_id"), baseTopic)
 	}
+	device.NewRegistry(baseTopic)
+	mqtt.AddSubscription("devices/+/$online", 1, device.OnlineCallback)
 	go http.Start()
 	<-sigc
 }

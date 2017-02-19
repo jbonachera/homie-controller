@@ -1,7 +1,6 @@
 package humidity
 
 import (
-	MQTT "github.com/eclipse/paho.mqtt.golang"
 	"github.com/jbonachera/homie-controller/log"
 	"github.com/jbonachera/homie-controller/model/homieMessage"
 	"github.com/jbonachera/homie-controller/model/metric"
@@ -33,11 +32,7 @@ func (t HumidityNode) GetProperties() []string {
 func (t HumidityNode) GetPoint() *metric.Metric {
 	return metric.New("humidity", map[string]string{"room": t.Room, "sensor": t.name}, map[string]interface{}{"percent": t.Percent})
 }
-func (t *HumidityNode) MQTTHandler(mqttClient MQTT.Client, mqttMessage MQTT.Message) {
-	message, err := homieMessage.New(mqttMessage, t.baseTopic)
-	if err != nil {
-		return
-	}
+func (t *HumidityNode) MessageHandler(message homieMessage.HomieMessage) {
 	topicComponents := strings.Split(message.Path, "/")
 	node, property := topicComponents[0], topicComponents[1]
 	if node != t.name {

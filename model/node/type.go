@@ -1,8 +1,8 @@
 package node
 
 import (
-	MQTT "github.com/eclipse/paho.mqtt.golang"
 	"github.com/jbonachera/homie-controller/model/metric"
+	"github.com/jbonachera/homie-controller/model/homieMessage"
 )
 
 type Type interface {
@@ -10,5 +10,5 @@ type Type interface {
 	GetType() string
 	GetProperties() []string
 	GetPoint() *metric.Metric
-	MQTTHandler(mqttClient MQTT.Client, message MQTT.Message)
+	MessageHandler(message homieMessage.HomieMessage)
 }

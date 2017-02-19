@@ -1,20 +1,23 @@
 package temperature
 
 import (
-	"github.com/jbonachera/homie-controller/mocks/mqtt"
 	"testing"
+	"github.com/jbonachera/homie-controller/model/homieMessage"
 )
 
-var message mqtt.MessageMock = mqtt.NewMessage(
+var message homieMessage.HomieMessage = homieMessage.HomieMessage{
 	"devices/u1234/temperature/degrees",
 	"23.9",
-)
+	"devices/",
+	"u1234",
+	"temperature/degrees",
+}
 
 func TestMQTTHandler(t *testing.T) {
 	temperature := TemperatureNode{"temperature", "devices/", "temperature", "c", 21.0, "living"}
-	temperature.MQTTHandler(nil, message)
+	temperature.MessageHandler(message)
 	if temperature.Degrees != 23.9 {
-		t.Error("setting temperature via MQTTHandler failed: wanted 23.9, got", temperature.Degrees)
+		t.Error("setting temperature via MessageHandler failed: wanted 23.9, got", temperature.Degrees)
 	}
 }
 

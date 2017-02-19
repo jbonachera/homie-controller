@@ -4,20 +4,18 @@ import (
 	MQTT "github.com/eclipse/paho.mqtt.golang"
 	"github.com/jbonachera/homie-controller/log"
 	"time"
-	"github.com/jbonachera/homie-controller/model/device"
 	"github.com/jbonachera/homie-controller/model/homieMessage"
 )
 
-var baseTopic string = "devices/"
 var c MQTT.Client
-
+var baseTopic string
 type CallbackHandler func(message homieMessage.HomieMessage)
 
-func Start(broker string, client_id string) {
-	device.NewRegistry(baseTopic)
+func Start(broker string, client_id string, mqttBaseTopic string) {
 	opts := MQTT.NewClientOptions().AddBroker("tcp://" + broker + ":1883")
 	opts.SetClientID(client_id)
 	c = MQTT.NewClient(opts)
+	baseTopic = mqttBaseTopic
 	connected := false
 	for !connected {
 		if token := c.Connect(); token.Wait() && token.Error() != nil {
@@ -28,7 +26,6 @@ func Start(broker string, client_id string) {
 			connected = true
 		}
 	}
-	AddSubscription("devices/+/$online", 1, device.OnlineCallback)
 }
 
 func AddSubscription(topic string, qos byte, callback MQTT.MessageHandler){

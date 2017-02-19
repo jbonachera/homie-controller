@@ -2,15 +2,16 @@ package device
 
 import (
 	MQTT "github.com/eclipse/paho.mqtt.golang"
+	"github.com/jbonachera/homie-controller/influxdb"
 	"github.com/jbonachera/homie-controller/log"
 	"github.com/jbonachera/homie-controller/model/homieMessage"
+	"github.com/jbonachera/homie-controller/model/metric"
 	"github.com/jbonachera/homie-controller/model/node"
 	"strconv"
 	"strings"
-	"github.com/jbonachera/homie-controller/model/metric"
-	"github.com/jbonachera/homie-controller/influxdb"
 
 	"github.com/jbonachera/homie-controller/model/implementation"
+	"github.com/jbonachera/homie-controller/mqtt"
 )
 
 type DeviceStats struct {
@@ -26,21 +27,30 @@ type DeviceFirmware struct {
 }
 
 type Device struct {
-	Id             string               `json:"id"`
-	Online         bool                 `json:"online"`
-	Name           string               `json:"name"`
-	Localip        string               `json:"localip"`
-	Mac            string               `json:"mac"`
-	Stats          DeviceStats          `json:"stats"`
-	Fw             DeviceFirmware       `json:"fw"`
+	Id             string                        `json:"id"`
+	Online         bool                          `json:"online"`
+	Name           string                        `json:"name"`
+	Localip        string                        `json:"localip"`
+	Mac            string                        `json:"mac"`
+	Stats          DeviceStats                   `json:"stats"`
+	Fw             DeviceFirmware                `json:"fw"`
 	Implementation implementation.Implementation `json:"implementation"`
-	Nodes          map[string]node.Type `json:"nodes"`
-	BaseTopic      string               `json:"base_topic"`
+	Nodes          map[string]node.Type          `json:"nodes"`
+	BaseTopic      string                        `json:"base_topic"`
+	registrator    HandlerRegistrator
 }
 
+type HandlerRegistrator func(topic string, callback mqtt.CallbackHandler)
+
 func New(id string, baseTopic string) *Device {
-	return &Device{id, false, "", "", "", DeviceStats{0, 0, 0}, DeviceFirmware{"", "", ""}, nil, map[string]node.Type{}, baseTopic}
+	return &Device{id, false, "", "", "",
+		DeviceStats{0, 0, 0}, DeviceFirmware{"", "", ""},
+		nil, map[string]node.Type{}, baseTopic, mqtt.AddHandler}
 }
+func (d *Device) SetRegistrator(handler HandlerRegistrator){
+	d.registrator = handler
+}
+
 func (d *Device) Set(prop string, value string) {
 	switch prop {
 	case "$online":
@@ -103,7 +113,7 @@ func (d *Device) MQTTNodeHandler(mqttClient MQTT.Client, mqttMessage MQTT.Messag
 					log.Debug("adding node " + nodeName + " for device " + message.Id)
 					for _, property := range properties {
 						log.Debug("adding property " + property + " to node " + nodeName + " for device " + message.Id)
-						mqttClient.Subscribe(d.BaseTopic+d.Id+"/"+nodeName+"/"+property, 1, d.Nodes[nodeName].MQTTHandler)
+						d.registrator(d.BaseTopic+d.Id+"/"+nodeName+"/"+property, d.Nodes[nodeName].MessageHandler)
 					}
 				} else {
 					log.Warn("adding node failed: " + err.Error())
