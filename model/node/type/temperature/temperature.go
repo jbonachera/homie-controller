@@ -13,8 +13,8 @@ import (
 var nodeType string = "temperature"
 
 type TemperatureNode struct {
-	name      string `json:"name"`
-	baseTopic string `json:"base_topic"`
+	name      string
+	baseTopic string
 	Nodetype  string `json:"type"`
 	Unit      string `json:"unit"`
 	Degrees   float64 `json:"degrees"`
