@@ -19,6 +19,15 @@ func TestAddSubscription(t *testing.T) {
 	}
 }
 
+func TestDelSubscription(t *testing.T) {
+	mock := mqtt.NewMockClient(true, "old/topic")
+	c = mock
+	AddSubscription("devices/bah/+", 0, callback)
+	DelSubscription("devices/bah/+")
+	if mock.Topic == "devices/bah/+" {
+		t.Error("could not del subscription")
+	}
+}
 func TestAddHandler(t *testing.T) {
 	mock := mqtt.NewMockClient(true, "old/topic")
 	c = mock
