@@ -10,6 +10,8 @@ import (
 var baseTopic string = "devices/"
 var c MQTT.Client
 
+type CallbackHandler func(topic string, payload string)
+
 func Start(broker string, client_id string) {
 	device.NewRegistry(baseTopic)
 	opts := MQTT.NewClientOptions().AddBroker("tcp://" + broker + ":1883")
@@ -31,4 +33,10 @@ func Start(broker string, client_id string) {
 func AddSubscription(topic string, qos byte, callback MQTT.MessageHandler){
 	log.Debug("Subscribing to "+topic)
 	c.Subscribe(topic, qos, callback)
+}
+
+func AddHandler(topic string, callback CallbackHandler){
+	AddSubscription(topic, 0, func(mqttClient MQTT.Client, mqttMessage MQTT.Message){
+		callback(mqttMessage.Topic(), string(mqttMessage.Payload()))
+	})
 }
