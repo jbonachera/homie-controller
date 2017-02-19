@@ -4,12 +4,12 @@ import (
 	"errors"
 	"github.com/jbonachera/homie-controller/log"
 	"github.com/jbonachera/homie-controller/model/homieMessage"
-	"github.com/jbonachera/homie-controller/mqtt"
+	"github.com/jbonachera/homie-controller/messaging"
 	"sync"
 )
 
 type RegistrationHandler struct {
-	add func(topic string, callback mqtt.CallbackHandler)
+	add func(topic string, callback messaging.CallbackHandler)
 	del func(topic string)
 }
 
@@ -33,8 +33,8 @@ func List() []string {
 
 func NewRegistry(baseTopic string) {
 	registry = Registry{sync.Mutex{}, map[string]*Device{}, baseTopic, RegistrationHandler{
-		add: mqtt.AddHandler,
-		del: mqtt.DelSubscription,
+		add: messaging.AddHandler,
+		del: messaging.DelSubscription,
 	}}
 }
 

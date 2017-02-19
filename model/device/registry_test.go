@@ -2,7 +2,7 @@ package device
 
 import (
 	"github.com/jbonachera/homie-controller/mocks/mqtt"
-	MQTT 	"github.com/jbonachera/homie-controller/mqtt"
+	MQTT 	"github.com/jbonachera/homie-controller/messaging"
 	"strconv"
 	"sync"
 	"testing"

@@ -10,7 +10,7 @@ import (
 	"strings"
 
 	"github.com/jbonachera/homie-controller/model/implementation"
-	"github.com/jbonachera/homie-controller/mqtt"
+	"github.com/jbonachera/homie-controller/messaging"
 )
 
 type DeviceStats struct {
@@ -39,12 +39,12 @@ type Device struct {
 	registrator    HandlerRegistrator
 }
 
-type HandlerRegistrator func(topic string, callback mqtt.CallbackHandler)
+type HandlerRegistrator func(topic string, callback messaging.CallbackHandler)
 
 func New(id string, baseTopic string) *Device {
 	return &Device{id, false, "", "", "",
-		DeviceStats{0, 0, 0}, DeviceFirmware{"", "", ""},
-		nil, map[string]node.Type{}, baseTopic, mqtt.AddHandler}
+		       DeviceStats{0, 0, 0}, DeviceFirmware{"", "", ""},
+		       nil, map[string]node.Type{}, baseTopic, messaging.AddHandler}
 }
 func (d *Device) SetRegistrator(handler HandlerRegistrator){
 	d.registrator = handler

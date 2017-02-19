@@ -2,7 +2,7 @@ package device
 
 import (
 	"github.com/jbonachera/homie-controller/mocks/mqtt"
-	MQTT "github.com/jbonachera/homie-controller/mqtt"
+	MQTT "github.com/jbonachera/homie-controller/messaging"
 	_ "github.com/jbonachera/homie-controller/model/node/type/temperature"
 	"testing"
 	"github.com/jbonachera/homie-controller/model/homieMessage"
@@ -61,7 +61,7 @@ func TestDevice_MQTTNodeHandler(t *testing.T) {
 	device := New("u1234", "devices/")
 	device.MQTTNodeHandler(message)
 	if device.Localip != "127.0.0.1"{
-		t.Error("mqtt message did not update property LocalIP: wanted 127.0.0.1, got", device.Localip)
+		t.Error("messaging message did not update property LocalIP: wanted 127.0.0.1, got", device.Localip)
 	}
 
 }

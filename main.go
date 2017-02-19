@@ -5,7 +5,7 @@ import (
 	_ "github.com/jbonachera/homie-controller/model/node/type/humidity"
 	_ "github.com/jbonachera/homie-controller/model/node/type/temperature"
 	_ "github.com/jbonachera/homie-controller/model/implementation/esp8266"
-	"github.com/jbonachera/homie-controller/mqtt"
+	"github.com/jbonachera/homie-controller/messaging"
 	"github.com/jbonachera/homie-controller/http"
 	"os"
 	"os/signal"
@@ -35,10 +35,10 @@ func main() {
 	}
 	if broker != "" {
 		log.Debug("starting connection to MQTT broker at "+broker)
-		go mqtt.Start(broker, config.Get("mqtt_client_id"), baseTopic)
+		go messaging.Start(broker, config.Get("mqtt_client_id"), baseTopic)
 	}
 	device.NewRegistry(baseTopic)
-	mqtt.AddHandler("devices/+/$online", device.OnlineCallback)
+	messaging.AddHandler("devices/+/$online", device.OnlineCallback)
 	go http.Start()
 	<-sigc
 }
