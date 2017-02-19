@@ -17,3 +17,13 @@ func TestAddSubscription(t *testing.T) {
 		t.Error("could not add subscription")
 	}
 }
+
+func TestAddHandler(t *testing.T) {
+	mock := mqtt.NewMockClient(true, "old/topic")
+	c = mock
+	AddHandler("devices/bah/+", func(topic string, payload string){})
+	if mock.Topic != "devices/bah/+" {
+		t.Error("could not add handler")
+	}
+
+}
