@@ -1,11 +1,11 @@
 package http
 
 import (
+	"encoding/json"
 	"github.com/husobee/vestigo"
 	"github.com/jbonachera/homie-controller/log"
-	"net/http"
 	"github.com/jbonachera/homie-controller/model/device"
-	"encoding/json"
+	"net/http"
 )
 
 var router = vestigo.NewRouter()

@@ -1,8 +1,8 @@
 package humidity
 
 import (
-	"testing"
 	"github.com/jbonachera/homie-controller/model/homieMessage"
+	"testing"
 )
 
 var message homieMessage.HomieMessage = homieMessage.HomieMessage{
@@ -14,7 +14,7 @@ var message homieMessage.HomieMessage = homieMessage.HomieMessage{
 }
 
 func TestMQTTHandler(t *testing.T) {
-	humidity := HumidityNode{"humidity", "devices/", "humidity",  "%", 21, "living"}
+	humidity := HumidityNode{"humidity", "devices/", "humidity", "%", 21, "living"}
 	humidity.MessageHandler(message)
 	if humidity.Percent != 23.0 {
 		t.Error("setting humidity via MQTTHandler failed: wanted 23, got", humidity.Percent)

@@ -7,7 +7,7 @@ import (
 type HumidityFactory struct{}
 
 func (HumidityFactory) New(name string, baseTopic string) node.Type {
-	return &HumidityNode{name, baseTopic, "humidity",  "%", 0, ""}
+	return &HumidityNode{name, baseTopic, "humidity", "%", 0, ""}
 }
 
 func init() {

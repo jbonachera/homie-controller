@@ -1,8 +1,8 @@
 package temperature
 
 import (
-	"testing"
 	"github.com/jbonachera/homie-controller/model/homieMessage"
+	"testing"
 )
 
 var message homieMessage.HomieMessage = homieMessage.HomieMessage{

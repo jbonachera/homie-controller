@@ -3,8 +3,8 @@ package device
 import (
 	"errors"
 	"github.com/jbonachera/homie-controller/log"
-	"github.com/jbonachera/homie-controller/model/homieMessage"
 	"github.com/jbonachera/homie-controller/messaging"
+	"github.com/jbonachera/homie-controller/model/homieMessage"
 	"sync"
 )
 
@@ -38,7 +38,7 @@ func NewRegistry(baseTopic string) {
 	}}
 }
 
-func SetRegistrationManager(manager RegistrationHandler){
+func SetRegistrationManager(manager RegistrationHandler) {
 	registry.registrationManager = manager
 }
 

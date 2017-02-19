@@ -1,12 +1,12 @@
 package humidity
 
 import (
+	"github.com/jbonachera/homie-controller/influxdb"
 	"github.com/jbonachera/homie-controller/log"
 	"github.com/jbonachera/homie-controller/model/homieMessage"
 	"github.com/jbonachera/homie-controller/model/metric"
 	"strconv"
 	"strings"
-	"github.com/jbonachera/homie-controller/influxdb"
 )
 
 var nodeType string = "humidity"
@@ -14,10 +14,10 @@ var nodeType string = "humidity"
 type HumidityNode struct {
 	name      string
 	baseTopic string
-	Nodetype  string `json:"type"`
-	Unit      string `json:"unit"`
+	Nodetype  string  `json:"type"`
+	Unit      string  `json:"unit"`
 	Percent   float64 `json:"percent"`
-	Room      string `json:"room"`
+	Room      string  `json:"room"`
 }
 
 func (t HumidityNode) GetName() string {

@@ -6,7 +6,7 @@ import (
 
 type Factory struct{}
 
-func (Factory) New(baseTopic string) implementation.Implementation{
+func (Factory) New(baseTopic string) implementation.Implementation {
 	return New(baseTopic)
 }
 

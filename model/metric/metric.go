@@ -5,10 +5,10 @@ import (
 )
 
 type Metric struct {
-	Name string
-	Tags map[string]string
+	Name   string
+	Tags   map[string]string
 	Fields map[string]interface{}
-	Time time.Time
+	Time   time.Time
 }
 
 func New(name string, tags map[string]string, fields map[string]interface{}) *Metric {

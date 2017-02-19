@@ -1,14 +1,14 @@
 package esp8266
 
 import (
-	"testing"
 	"github.com/jbonachera/homie-controller/mocks/mqtt"
 	"github.com/jbonachera/homie-controller/model/homieMessage"
+	"testing"
 )
 
 func TestEsp8266_GetName(t *testing.T) {
 	esp := New("devices/")
-	if esp.GetName() != "esp8266"{
+	if esp.GetName() != "esp8266" {
 		t.Error("did create an invalid esp8266")
 	}
 }
@@ -19,7 +19,7 @@ func TestEsp8266_Set(t *testing.T) {
 		t.Error("setting ota property failed: wanted true, go", esp.ota)
 	}
 	esp.Set("version", "cookiebotOS v902.3-testing")
-	if esp.version != "cookiebotOS v902.3-testing"{
+	if esp.version != "cookiebotOS v902.3-testing" {
 		t.Error("setting version failed: wanted 'cookiebotOS v902.3-testing', got", esp.version)
 	}
 }
@@ -39,7 +39,7 @@ func TestMQTTHandler(t *testing.T) {
 	), "devices/")
 	esp := New("devices/")
 	esp.MessageHandler(message)
-	if esp.version != "cookiebotOS_3.1"{
+	if esp.version != "cookiebotOS_3.1" {
 		t.Error("setting version failed: wanted 'cookiebotOS_3.1', got", esp.version)
 	}
 }

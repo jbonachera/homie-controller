@@ -1,10 +1,10 @@
 package temperature
 
 import (
+	"github.com/jbonachera/homie-controller/influxdb"
 	"github.com/jbonachera/homie-controller/log"
 	"github.com/jbonachera/homie-controller/model/homieMessage"
 	"github.com/jbonachera/homie-controller/model/metric"
-	"github.com/jbonachera/homie-controller/influxdb"
 	"strconv"
 	"strings"
 )
@@ -14,10 +14,10 @@ var nodeType string = "temperature"
 type TemperatureNode struct {
 	name      string
 	baseTopic string
-	Nodetype  string `json:"type"`
-	Unit      string `json:"unit"`
+	Nodetype  string  `json:"type"`
+	Unit      string  `json:"unit"`
 	Degrees   float64 `json:"degrees"`
-	Room      string `json:"room"`
+	Room      string  `json:"room"`
 }
 
 func (t TemperatureNode) GetName() string {
@@ -36,7 +36,7 @@ func (t *TemperatureNode) MessageHandler(message homieMessage.HomieMessage) {
 	topicComponents := strings.Split(message.Path, "/")
 	node, property := topicComponents[0], topicComponents[1]
 	if node != t.name {
-		log.Debug("received message for "+ node+ " but we are "+t.name)
+		log.Debug("received message for " + node + " but we are " + t.name)
 		return
 	}
 	log.Debug("set property " + property + " to " + message.Payload + " for node " + t.name)

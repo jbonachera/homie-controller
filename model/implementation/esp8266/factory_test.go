@@ -5,7 +5,7 @@ import "testing"
 func TestFactory_New(t *testing.T) {
 	factory := new(Factory)
 	esp := factory.New("devices/")
-	if esp.GetName() != "esp8266"{
+	if esp.GetName() != "esp8266" {
 		t.Error("did create an invalid 8266 implementation")
 	}
 }

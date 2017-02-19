@@ -1,9 +1,9 @@
 package influxdb
 
 import (
-	"github.com/jbonachera/homie-controller/log"
 	influxdb "github.com/influxdata/influxdb/client/v2"
 	"github.com/jbonachera/homie-controller/config"
+	"github.com/jbonachera/homie-controller/log"
 	"github.com/jbonachera/homie-controller/model/metric"
 )
 
@@ -11,24 +11,24 @@ var dbClient influxdb.Client
 var ready bool = false
 var logOnlyMode = false
 
-func Start(config influxdb.HTTPConfig, logOnly bool){
+func Start(config influxdb.HTTPConfig, logOnly bool) {
 	var err error
 	dbClient, err = influxdb.NewHTTPClient(config)
 	if err != nil {
-		log.Error("Error: "+ err.Error())
+		log.Error("Error: " + err.Error())
 		return
 	}
 	logOnlyMode = logOnly
 	ready = true
 }
 
-func Ready() bool{
+func Ready() bool {
 	return ready
 }
 
-func metricToPoint(metric *metric.Metric) *influxdb.Point{
+func metricToPoint(metric *metric.Metric) *influxdb.Point {
 	point, err := influxdb.NewPoint(metric.Name, metric.Tags, metric.Fields, metric.Time)
-	if err != nil  {
+	if err != nil {
 		log.Error("could not create point")
 		return nil
 	} else {
@@ -36,11 +36,11 @@ func metricToPoint(metric *metric.Metric) *influxdb.Point{
 	}
 }
 
-func PublishMetric(metric *metric.Metric){
+func PublishMetric(metric *metric.Metric) {
 	PublishPoint(metricToPoint(metric))
 }
 
-func PublishPoint(metric *influxdb.Point){
+func PublishPoint(metric *influxdb.Point) {
 
 	if !logOnlyMode {
 		bp, _ := influxdb.NewBatchPoints(influxdb.BatchPointsConfig{

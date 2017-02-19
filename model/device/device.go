@@ -9,8 +9,8 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/jbonachera/homie-controller/model/implementation"
 	"github.com/jbonachera/homie-controller/messaging"
+	"github.com/jbonachera/homie-controller/model/implementation"
 )
 
 type DeviceStats struct {
@@ -43,10 +43,10 @@ type HandlerRegistrator func(topic string, callback messaging.CallbackHandler)
 
 func New(id string, baseTopic string) *Device {
 	return &Device{id, false, "", "", "",
-		       DeviceStats{0, 0, 0}, DeviceFirmware{"", "", ""},
-		       nil, map[string]node.Type{}, baseTopic, messaging.AddHandler}
+		DeviceStats{0, 0, 0}, DeviceFirmware{"", "", ""},
+		nil, map[string]node.Type{}, baseTopic, messaging.AddHandler}
 }
-func (d *Device) SetRegistrator(handler HandlerRegistrator){
+func (d *Device) SetRegistrator(handler HandlerRegistrator) {
 	d.registrator = handler
 }
 
