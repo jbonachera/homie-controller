@@ -2,9 +2,11 @@ package device
 
 import (
 	"github.com/jbonachera/homie-controller/mocks/mqtt"
+	MQTT 	"github.com/jbonachera/homie-controller/mqtt"
 	"strconv"
 	"sync"
 	"testing"
+	"github.com/jbonachera/homie-controller/model/homieMessage"
 )
 
 var baseTopic string = "devices/"
@@ -175,20 +177,27 @@ func benchmarkList(j int, b *testing.B) {
 }
 
 func TestOnlineCallback(t *testing.T) {
+	manager := RegistrationHandler{
+		add: func(topic string, callback MQTT.CallbackHandler){},
+		del: func(topic string){},
+	}
 	NewRegistry(baseTopic)
-	client := mqtt.NewMockClient(true, "old/topic")
-	OnlineCallback(client, mqtt.NewMessage(
+	SetRegistrationManager(manager)
+	var message homieMessage.HomieMessage
+	message, _ = homieMessage.New(mqtt.NewMessage(
 		"devices/u0/$online",
 		"true",
-	))
+	), "devices/")
+	OnlineCallback(message)
 	device, err := Get("u0")
 	if err != nil {
 		t.Error("test device was not created")
 	}
-	device.MQTTNodeHandler(client, mqtt.NewMessage(
+	message, err = homieMessage.New(mqtt.NewMessage(
 		"devices/u0/$name",
 		"sensor-test",
-	))
+	), "devices/")
+	device.MQTTNodeHandler(message)
 	if registry.devices["u0"].Name != "sensor-test"{
 		t.Error("test device was not updated")
 	}

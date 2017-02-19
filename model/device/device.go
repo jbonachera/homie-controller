@@ -1,7 +1,6 @@
 package device
 
 import (
-	MQTT "github.com/eclipse/paho.mqtt.golang"
 	"github.com/jbonachera/homie-controller/influxdb"
 	"github.com/jbonachera/homie-controller/log"
 	"github.com/jbonachera/homie-controller/model/homieMessage"
@@ -76,18 +75,19 @@ func (d *Device) Set(prop string, value string) {
 	}
 }
 
-func (d *Device) MQTTNodeHandler(mqttClient MQTT.Client, mqttMessage MQTT.Message) {
+func (d *Device) MQTTNodeHandler(message homieMessage.HomieMessage) {
 	// TODO: split this into a map of handler functions, and call handler[topic](payload), then default to Set()
 	// Will be bound to devices/<id/>+/$type
-	message, err := homieMessage.New(mqttMessage, d.BaseTopic)
-	if err != nil {
-		return
-	}
 	topicComponents := strings.Split(message.Path, "/")
 	if len(topicComponents) == 1 {
 		if topicComponents[0] == "$implementation" {
+			var err error
 			d.Implementation, err = implementation.New(message.Payload, d.BaseTopic)
-			mqttClient.Subscribe(d.BaseTopic+d.Id+"/$implementation/+", 1, d.Implementation.MQTTHandler)
+			if err != nil {
+				log.Error(err.Error())
+			} else {
+				d.registrator(d.BaseTopic+d.Id+"/$implementation/+", d.Implementation.MessageHandler)
+			}
 
 		} else {
 			log.Debug("updating " + topicComponents[0] + " for " + d.Id)

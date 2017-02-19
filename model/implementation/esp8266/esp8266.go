@@ -2,7 +2,6 @@ package esp8266
 
 import (
 	"strconv"
-	MQTT "github.com/eclipse/paho.mqtt.golang"
 	"github.com/jbonachera/homie-controller/model/homieMessage"
 	"strings"
 	"github.com/jbonachera/homie-controller/log"
@@ -36,12 +35,9 @@ func (e *esp8266) GetProperties() []string{
 	return []string{"version", "ota"}
 }
 
-func (e *esp8266) MQTTHandler(mqttClient MQTT.Client, mqttMessage MQTT.Message){
+func (e *esp8266) MessageHandler(message homieMessage.HomieMessage){
 	// Will be bound to devices/<id>/implementation/#
-	message, err := homieMessage.New(mqttMessage, e.baseTopic)
-	if err != nil {
-		return
-	}
+
 	topicComponents := strings.Split(message.Path, "/")
 	if len(topicComponents) < 2 {
 		return

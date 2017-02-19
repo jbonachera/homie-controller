@@ -2,8 +2,7 @@ package implementation
 
 import (
 	"testing"
-	MQTT "github.com/eclipse/paho.mqtt.golang"
-
+	"github.com/jbonachera/homie-controller/model/homieMessage"
 )
 
 type mockImplementation struct {
@@ -21,7 +20,7 @@ func (e *mockImplementation) GetProperties() []string{
 	return []string{}
 }
 
-func (e *mockImplementation) MQTTHandler(mqttClient MQTT.Client, mqttMessage MQTT.Message){}
+func (e *mockImplementation) MessageHandler(message homieMessage.HomieMessage){}
 
 type mockFactory struct {
 }

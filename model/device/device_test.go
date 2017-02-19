@@ -5,11 +5,7 @@ import (
 	MQTT "github.com/jbonachera/homie-controller/mqtt"
 	_ "github.com/jbonachera/homie-controller/model/node/type/temperature"
 	"testing"
-)
-
-var message mqtt.MessageMock = mqtt.NewMessage(
-	"devices/u1234/temperature/$type",
-	"temperature",
+	"github.com/jbonachera/homie-controller/model/homieMessage"
 )
 
 func TestNew(t *testing.T) {
@@ -35,13 +31,18 @@ func TestSet(t *testing.T) {
 }
 
 func TestAddNode(t *testing.T) {
+	var message homieMessage.HomieMessage
+	message, _ = homieMessage.New(mqtt.NewMessage(
+		"devices/u1234/temperature/$type",
+		"temperature",
+	), "devices/")
 	client := mqtt.NewMockClient(true, "old/topic")
 	registrator := func(topic string, callback MQTT.CallbackHandler){
 		client.Topic = topic
 	}
 	device := New("azertyuip", "devices/")
 	device.SetRegistrator(registrator)
-	device.MQTTNodeHandler(client, message)
+	device.MQTTNodeHandler( message)
 	if len(device.Nodes) != 1 {
 		t.Error("adding node failed")
 	}
@@ -51,13 +52,14 @@ func TestAddNode(t *testing.T) {
 }
 
 func TestDevice_MQTTNodeHandler(t *testing.T) {
+	var message homieMessage.HomieMessage
 	updateMessage := mqtt.NewMessage(
 		"devices/u1234/$localip",
 		"127.0.0.1",
 	)
-	client := mqtt.NewMockClient(true, "old/topic")
+	message, _ = homieMessage.New(updateMessage, "devices/")
 	device := New("u1234", "devices/")
-	device.MQTTNodeHandler(client, updateMessage)
+	device.MQTTNodeHandler(message)
 	if device.Localip != "127.0.0.1"{
 		t.Error("mqtt message did not update property LocalIP: wanted 127.0.0.1, got", device.Localip)
 	}

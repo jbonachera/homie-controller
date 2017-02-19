@@ -1,9 +1,8 @@
 package implementation
 
 import (
-	MQTT "github.com/eclipse/paho.mqtt.golang"
-
 	"errors"
+	"github.com/jbonachera/homie-controller/model/homieMessage"
 )
 
 var implementations = make(map[string]Factory)
@@ -12,7 +11,7 @@ type Implementation interface {
 	GetName() string
 	Set(property string, value string)
 	GetProperties() []string
-	MQTTHandler(mqttClient MQTT.Client, message MQTT.Message)
+	MessageHandler(message homieMessage.HomieMessage)
 }
 
 type Factory interface {

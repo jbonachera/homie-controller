@@ -38,7 +38,7 @@ func main() {
 		go mqtt.Start(broker, config.Get("mqtt_client_id"), baseTopic)
 	}
 	device.NewRegistry(baseTopic)
-	mqtt.AddSubscription("devices/+/$online", 1, device.OnlineCallback)
+	mqtt.AddHandler("devices/+/$online", device.OnlineCallback)
 	go http.Start()
 	<-sigc
 }

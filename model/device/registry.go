@@ -1,22 +1,28 @@
 package device
 
 import (
-	MQTT "github.com/eclipse/paho.mqtt.golang"
+	"errors"
 	"github.com/jbonachera/homie-controller/log"
 	"github.com/jbonachera/homie-controller/model/homieMessage"
+	"github.com/jbonachera/homie-controller/mqtt"
 	"sync"
-	"errors"
 )
+
+type RegistrationHandler struct {
+	add func(topic string, callback mqtt.CallbackHandler)
+	del func(topic string)
+}
 
 type Registry struct {
 	sync.Mutex
-	devices      map[string]*Device
-	baseTopic    string
+	devices             map[string]*Device
+	baseTopic           string
+	registrationManager RegistrationHandler
 }
 
 var registry Registry
 
-func List() []string{
+func List() []string {
 	keys := make([]string, 0, len(registry.devices))
 	for k := range registry.devices {
 		keys = append(keys, k)
@@ -26,7 +32,14 @@ func List() []string{
 }
 
 func NewRegistry(baseTopic string) {
-	registry = Registry{sync.Mutex{}, map[string]*Device{}, baseTopic}
+	registry = Registry{sync.Mutex{}, map[string]*Device{}, baseTopic, RegistrationHandler{
+		add: mqtt.AddHandler,
+		del: mqtt.DelSubscription,
+	}}
+}
+
+func SetRegistrationManager(manager RegistrationHandler){
+	registry.registrationManager = manager
 }
 
 func Append(device *Device) {
@@ -55,29 +68,24 @@ func Set(id string, path string, value string) {
 		registry.devices[id] = wantedDevice
 	}
 }
-func OnlineCallback(client MQTT.Client, mqttMessage MQTT.Message) {
-	message, err := homieMessage.New(mqttMessage, registry.baseTopic)
-	if err != nil {
-		log.Warn("received an invalid message")
-		return
-	}
+func OnlineCallback(message homieMessage.HomieMessage) {
 	if message.Payload == "true" {
 		log.Debug("discovered a new newDevice: " + message.Id)
 		newDevice := New(message.Id, registry.baseTopic)
 		Append(newDevice)
 		for _, prop := range homieMessage.Properties {
-			client.Subscribe(registry.baseTopic+message.Id+"/"+prop, 1, newDevice.MQTTNodeHandler)
+			registry.registrationManager.add(registry.baseTopic+message.Id+"/"+prop, newDevice.MQTTNodeHandler)
 		}
-		client.Subscribe(registry.baseTopic+message.Id+"/+/$type", 1, newDevice.MQTTNodeHandler)
+		registry.registrationManager.add(registry.baseTopic+message.Id+"/+/$type", newDevice.MQTTNodeHandler)
 	} else {
 		log.Debug("a device has disconnected: " + message.Id)
 		for _, prop := range homieMessage.Properties {
-			client.Unsubscribe(registry.baseTopic + message.Id + "/" + prop)
+			registry.registrationManager.del(registry.baseTopic + message.Id + "/" + prop)
 		}
-		client.Unsubscribe(registry.baseTopic + message.Id + "/+/$type")
+		registry.registrationManager.del(registry.baseTopic + message.Id + "/+/$type")
 	}
 }
 
-func GetAll() map[string]*Device{
+func GetAll() map[string]*Device {
 	return registry.devices
 }
