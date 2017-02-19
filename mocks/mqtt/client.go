@@ -58,6 +58,7 @@ func (mc *MockClient) SubscribeMultiple(filters map[string]byte, callback MQTT.M
 }
 
 func (mc *MockClient) Unsubscribe(topics ...string) MQTT.Token {
+	mc.Topic = ""
 	return nil
 }
 
