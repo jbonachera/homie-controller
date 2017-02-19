@@ -29,5 +29,6 @@ func Start(broker string, client_id string) {
 }
 
 func AddSubscription(topic string, qos byte, callback MQTT.MessageHandler){
+	log.Debug("Subscribing to "+topic)
 	c.Subscribe(topic, qos, callback)
 }
