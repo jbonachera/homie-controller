@@ -8,14 +8,16 @@ import (
 
 var dbClient influxdb.Client
 var ready bool = false
+var logOnlyMode = false
 
-func Start(config influxdb.HTTPConfig){
+func Start(config influxdb.HTTPConfig, logOnly bool){
 	var err error
 	dbClient, err = influxdb.NewHTTPClient(config)
 	if err != nil {
 		log.Error("Error: "+ err.Error())
 		return
 	}
+	logOnlyMode = logOnly
 	ready = true
 }
 
@@ -25,7 +27,7 @@ func Ready() bool{
 
 func PublishPoint(metric *influxdb.Point){
 
-	if false {
+	if !logOnlyMode {
 		bp, _ := influxdb.NewBatchPoints(influxdb.BatchPointsConfig{
 			Database:  config.Get("INFLUXDB_DATABASE"),
 			Precision: "us",
@@ -37,5 +39,7 @@ func PublishPoint(metric *influxdb.Point){
 		} else {
 			log.Debug("metrics sent to influxdb server")
 		}
+	} else {
+		log.Info("would have send metric to InfluxDB: " + metric.Name())
 	}
 }
