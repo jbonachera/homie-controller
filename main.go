@@ -28,11 +28,11 @@ func main() {
 		log.Debug("Starting log export to influxdb at " + influxdb_server)
 		influxdb.Start(client.HTTPConfig{
 			Addr: "http://"+influxdb_server+":8086",
-		})
+		}, true)
 	}
 	if broker != "" {
 		log.Debug("starting connection to MQTT broker at "+broker)
-		go mqtt.Start(broker)
+		go mqtt.Start(broker, config.Get("mqtt_client_id"))
 	}
 	go http.Start()
 	<-sigc
