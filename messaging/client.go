@@ -28,8 +28,7 @@ func Start(broker string, client_id string, mqttBaseTopic string) {
 		}
 	}
 }
-
-func DelSubscription(topic string){
+func asyncDelSubscription(topic string){
 	for !connected {
 		log.Info("waiting for MQTT connection to start..")
 		time.Sleep(2 * time.Second)
@@ -37,8 +36,14 @@ func DelSubscription(topic string){
 	log.Debug("Unsubscribing to "+topic)
 	c.Unsubscribe(topic)
 }
+func DelSubscription(topic string){
+	go asyncDelSubscription(topic)
+}
 
-func AddSubscription(topic string, qos byte, callback MQTT.MessageHandler){
+func AddSubscription(topic string, qos byte, callback MQTT.MessageHandler) {
+	go asyncAddSubscription(topic, qos, callback)
+}
+func asyncAddSubscription(topic string, qos byte, callback MQTT.MessageHandler){
 	for !connected {
 		log.Info("waiting for MQTT connection to start..")
 		time.Sleep(2 * time.Second)
