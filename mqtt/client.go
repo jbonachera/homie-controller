@@ -3,14 +3,15 @@ package mqtt
 import (
 	MQTT "github.com/eclipse/paho.mqtt.golang"
 	"github.com/jbonachera/homie-controller/log"
-	"github.com/jbonachera/homie-controller/model/device"
 	"time"
+	"github.com/jbonachera/homie-controller/model/device"
+	"github.com/jbonachera/homie-controller/model/homieMessage"
 )
 
 var baseTopic string = "devices/"
 var c MQTT.Client
 
-type CallbackHandler func(topic string, payload string)
+type CallbackHandler func(message homieMessage.HomieMessage)
 
 func Start(broker string, client_id string) {
 	device.NewRegistry(baseTopic)
@@ -37,6 +38,11 @@ func AddSubscription(topic string, qos byte, callback MQTT.MessageHandler){
 
 func AddHandler(topic string, callback CallbackHandler){
 	AddSubscription(topic, 0, func(mqttClient MQTT.Client, mqttMessage MQTT.Message){
-		callback(mqttMessage.Topic(), string(mqttMessage.Payload()))
+		message, err := homieMessage.New(mqttMessage, baseTopic)
+		if err != nil {
+			log.Error("malformed message")
+		} else {
+			callback(message)
+		}
 	})
 }
