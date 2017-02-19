@@ -8,7 +8,6 @@ import (
 	"strconv"
 	"strings"
 	"github.com/jbonachera/homie-controller/model/metric"
-	"github.com/influxdata/influxdb/client/v2"
 	"github.com/jbonachera/homie-controller/influxdb"
 
 	"github.com/jbonachera/homie-controller/model/implementation"
@@ -91,7 +90,7 @@ func (d *Device) MQTTNodeHandler(mqttClient MQTT.Client, mqttMessage MQTT.Messag
 		case "$stats":
 			d.Set(message.Path, message.Payload)
 			if influxdb.Ready() {
-				influxdb.PublishPoint(d.GetPoint())
+				influxdb.PublishMetric(d.GetPoint())
 			}
 		case "$fw":
 			d.Set(message.Path, message.Payload)
@@ -117,6 +116,6 @@ func (d *Device) MQTTNodeHandler(mqttClient MQTT.Client, mqttMessage MQTT.Messag
 
 }
 
-func (d *Device) GetPoint() *client.Point {
+func (d *Device) GetPoint() *metric.Metric {
 	return metric.New("system", map[string]string{"id": d.Id, "name": d.Name}, map[string]interface{}{"signal": d.Stats.Signal, "uptime": d.Stats.Uptime, "sensors_count": len(d.Nodes)})
 }

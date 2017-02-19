@@ -4,6 +4,7 @@ import (
 	"github.com/jbonachera/homie-controller/log"
 	influxdb "github.com/influxdata/influxdb/client/v2"
 	"github.com/jbonachera/homie-controller/config"
+	"github.com/jbonachera/homie-controller/model/metric"
 )
 
 var dbClient influxdb.Client
@@ -23,6 +24,20 @@ func Start(config influxdb.HTTPConfig, logOnly bool){
 
 func Ready() bool{
 	return ready
+}
+
+func metricToPoint(metric *metric.Metric) *influxdb.Point{
+	point, err := influxdb.NewPoint(metric.Name, metric.Tags, metric.Fields, metric.Time)
+	if err != nil  {
+		log.Error("could not create point")
+		return nil
+	} else {
+		return point
+	}
+}
+
+func PublishMetric(metric *metric.Metric){
+	PublishPoint(metricToPoint(metric))
 }
 
 func PublishPoint(metric *influxdb.Point){

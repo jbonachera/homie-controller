@@ -4,7 +4,6 @@ import (
 	MQTT "github.com/eclipse/paho.mqtt.golang"
 	"github.com/jbonachera/homie-controller/model/metric"
 	"testing"
-	"github.com/influxdata/influxdb/client/v2"
 )
 
 type dummyNodeType struct {
@@ -21,7 +20,7 @@ func (d dummyNodeType) GetType() string {
 func (d dummyNodeType) GetProperties() []string {
 	return []string{"temperature"}
 }
-func (d dummyNodeType) GetPoint() *client.Point {
+func (d dummyNodeType) GetPoint() *metric.Metric {
 	return metric.New("temperature", map[string]string{"room": "living", "sensor": "sensor01"}, map[string]interface{}{"degrees": 24.0})
 }
 

@@ -2,16 +2,20 @@ package metric
 
 import (
 	"time"
-	"github.com/influxdata/influxdb/client/v2"
 )
 
-type Metric client.Point
+type Metric struct {
+	Name string
+	Tags map[string]string
+	Fields map[string]interface{}
+	Time time.Time
+}
 
-func New(name string, tags map[string]string, fields map[string]interface{}) *client.Point {
-	point, _ := client.NewPoint(name, tags, fields, time.Now())
+func New(name string, tags map[string]string, fields map[string]interface{}) *Metric {
+	point := &Metric{name, tags, fields, time.Now()}
 	return point
 }
 
 type Metricable interface {
-	GetPoint() Metric
+	GetPoint() *Metric
 }
