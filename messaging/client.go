@@ -29,7 +29,7 @@ func Start(broker string, client_id string, mqttBaseTopic string) {
 }
 
 func DelSubscription(topic string){
-	log.Debug("UnsZubscribing to "+topic)
+	log.Debug("Unsubscribing to "+topic)
 	c.Unsubscribe(topic)
 }
 
