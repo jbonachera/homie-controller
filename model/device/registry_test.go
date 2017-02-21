@@ -202,3 +202,11 @@ func TestOnlineCallback(t *testing.T) {
 		t.Error("test device was not updated")
 	}
 }
+
+func TestGetAll(t *testing.T) {
+	populate(30)
+	deviceList := GetAll()
+	if len(deviceList) != 30 {
+		t.Error("GetAll did not return all the devices")
+	}
+}
