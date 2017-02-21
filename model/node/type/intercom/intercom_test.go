@@ -7,7 +7,7 @@ import (
 
 var message homieMessage.HomieMessage = homieMessage.HomieMessage{
 	"devices/u1234/intercom/ringing",
-	"1",
+	"true",
 	"devices/",
 	"u1234",
 	"intercom/ringing",

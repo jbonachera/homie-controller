@@ -44,7 +44,7 @@ func (t *IntercomNode) MessageHandler(message homieMessage.HomieMessage) {
 	case "room":
 		t.Room = message.Payload
 	case "ringing":
-		t.Ringing = message.Payload == "1"
+		t.Ringing = message.Payload == "true"
 	}
 
 }
