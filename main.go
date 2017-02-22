@@ -32,7 +32,7 @@ func main() {
 		log.Debug("Starting log export to influxdb at " + influxdb_server)
 		influxdb.Start(client.HTTPConfig{
 			Addr: "http://" + influxdb_server + ":8086",
-		}, true)
+		}, false)
 	}
 	if broker != "" {
 		log.Debug("starting connection to MQTT broker at " + broker)
