@@ -4,7 +4,9 @@ services:
   - docker
 
 script:
-  - docker build -t homie-controller:build -f Dockerfile.build .
-  - docker run homie-controller:build /usr/local/bin/get-artifact > homie-controller
-  - docker build -t homie-controller:runtime .
-
+  - docker build -t homie-controller:build-$TRAVIS_COMMIT -f Dockerfile.build . ;
+  - docker run homie-controller:build /usr/local/bin/get-artifact > homie-controller;
+  - docker build -t jbonachera/homie-controller:$TRAVIS_COMMIT . ;
+after_success:
+  - docker login -e="$DOCKER_EMAIL" -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD";
+  - docker push jbonachera/homie-controller:$TRAVIS_COMMIT;
