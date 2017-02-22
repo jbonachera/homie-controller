@@ -5,7 +5,8 @@ services:
 
 script:
   - docker build -t homie-controller:build-$TRAVIS_COMMIT -f Dockerfile.build . ;
-  - docker run homie-controller:build /usr/local/bin/get-artifact > homie-controller;
+  - docker run homie-controller:build-$TRAVIS_COMMIT /usr/local/bin/get-artifact > homie-controller;
+  - chmod +x homie-controller;
   - docker build -t jbonachera/homie-controller:$TRAVIS_COMMIT . ;
 after_success:
   - docker login -e="$DOCKER_EMAIL" -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD";
