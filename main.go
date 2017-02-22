@@ -21,7 +21,7 @@ var VERSION = "0.1"
 var baseTopic string = "devices/"
 
 func main() {
-	log.SetLogLevel("DEBUG")
+	log.SetLogLevel("INFO")
 	log.Info("starting homie-controller version " + VERSION)
 	sigc := make(chan os.Signal, 1)
 	signal.Notify(sigc, os.Interrupt, os.Kill)
