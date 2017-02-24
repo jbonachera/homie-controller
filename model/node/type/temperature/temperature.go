@@ -7,6 +7,7 @@ import (
 	"github.com/jbonachera/homie-controller/model/metric"
 	"strconv"
 	"strings"
+	"time"
 )
 
 var nodeType string = "temperature"
@@ -18,6 +19,7 @@ type TemperatureNode struct {
 	Unit      string  `json:"unit"`
 	Degrees   float64 `json:"degrees"`
 	Room      string  `json:"room"`
+	LastUpdate time.Time `json:"last_update"`
 }
 
 func (t TemperatureNode) GetName() string {
@@ -49,6 +51,7 @@ func (t *TemperatureNode) MessageHandler(message homieMessage.HomieMessage) {
 		degrees, err := strconv.ParseFloat(message.Payload, 64)
 		if err == nil {
 			t.Degrees = degrees
+			t.LastUpdate = time.Now()
 			if influxdb.Ready() {
 				influxdb.PublishMetric(t.GetPoint())
 			}
