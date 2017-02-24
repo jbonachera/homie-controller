@@ -7,7 +7,7 @@ import (
 
 var Properties []string = []string{
 	"$homie",
-	"$onine",
+	"$online",
 	"$name",
 	"$localip",
 	"$mac",
@@ -53,7 +53,7 @@ func IsProperty(prop string) bool {
 	switch prop {
 	case
 		"$homie",
-		"$onine",
+		"$online",
 		"$name",
 		"$localip",
 		"$mac",
