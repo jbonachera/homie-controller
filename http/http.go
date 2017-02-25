@@ -6,6 +6,7 @@ import (
 	"github.com/jbonachera/homie-controller/log"
 	"github.com/jbonachera/homie-controller/model/device"
 	"net/http"
+	"github.com/jbonachera/homie-controller/model/search"
 )
 
 var router = vestigo.NewRouter()
@@ -17,6 +18,7 @@ type statusMessage struct {
 
 func Start() {
 	router.Get("/devices/", ListDevicesHandler)
+	router.Post("/devices/search", SearchDevicesHandler)
 	router.Get("/device/:name", GetDeviceHandler)
 	router.Post("/device/:name/implementation/:action", PostImplementationActionHandler)
 	log.Info("starting HTTP API")
@@ -52,5 +54,27 @@ func PostImplementationActionHandler(w http.ResponseWriter, r *http.Request) {
 			log.Info("command sent")
 			json.NewEncoder(w).Encode(statusMessage{Error: false, Msg: "command sent"})
 		}
+	}
+}
+
+func SearchDevicesHandler(w http.ResponseWriter, r *http.Request) {
+	expand := r.URL.Query().Get("expand") == "true"
+	decoder := json.NewDecoder(r.Body)
+	var opts search.Options
+	err := decoder.Decode(&opts)
+	if err != nil {
+		w.WriteHeader(400)
+		json.NewEncoder(w).Encode(statusMessage{Error: true, Msg: err.Error()})
+		return
+	}
+	devices := device.Search(opts)
+	if expand {
+		json.NewEncoder(w).Encode(devices)
+	} else {
+		devices_id := []string{}
+		for id := range devices{
+			devices_id = append(devices_id, id)
+		}
+		json.NewEncoder(w).Encode(devices_id)
 	}
 }
