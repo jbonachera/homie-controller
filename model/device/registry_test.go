@@ -7,6 +7,7 @@ import (
 	"strconv"
 	"sync"
 	"testing"
+	"github.com/jbonachera/homie-controller/model/search"
 )
 
 var baseTopic string = "devices/"
@@ -208,5 +209,36 @@ func TestGetAll(t *testing.T) {
 	deviceList := GetAll()
 	if len(deviceList) != 30 {
 		t.Error("GetAll did not return all the devices")
+	}
+}
+
+func TestSearch(t *testing.T) {
+	populate(30)
+	registry.devices["u1"].Online = true
+	registry.devices["u3"].Online = true
+	searchTerms := map[string]string{
+		"online": "true",
+	}
+	matched := Search(search.Options{Terms: searchTerms})
+	if len(matched) != 2{
+		t.Error("device search failed")
+	}
+}
+
+func BenchmarkSearch1000(b *testing.B) {
+	benchmarkSearch(1000, b)
+}
+func BenchmarkSearch10000(b *testing.B) {
+	benchmarkSearch(10000, b)
+}
+func benchmarkSearch(j int, b *testing.B) {
+	populate(j)
+	registry.devices["u1"].Online = true
+	registry.devices["u3"].Online = true
+	searchTerms := map[string]string{
+		"online": "true",
+	}
+	for i := 0; i < b.N; i++ {
+		Search(search.Options{Terms: searchTerms})
 	}
 }
