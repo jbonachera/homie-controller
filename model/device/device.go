@@ -143,6 +143,21 @@ func (d *Device)Match(opts Search.Options) bool {
 			return false
 		}
 	}
+	if term , ok:= opts.Terms["type"]; ok {
+		type_matched := false
+		for name := range d.Nodes {
+			if name == term {
+				type_matched = true
+				break
+			}
+		}
+		if !type_matched {
+			return false
+		} else {
+			match = type_matched
+		}
+	}
+
 
 	return match
 }

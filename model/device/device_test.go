@@ -7,6 +7,7 @@ import (
 	_ "github.com/jbonachera/homie-controller/model/node/type/temperature"
 	"testing"
 	"github.com/jbonachera/homie-controller/model/search"
+	"github.com/jbonachera/homie-controller/model/node"
 )
 
 func TestNew(t *testing.T) {
@@ -78,6 +79,21 @@ func TestDevice_Match(t *testing.T) {
 		t.Error("device should not match the requested search")
 	}
 	device.Online = true
+	if !device.Match(opts){
+		t.Error("device should match the requested search")
+	}
+
+}
+func TestDevice_Match2(t *testing.T) {
+	searchTerms := map[string]string{
+		"type": "temperature",
+	}
+	opts := Search.Options{Terms: searchTerms}
+	device := New("u1234", "devices/")
+	if device.Match(opts){
+		t.Error("device should not match the requested search")
+	}
+	device.Nodes["temperature"],_ = node.New("temperature", "temperature", "u1", "devices/")
 	if !device.Match(opts){
 		t.Error("device should match the requested search")
 	}
