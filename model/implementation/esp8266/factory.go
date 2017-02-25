@@ -6,8 +6,8 @@ import (
 
 type Factory struct{}
 
-func (Factory) New(baseTopic string) implementation.Implementation {
-	return New(baseTopic)
+func (Factory) New(parent string, baseTopic string) implementation.Implementation {
+	return New(parent, baseTopic)
 }
 
 func init() {

@@ -13,7 +13,7 @@ type esp8266 struct {
 	baseTopic string
 }
 
-func New(baseTopic string) *esp8266 {
+func New(_ string, baseTopic string) *esp8266 {
 	return &esp8266{"", false, baseTopic}
 }
 

@@ -82,7 +82,7 @@ func (d *Device) MQTTNodeHandler(message homieMessage.HomieMessage) {
 	if len(topicComponents) == 1 {
 		if topicComponents[0] == "$implementation" {
 			var err error
-			d.Implementation, err = implementation.New(message.Payload, d.BaseTopic)
+			d.Implementation, err = implementation.New(message.Payload, d.Id, d.BaseTopic)
 			if err != nil {
 				log.Error(err.Error())
 			} else {

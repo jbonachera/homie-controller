@@ -23,7 +23,7 @@ func (e *mockImplementation) MessageHandler(message homieMessage.HomieMessage) {
 type mockFactory struct {
 }
 
-func (m *mockFactory) New(baseTopic string) Implementation {
+func (m *mockFactory) New(parent string, baseTopic string) Implementation {
 	return &mockImplementation{}
 }
 

@@ -15,7 +15,7 @@ type Implementation interface {
 }
 
 type Factory interface {
-	New(baseTopic string) Implementation
+	New(parent string, baseTopic string) Implementation
 }
 
 func RegisterImplementation(name string, constructor Factory) {
@@ -25,9 +25,9 @@ func RegisterImplementation(name string, constructor Factory) {
 	}
 }
 
-func New(name string, baseTopic string) (Implementation, error) {
+func New(name string, parent string, baseTopic string) (Implementation, error) {
 	if _, exist := implementations[name]; exist {
-		return implementations[name].New(baseTopic), nil
+		return implementations[name].New(parent, baseTopic), nil
 	}
 	return nil, errors.New("Invalid type requested: " + name)
 }
