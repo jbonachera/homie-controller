@@ -35,6 +35,16 @@ var invalidMessages []MessageMock = []MessageMock{
 	{"", "devices/foor/bar/", "true", "devices/foo/bar/", ""},
 }
 
+func TestNew(t *testing.T) {
+	message, err := New("u1", "devices/", "$online", "true")
+	if err != nil {
+		t.Error("message creation failed")
+	}
+	if message.Topic != "devices/u1/$online" {
+		t.Error("message did not have the right topic: wanted devices/u1/$online, got "+message.Topic)
+	}
+}
+
 func TestExtract(t *testing.T) {
 
 	for _, message := range messages {
