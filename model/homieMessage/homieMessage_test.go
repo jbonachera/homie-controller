@@ -35,7 +35,7 @@ var invalidMessages []MessageMock = []MessageMock{
 	{"", "devices/foor/bar/", "true", "devices/foo/bar/", ""},
 }
 
-func TestNew(t *testing.T) {
+func TestExtract(t *testing.T) {
 
 	for _, message := range messages {
 		homieMessage, err := Extract(message, message.baseTopic)
