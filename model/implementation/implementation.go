@@ -9,7 +9,7 @@ var implementations = make(map[string]Factory)
 
 type Implementation interface {
 	GetName() string
-	Do(action string)
+	Do(action string) error
 	Set(property string, value string)
 	GetProperties() []string
 	MessageHandler(message homieMessage.HomieMessage)

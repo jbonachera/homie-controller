@@ -6,6 +6,7 @@ import (
 	"strconv"
 	"strings"
 	"github.com/jbonachera/homie-controller/messaging"
+	"errors"
 )
 
 type esp8266 struct {
@@ -39,8 +40,13 @@ func New(parent string, baseTopic string) *esp8266 {
 	return esp
 }
 
-func (e *esp8266) Do(action string) {
-	return
+func (e *esp8266) Do(action string) error{
+	if handler := e.ActionHandlers[action]; handler != nil {
+		handler()
+		return nil
+	} else {
+		return errors.New("method not found: "+action)
+	}
 }
 
 func (e *esp8266) GetName() string {
