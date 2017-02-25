@@ -12,14 +12,33 @@ type esp8266 struct {
 	parentId         string
 	Version          string `json:"version"`
 	Ota              bool `json:"ota"`
+	Actions		 []string `json:"actions"`
 	baseTopic        string
 	MessagePublisher messagePublisherHandler `json:"-"`
+	ActionHandlers   map[string]func() `json:"-"`
 }
 
 type messagePublisherHandler func(message homieMessage.HomieMessage)
 
 func New(parent string, baseTopic string) *esp8266 {
-	return &esp8266{parent, "", false, baseTopic, messaging.PublishMessage}
+	esp := &esp8266{parent, "", false, []string{},baseTopic, messaging.PublishMessage,map[string]func(){}}
+	actionHandlers := map[string]func(){
+		"reset": esp.Reset,
+	}
+	actions := make([]string, len(actionHandlers))
+
+	i := 0
+	for k := range actionHandlers {
+		actions[i] = k
+		i++
+	}
+	esp.ActionHandlers = actionHandlers
+	esp.Actions = actions
+	return esp
+}
+
+func (e *esp8266) Do(action string) {
+	return
 }
 
 func (e *esp8266) GetName() string {
