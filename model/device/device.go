@@ -106,7 +106,7 @@ func (d *Device) MQTTNodeHandler(message homieMessage.HomieMessage) {
 			d.Set(message.Path, message.Payload)
 		default:
 			if property == "$type" {
-				newNode, err := node.New(message.Payload, nodeName, d.BaseTopic)
+				newNode, err := node.New(message.Payload, nodeName, d.Id, d.BaseTopic)
 				if err == nil {
 					d.Nodes[nodeName] = newNode
 					properties := newNode.GetProperties()

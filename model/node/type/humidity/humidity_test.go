@@ -15,7 +15,7 @@ var message homieMessage.HomieMessage = homieMessage.HomieMessage{
 }
 
 func TestMQTTHandler(t *testing.T) {
-	humidity := HumidityNode{"humidity", "devices/", "humidity", "%", 21, "living", time.Time{}}
+	humidity := HumidityNode{"humidity", "devices/", "humidity", "%", 21, "living", time.Time{}, "u1"}
 	humidity.MessageHandler(message)
 	if humidity.Percent != 23.0 {
 		t.Error("setting humidity via MQTTHandler failed: wanted 23, got", humidity.Percent)
@@ -23,7 +23,7 @@ func TestMQTTHandler(t *testing.T) {
 }
 
 func TestGetPoint(t *testing.T) {
-	humidity := HumidityNode{"humidity", "devices/", "humidity", "%", 21.0, "living", time.Time{}}
+	humidity := HumidityNode{"humidity", "devices/", "humidity", "%", 21.0, "living", time.Time{}, "u1"}
 	point := humidity.GetPoint()
 	fields := point.Fields
 

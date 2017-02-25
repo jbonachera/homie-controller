@@ -7,7 +7,7 @@ import (
 var Factories = make(map[string]Factory)
 
 type Factory interface {
-	New(name string, baseTopic string) Type
+	New(name string, parent string, baseTopic string) Type
 }
 
 func RegisterNodeTypeFactory(name string, nodeType Factory) {
@@ -17,9 +17,9 @@ func RegisterNodeTypeFactory(name string, nodeType Factory) {
 	}
 }
 
-func New(nodeType string, name string, baseTopic string) (Type, error) {
+func New(nodeType string, name string, parent string, baseTopic string) (Type, error) {
 	if _, exist := Factories[nodeType]; exist {
-		return Factories[nodeType].New(name, baseTopic), nil
+		return Factories[nodeType].New(name, parent, baseTopic), nil
 	}
 	return nil, errors.New("Invalid type requested: " + nodeType)
 }

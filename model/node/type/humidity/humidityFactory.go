@@ -7,8 +7,8 @@ import (
 
 type HumidityFactory struct{}
 
-func (HumidityFactory) New(name string, baseTopic string) node.Type {
-	return &HumidityNode{name, baseTopic, "humidity", "%", 0, "", time.Time{}}
+func (HumidityFactory) New(name string, parent string, baseTopic string) node.Type {
+	return &HumidityNode{name, baseTopic, "humidity", "%", 0, "", time.Time{}, parent}
 }
 
 func init() {

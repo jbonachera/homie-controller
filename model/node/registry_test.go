@@ -35,7 +35,7 @@ func (d dummyNodeType) MessageHandler(message homieMessage.HomieMessage) {
 
 type dummyFactory struct{}
 
-func (dummyFactory) New(name string, baseTopic string) Type {
+func (dummyFactory) New(name string, parent string, baseTopic string) Type {
 	return dummyNodeType{name, "dummyType"}
 }
 
@@ -45,7 +45,7 @@ func TestRegisterNodeTypeFactory(t *testing.T) {
 
 func TestNew(t *testing.T) {
 	RegisterNodeTypeFactory("dummy", dummyFactory{})
-	node, err := New("dummy", "dummy", "devices/")
+	node, err := New("dummy", "dummy", "u1","devices/")
 	if err != nil {
 		t.Error("error occured:", err)
 	}
@@ -56,7 +56,7 @@ func TestNew(t *testing.T) {
 
 func TestNew2(t *testing.T) {
 	RegisterNodeTypeFactory("dummy", dummyFactory{})
-	node, err := New("dummy", "dummy2", "devices/")
+	node, err := New("dummy", "dummy2", "u1","devices/")
 	if err != nil {
 		t.Error("error occured:", err)
 	}
@@ -65,7 +65,7 @@ func TestNew2(t *testing.T) {
 	}
 }
 func TestAbsentNodeType(t *testing.T) {
-	_, err := New("invalid", "invalid", "devices/")
+	_, err := New("invalid", "invalid", "u1","devices/")
 	if err == nil {
 		t.Error("could create an invalid node")
 	}

@@ -20,6 +20,7 @@ type HumidityNode struct {
 	Percent   float64 `json:"percent"`
 	Room      string  `json:"room"`
 	LastUpdate time.Time `json:"last_update"`
+	ParentId string `json:"-"`
 }
 
 func (t HumidityNode) GetName() string {

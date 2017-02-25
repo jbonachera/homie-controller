@@ -6,7 +6,7 @@ import (
 
 type IntercomFactory struct{}
 
-func (IntercomFactory) New(name string, baseTopic string) node.Type {
+func (IntercomFactory) New(name string, parent string, baseTopic string) node.Type {
 	return &IntercomNode{name, baseTopic, "intercom", "bool", false, "NoRoom"}
 }
 
