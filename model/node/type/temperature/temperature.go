@@ -20,6 +20,7 @@ type TemperatureNode struct {
 	Degrees   float64 `json:"degrees"`
 	Room      string  `json:"room"`
 	LastUpdate time.Time `json:"last_update"`
+	ParentId string `json:"-"`
 }
 
 func (t TemperatureNode) GetName() string {
