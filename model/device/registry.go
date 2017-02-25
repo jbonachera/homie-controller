@@ -80,7 +80,7 @@ func OnlineCallback(message homieMessage.HomieMessage) {
 			}
 		}
 		registry.registrationManager.add(registry.baseTopic+message.Id+"/+/$type", device.MQTTNodeHandler)
-		device.Set("$online", "true")
+		device.Set("$online", message.Payload)
 	}
 	if message.Payload == "true" {
 		log.Debug("device " + message.Id+ " came back to life")
