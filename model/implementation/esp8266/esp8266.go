@@ -5,21 +5,34 @@ import (
 	"github.com/jbonachera/homie-controller/model/homieMessage"
 	"strconv"
 	"strings"
+	"github.com/jbonachera/homie-controller/messaging"
 )
 
 type esp8266 struct {
-	parentId  string
-	Version   string `json:"version"`
-	Ota       bool `json:"ota"`
-	baseTopic string
+	parentId         string
+	Version          string `json:"version"`
+	Ota              bool `json:"ota"`
+	baseTopic        string
+	messagePublisher messagePublisherHandler
 }
 
+type messagePublisherHandler func(message homieMessage.HomieMessage)
+
 func New(parent string, baseTopic string) *esp8266 {
-	return &esp8266{parent, "", false, baseTopic}
+	return &esp8266{parent, "", false, baseTopic, messaging.PublishMessage}
 }
 
 func (e *esp8266) GetName() string {
 	return "esp8266"
+}
+
+func (e *esp8266) Reset() {
+	message, err := homieMessage.New(e.parentId, e.baseTopic, "$implementation/reset", "true")
+	if err != nil {
+		log.Error("failed to create message for reset")
+		return
+	}
+	e.messagePublisher(message)
 }
 
 func (e *esp8266) Set(property string, value string) {
