@@ -42,7 +42,6 @@ func (t *TemperatureNode) MessageHandler(message homieMessage.HomieMessage) {
 		log.Debug("received message for " + node + " but we are " + t.name)
 		return
 	}
-	log.Debug("set property " + property + " to " + message.Payload + " for node " + t.name)
 	switch property {
 	case "unit":
 		t.Unit = message.Payload

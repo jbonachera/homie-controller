@@ -39,10 +39,9 @@ func (t *HumidityNode) MessageHandler(message homieMessage.HomieMessage) {
 	topicComponents := strings.Split(message.Path, "/")
 	node, property := topicComponents[0], topicComponents[1]
 	if node != t.name {
-		// Message was not for us
+		log.Debug("received message for " + node + " but we are " + t.name)
 		return
 	}
-	log.Debug("set property " + property + " to " + message.Payload + " for node " + t.name)
 	switch property {
 	case "unit":
 		t.Unit = message.Payload

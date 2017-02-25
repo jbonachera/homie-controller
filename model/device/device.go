@@ -113,7 +113,10 @@ func (d *Device) MQTTNodeHandler(message homieMessage.HomieMessage) {
 					log.Debug("adding node " + nodeName + " for device " + message.Id)
 					for _, property := range properties {
 						log.Debug("adding property " + property + " to node " + nodeName + " for device " + message.Id)
-						d.registrator(d.BaseTopic+d.Id+"/"+nodeName+"/"+property, d.Nodes[nodeName].MessageHandler)
+						d.registrator(d.BaseTopic+d.Id+"/"+nodeName+"/"+property, func(message homieMessage.HomieMessage) {
+							log.Debug("(device: "+d.Name+") set property " + property + " to " + message.Payload + " for node " + d.Nodes[nodeName].GetName())
+							d.Nodes[nodeName].MessageHandler(message)
+						})
 					}
 				} else {
 					log.Warn("adding node failed: " + err.Error())
