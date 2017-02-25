@@ -70,36 +70,26 @@ func Set(id string, path string, value string) {
 }
 func OnlineCallback(message homieMessage.HomieMessage) {
 	device, err := Get(message.Id)
-	if message.Payload == "true" {
-		if err != nil {
-			log.Debug("discovered a new device: " + message.Id)
-			newDevice := New(message.Id, registry.baseTopic)
-			Append(newDevice)
-			for _, prop := range homieMessage.Properties {
-				if prop != "$online" {
-					registry.registrationManager.add(registry.baseTopic+message.Id+"/"+prop, newDevice.MQTTNodeHandler)
-				}
+	if err != nil {
+		log.Debug("discovered a new device: " + message.Id)
+		device = New(message.Id, registry.baseTopic)
+		Append(device)
+		for _, prop := range homieMessage.Properties {
+			if prop != "$online" {
+				registry.registrationManager.add(registry.baseTopic+message.Id+"/"+prop, device.MQTTNodeHandler)
 			}
-			registry.registrationManager.add(registry.baseTopic+message.Id+"/+/$type", newDevice.MQTTNodeHandler)
-			newDevice.Set("$online", "true")
-		} else {
-			log.Debug("device " + message.Id+ " came back to life")
-			for _, prop := range homieMessage.Properties {
-				if prop != "$online" {
-					registry.registrationManager.add(registry.baseTopic+message.Id+"/"+prop, device.MQTTNodeHandler)
-				}
-			}
-			registry.registrationManager.add(registry.baseTopic+message.Id+"/+/$type", device.MQTTNodeHandler)
-			device.Set("$online", "true")
 		}
+		registry.registrationManager.add(registry.baseTopic+message.Id+"/+/$type", device.MQTTNodeHandler)
+		device.Set("$online", "true")
+	}
+	if message.Payload == "true" {
+		log.Debug("device " + message.Id+ " came back to life")
+		device.Set("$online", "true")
+
 	} else {
 		if err == nil {
 			log.Debug("a device has disconnected: " + message.Id)
 			device.Set("$online", "false")
-			for _, prop := range homieMessage.Properties {
-				registry.registrationManager.del(registry.baseTopic + message.Id + "/" + prop)
-			}
-			registry.registrationManager.del(registry.baseTopic + message.Id + "/+/$type")
 		}
 	}
 }
