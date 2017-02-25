@@ -13,7 +13,7 @@ type esp8266 struct {
 	Version          string `json:"version"`
 	Ota              bool `json:"ota"`
 	baseTopic        string
-	messagePublisher messagePublisherHandler
+	MessagePublisher messagePublisherHandler `json:"-"`
 }
 
 type messagePublisherHandler func(message homieMessage.HomieMessage)
@@ -32,7 +32,7 @@ func (e *esp8266) Reset() {
 		log.Error("failed to create message for reset")
 		return
 	}
-	e.messagePublisher(message)
+	e.MessagePublisher(message)
 }
 
 func (e *esp8266) Set(property string, value string) {
