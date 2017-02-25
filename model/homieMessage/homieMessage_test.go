@@ -25,14 +25,14 @@ func (m MessageMock) Payload() []byte {
 }
 
 var messages []MessageMock = []MessageMock{
-	MessageMock{"u1234", "devices/u1234/$online", "true", "devices/", "$online"},
-	MessageMock{"u123", "devices/u123/$online", "true", "devices/", "$online"},
-	MessageMock{"u123", "homie/u123/$online", "true", "homie/", "$online"},
-	MessageMock{"u123", "devices/foo/bar/u123/$online", "true", "devices/foo/bar/", "$online"},
+	{"u1234", "devices/u1234/$online", "true", "devices/", "$online"},
+	{"u123", "devices/u123/$online", "true", "devices/", "$online"},
+	{"u123", "homie/u123/$online", "true", "homie/", "$online"},
+	{"u123", "devices/foo/bar/u123/$online", "true", "devices/foo/bar/", "$online"},
 }
 var invalidMessages []MessageMock = []MessageMock{
-	MessageMock{"", "devices", "true", "devices/foo/bar/", ""},
-	MessageMock{"", "devices/foor/bar/", "true", "devices/foo/bar/", ""},
+	{"", "devices", "true", "devices/foo/bar/", ""},
+	{"", "devices/foor/bar/", "true", "devices/foo/bar/", ""},
 }
 
 func TestNew(t *testing.T) {
