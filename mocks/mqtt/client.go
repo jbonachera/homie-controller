@@ -7,6 +7,7 @@ import (
 type MessageMock struct {
 	topic   string
 	payload string
+	retain  bool
 }
 
 func (m MessageMock) Topic() string {
@@ -22,7 +23,7 @@ func (m MessageMock) Qos() byte {
 	return byte(0)
 }
 func (m MessageMock) Retained() bool {
-	return true
+	return m.retain
 }
 func (m MessageMock) MessageID() uint16 {
 	return uint16(10)
@@ -48,7 +49,7 @@ func (mc *MockClient) Disconnect(quiesce uint) {
 
 func (mc *MockClient) Publish(topic string, qos byte, retained bool, payload interface{}) MQTT.Token {
 	payload_string := payload.(string)
-	mc.PublishedMessage = append(mc.PublishedMessage, MessageMock{topic:topic, payload:payload_string})
+	mc.PublishedMessage = append(mc.PublishedMessage, MessageMock{topic:topic, payload:payload_string, retain:retained})
 	return nil
 }
 func (mc *MockClient) Subscribe(topic string, qos byte, callback MQTT.MessageHandler) MQTT.Token {
@@ -66,7 +67,7 @@ func (mc *MockClient) Unsubscribe(topics ...string) MQTT.Token {
 }
 
 func NewMessage(topic string, payload string) MessageMock {
-	return MessageMock{topic, payload}
+	return MessageMock{topic, payload, true}
 }
 func NewMockClient(connected bool, topic string) *MockClient {
 	return &MockClient{connected, topic, []MessageMock{}}
