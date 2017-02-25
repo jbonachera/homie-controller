@@ -9,8 +9,8 @@ import (
 
 type esp8266 struct {
 	parentId  string
-	version   string
-	ota       bool
+	Version   string `json:"version"`
+	Ota       bool `json:"ota"`
 	baseTopic string
 }
 
@@ -24,17 +24,17 @@ func (e *esp8266) GetName() string {
 
 func (e *esp8266) Set(property string, value string) {
 	switch property {
-	case "version":
-		e.version = value
-	case "ota":
+	case "Version":
+		e.Version = value
+	case "Ota":
 		boolValue, err := strconv.ParseBool(value)
 		if err == nil {
-			e.ota = boolValue
+			e.Ota = boolValue
 		}
 	}
 }
 func (e *esp8266) GetProperties() []string {
-	return []string{"version", "ota"}
+	return []string{"Version", "Ota"}
 }
 
 func (e *esp8266) MessageHandler(message homieMessage.HomieMessage) {

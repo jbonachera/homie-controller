@@ -14,13 +14,13 @@ func TestEsp8266_GetName(t *testing.T) {
 }
 func TestEsp8266_Set(t *testing.T) {
 	esp := New("u1", "devices/")
-	esp.Set("ota", "true")
-	if !esp.ota {
-		t.Error("setting ota property failed: wanted true, go", esp.ota)
+	esp.Set("Ota", "true")
+	if !esp.Ota {
+		t.Error("setting Ota property failed: wanted true, go", esp.Ota)
 	}
-	esp.Set("version", "cookiebotOS v902.3-testing")
-	if esp.version != "cookiebotOS v902.3-testing" {
-		t.Error("setting version failed: wanted 'cookiebotOS v902.3-testing', got", esp.version)
+	esp.Set("Version", "cookiebotOS v902.3-testing")
+	if esp.Version != "cookiebotOS v902.3-testing" {
+		t.Error("setting Version failed: wanted 'cookiebotOS v902.3-testing', got", esp.Version)
 	}
 }
 
@@ -34,12 +34,12 @@ func TestEsp8266_GetProperties(t *testing.T) {
 func TestMQTTHandler(t *testing.T) {
 	var message homieMessage.HomieMessage
 	message, _ = homieMessage.Extract(mqtt.NewMessage(
-		"devices/u1234/implementation/version",
+		"devices/u1234/implementation/Version",
 		"cookiebotOS_3.1",
 	), "devices/")
 	esp := New("u1", "devices/")
 	esp.MessageHandler(message)
-	if esp.version != "cookiebotOS_3.1" {
-		t.Error("setting version failed: wanted 'cookiebotOS_3.1', got", esp.version)
+	if esp.Version != "cookiebotOS_3.1" {
+		t.Error("setting Version failed: wanted 'cookiebotOS_3.1', got", esp.Version)
 	}
 }
