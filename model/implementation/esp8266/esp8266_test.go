@@ -43,3 +43,18 @@ func TestMQTTHandler(t *testing.T) {
 		t.Error("setting Version failed: wanted 'cookiebotOS_3.1', got", esp.Version)
 	}
 }
+func TestEsp8266_Reset(t *testing.T) {
+	esp := New("u1", "devices/")
+	messages := []homieMessage.HomieMessage{}
+	esp.MessagePublisher = func(message homieMessage.HomieMessage){
+		messages = append(messages, message)
+	}
+	esp.Reset()
+	if messages[0].Payload != "true"{
+		t.Error("message payload was wrong: got "+messages[0].Payload+", wanted true")
+	}
+	topic := "devices/u1/$implementation/reset"
+	if messages[0].Topic != topic{
+		t.Error("message payload was wrong: got "+messages[0].Topic+", wanted "+topic)
+	}
+}
