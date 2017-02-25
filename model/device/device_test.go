@@ -14,7 +14,7 @@ func TestNew(t *testing.T) {
 		t.Error("Wrong device id: expected azertyuip, got ", device.Id)
 	}
 	if device.Online {
-		t.Error("New device is online, and should not")
+		t.Error("Extract device is online, and should not")
 	}
 }
 
@@ -32,7 +32,7 @@ func TestSet(t *testing.T) {
 
 func TestAddNode(t *testing.T) {
 	var message homieMessage.HomieMessage
-	message, _ = homieMessage.New(mqtt.NewMessage(
+	message, _ = homieMessage.Extract(mqtt.NewMessage(
 		"devices/u1234/temperature/$type",
 		"temperature",
 	), "devices/")
@@ -57,7 +57,7 @@ func TestDevice_MQTTNodeHandler(t *testing.T) {
 		"devices/u1234/$localip",
 		"127.0.0.1",
 	)
-	message, _ = homieMessage.New(updateMessage, "devices/")
+	message, _ = homieMessage.Extract(updateMessage, "devices/")
 	device := New("u1234", "devices/")
 	device.MQTTNodeHandler(message)
 	if device.Localip != "127.0.0.1" {

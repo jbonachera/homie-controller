@@ -61,7 +61,7 @@ func AddSubscription(topic string, qos byte, callback MQTT.MessageHandler) {
 
 func AddHandler(topic string, callback CallbackHandler) {
 	AddSubscription(topic, 0, func(mqttClient MQTT.Client, mqttMessage MQTT.Message) {
-		message, err := homieMessage.New(mqttMessage, broker.baseTopic)
+		message, err := homieMessage.Extract(mqttMessage, broker.baseTopic)
 		if err != nil {
 			log.Error("malformed message")
 		} else {

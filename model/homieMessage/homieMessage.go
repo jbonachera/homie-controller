@@ -37,7 +37,7 @@ type HomieMessage struct {
 	Path      string
 }
 
-func New(m HomieExtractableMessage, baseTopic string) (HomieMessage, error) {
+func Extract(m HomieExtractableMessage, baseTopic string) (HomieMessage, error) {
 	message := HomieMessage{m.Topic(), string(m.Payload()), baseTopic, "", ""}
 	strippedPrefix := strings.TrimPrefix(message.Topic, message.BaseTopic)
 	if strippedPrefix == message.Topic {

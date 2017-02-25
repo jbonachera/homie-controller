@@ -184,7 +184,7 @@ func TestOnlineCallback(t *testing.T) {
 	NewRegistry(baseTopic)
 	SetRegistrationManager(manager)
 	var message homieMessage.HomieMessage
-	message, _ = homieMessage.New(mqtt.NewMessage(
+	message, _ = homieMessage.Extract(mqtt.NewMessage(
 		"devices/u0/$online",
 		"true",
 	), "devices/")
@@ -193,7 +193,7 @@ func TestOnlineCallback(t *testing.T) {
 	if err != nil {
 		t.Error("test device was not created")
 	}
-	message, err = homieMessage.New(mqtt.NewMessage(
+	message, err = homieMessage.Extract(mqtt.NewMessage(
 		"devices/u0/$name",
 		"sensor-test",
 	), "devices/")

@@ -33,7 +33,7 @@ func TestEsp8266_GetProperties(t *testing.T) {
 
 func TestMQTTHandler(t *testing.T) {
 	var message homieMessage.HomieMessage
-	message, _ = homieMessage.New(mqtt.NewMessage(
+	message, _ = homieMessage.Extract(mqtt.NewMessage(
 		"devices/u1234/implementation/version",
 		"cookiebotOS_3.1",
 	), "devices/")

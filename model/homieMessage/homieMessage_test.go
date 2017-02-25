@@ -38,7 +38,7 @@ var invalidMessages []MessageMock = []MessageMock{
 func TestNew(t *testing.T) {
 
 	for _, message := range messages {
-		homieMessage, err := New(message, message.baseTopic)
+		homieMessage, err := Extract(message, message.baseTopic)
 		if err != nil {
 			t.Error("Error thrown: ", err)
 		}
@@ -55,7 +55,7 @@ func TestNew(t *testing.T) {
 	}
 
 	for _, message := range invalidMessages {
-		_, err := New(message, message.baseTopic)
+		_, err := Extract(message, message.baseTopic)
 		if err == nil {
 			t.Error("Error not thrown")
 		}
@@ -64,7 +64,7 @@ func TestNew(t *testing.T) {
 
 func TestDeviceId(t *testing.T) {
 	for _, message := range messages {
-		homieMessage, err := New(message, message.baseTopic)
+		homieMessage, err := Extract(message, message.baseTopic)
 		if err != nil {
 			t.Error("Error thrown: ", err)
 		}
