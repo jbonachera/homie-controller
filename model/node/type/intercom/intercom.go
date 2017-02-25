@@ -16,6 +16,7 @@ type IntercomNode struct {
 	Unit      string  `json:"unit"`
 	Ringing   bool `json:"ringing"`
 	Room      string  `json:"room"`
+	ParentId string `json:"-"`
 }
 
 func (t IntercomNode) GetName() string {

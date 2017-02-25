@@ -14,7 +14,7 @@ var message homieMessage.HomieMessage = homieMessage.HomieMessage{
 }
 
 func TestMQTTHandler(t *testing.T) {
-	intercom := IntercomNode{"intercom", "devices/", "intercom", "bool", false, "living"}
+	intercom := IntercomNode{"intercom", "devices/", "intercom", "bool", false, "living", "u1"}
 	intercom.MessageHandler(message)
 	if !intercom.Ringing {
 		t.Error("setting intercom via MQTTHandler failed: wanted true, got", intercom.Ringing)
@@ -22,7 +22,7 @@ func TestMQTTHandler(t *testing.T) {
 }
 
 func TestGetPoint(t *testing.T) {
-	intercom := IntercomNode{"intercom", "devices/", "intercom", "bool", false, "living"}
+	intercom := IntercomNode{"intercom", "devices/", "intercom", "bool", false, "living", "u1"}
 	point := intercom.GetPoint()
 
 	if point != nil {
