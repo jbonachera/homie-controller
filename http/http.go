@@ -43,7 +43,14 @@ func PostImplementationActionHandler(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(404)
 	} else {
 		action := vestigo.Param(r, "action")
-		myDevice.Implementation.Do(action)
-		json.NewEncoder(w).Encode(statusMessage{Error: false, Msg: "command sent"})
+		log.Info("will send "+action + " command to device "+name)
+		err := myDevice.Implementation.Do(action)
+		if err != nil {
+			log.Info("command failed: "+err.Error())
+			json.NewEncoder(w).Encode(statusMessage{Error: true, Msg: "command said: "+err.Error()})
+		} else {
+			log.Info("command sent")
+			json.NewEncoder(w).Encode(statusMessage{Error: false, Msg: "command sent"})
+		}
 	}
 }
