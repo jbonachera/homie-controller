@@ -99,3 +99,30 @@ func TestDevice_Match2(t *testing.T) {
 	}
 
 }
+
+func TestDevice_Match3(t *testing.T) {
+	searchTerms := map[string]string{
+		"type": "temperature",
+		"online": "true",
+	}
+	opts := Search.Options{Terms: searchTerms}
+	device := New("u1234", "devices/")
+	device.Online = false
+	if device.Match(opts){
+		t.Error("device should not match the requested search")
+	}
+	device.Online = true
+	if device.Match(opts){
+		t.Error("device should not match the requested search")
+	}
+	device.Nodes["temperature"],_ = node.New("temperature", "temperature", "u1", "devices/")
+	device.Online = false
+	if device.Match(opts){
+		t.Error("device should not match the requested search")
+	}
+	device.Online = true
+	if !device.Match(opts){
+		t.Error("device should match the requested search")
+	}
+
+}
