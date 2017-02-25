@@ -31,6 +31,17 @@ func Start(brokerHost string, client_id string, mqttBaseTopic string) {
 		}
 	}
 }
+
+func mqttPublish(topic string, qos byte, retained bool, payload string){
+	broker.c.Publish(topic, qos, retained, payload)
+}
+
+func PublishMessage(message homieMessage.HomieMessage){
+	mqttPublish(message.Topic, 1, false, message.Payload)
+}
+func PublishState(message homieMessage.HomieMessage){
+	mqttPublish(message.Topic, 1, true, message.Payload)
+}
 func DelSubscription(topic string) {
 	for !broker.connected {
 		log.Info("waiting for MQTT connection to start..")

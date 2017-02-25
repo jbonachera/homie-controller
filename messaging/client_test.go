@@ -38,3 +38,28 @@ func TestAddHandler(t *testing.T) {
 	}
 
 }
+
+func TestPublishMessage(t *testing.T) {
+	mock := mqtt.NewMockClient(true, "old/topic")
+	broker = messagingBroker{mock, "devices/", true}
+	topic := "devices/u1/implementation/reset"
+	PublishMessage(homieMessage.HomieMessage{Id:"u1", Payload:"true",BaseTopic:"devices/",Path:"$implementation/reset", Topic:topic})
+	if mock.PublishedMessage[0].Topic() != topic {
+		t.Error("did not published to MQTT broker")
+	}
+	if mock.PublishedMessage[0].Retained() != false {
+		t.Error("MQTT message was flagged for retention, and should not")
+	}
+}
+func TestPublishState(t *testing.T) {
+	mock := mqtt.NewMockClient(true, "old/topic")
+	broker = messagingBroker{mock, "devices/", true}
+	topic := "devices/u1/implementation/reset"
+	PublishState(homieMessage.HomieMessage{Id:"u1", Payload:"true",BaseTopic:"devices/",Path:"$implementation/reset", Topic:topic})
+	if mock.PublishedMessage[0].Topic() != topic {
+		t.Error("did not published to MQTT broker")
+	}
+	if mock.PublishedMessage[0].Retained() != true {
+		t.Error("MQTT message was not flagged for retention, and should be")
+	}
+}
