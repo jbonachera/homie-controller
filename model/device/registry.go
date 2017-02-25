@@ -76,14 +76,18 @@ func OnlineCallback(message homieMessage.HomieMessage) {
 			newDevice := New(message.Id, registry.baseTopic)
 			Append(newDevice)
 			for _, prop := range homieMessage.Properties {
-				registry.registrationManager.add(registry.baseTopic+message.Id+"/"+prop, newDevice.MQTTNodeHandler)
+				if prop != "$online" {
+					registry.registrationManager.add(registry.baseTopic+message.Id+"/"+prop, newDevice.MQTTNodeHandler)
+				}
 			}
 			registry.registrationManager.add(registry.baseTopic+message.Id+"/+/$type", newDevice.MQTTNodeHandler)
 			newDevice.Set("$online", "true")
 		} else {
 			log.Debug("device " + message.Id+ " came back to life")
 			for _, prop := range homieMessage.Properties {
-				registry.registrationManager.add(registry.baseTopic+message.Id+"/"+prop, device.MQTTNodeHandler)
+				if prop != "$online" {
+					registry.registrationManager.add(registry.baseTopic+message.Id+"/"+prop, device.MQTTNodeHandler)
+				}
 			}
 			registry.registrationManager.add(registry.baseTopic+message.Id+"/+/$type", device.MQTTNodeHandler)
 			device.Set("$online", "true")
