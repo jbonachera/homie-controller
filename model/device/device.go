@@ -134,7 +134,7 @@ func (d *Device) GetPoint() *metric.Metric {
 	return metric.New("system", map[string]string{"id": d.Id, "name": d.Name}, map[string]interface{}{"signal": d.Stats.Signal, "uptime": d.Stats.Uptime, "sensors_count": len(d.Nodes)})
 }
 
-func (d *Device)Match(opts Search.Options) bool {
+func (d *Device)Match(opts search.Options) bool {
 	match := false
 	if term , ok:= opts.Terms["online"]; ok {
 		if (term == "true") == d.Online {
