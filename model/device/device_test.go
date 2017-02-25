@@ -6,6 +6,7 @@ import (
 	"github.com/jbonachera/homie-controller/model/homieMessage"
 	_ "github.com/jbonachera/homie-controller/model/node/type/temperature"
 	"testing"
+	"github.com/jbonachera/homie-controller/model/search"
 )
 
 func TestNew(t *testing.T) {
@@ -62,6 +63,23 @@ func TestDevice_MQTTNodeHandler(t *testing.T) {
 	device.MQTTNodeHandler(message)
 	if device.Localip != "127.0.0.1" {
 		t.Error("messaging message did not update property LocalIP: wanted 127.0.0.1, got", device.Localip)
+	}
+
+}
+
+func TestDevice_Match(t *testing.T) {
+	searchTerms := map[string]string{
+		"online": "true",
+	}
+	opts := Search.Options{Terms: searchTerms}
+	device := New("u1234", "devices/")
+	device.Online = false
+	if device.Match(opts){
+		t.Error("device should not match the requested search")
+	}
+	device.Online = true
+	if !device.Match(opts){
+		t.Error("device should match the requested search")
 	}
 
 }

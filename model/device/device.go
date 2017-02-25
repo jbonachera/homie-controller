@@ -11,6 +11,7 @@ import (
 
 	"github.com/jbonachera/homie-controller/messaging"
 	"github.com/jbonachera/homie-controller/model/implementation"
+	"github.com/jbonachera/homie-controller/model/search"
 )
 
 type DeviceStats struct {
@@ -131,4 +132,17 @@ func (d *Device) MQTTNodeHandler(message homieMessage.HomieMessage) {
 
 func (d *Device) GetPoint() *metric.Metric {
 	return metric.New("system", map[string]string{"id": d.Id, "name": d.Name}, map[string]interface{}{"signal": d.Stats.Signal, "uptime": d.Stats.Uptime, "sensors_count": len(d.Nodes)})
+}
+
+func (d *Device)Match(opts Search.Options) bool {
+	match := false
+	if term , ok:= opts.Terms["online"]; ok {
+		if (term == "true") == d.Online {
+			match = true
+		}else {
+			return false
+		}
+	}
+
+	return match
 }
