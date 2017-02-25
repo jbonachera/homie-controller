@@ -36,7 +36,7 @@ func main() {
 	}
 	if broker != "" {
 		log.Debug("starting connection to MQTT broker at " + broker)
-		go messaging.Start(broker, config.Get("mqtt_client_id"), baseTopic)
+		go messaging.Start(broker, config.Get("mqtt_client_id")+"-"+VERSION, baseTopic)
 	}
 	device.NewRegistry(baseTopic)
 	messaging.AddHandler("devices/+/$online", device.OnlineCallback)
