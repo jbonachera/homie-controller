@@ -14,11 +14,11 @@ func TestEsp8266_GetName(t *testing.T) {
 }
 func TestEsp8266_Set(t *testing.T) {
 	esp := New("u1", "devices/")
-	esp.Set("Ota", "true")
+	esp.Set("ota", "true")
 	if !esp.Ota {
 		t.Error("setting Ota property failed: wanted true, go", esp.Ota)
 	}
-	esp.Set("Version", "cookiebotOS v902.3-testing")
+	esp.Set("version", "cookiebotOS v902.3-testing")
 	if esp.Version != "cookiebotOS v902.3-testing" {
 		t.Error("setting Version failed: wanted 'cookiebotOS v902.3-testing', got", esp.Version)
 	}
@@ -34,7 +34,7 @@ func TestEsp8266_GetProperties(t *testing.T) {
 func TestMQTTHandler(t *testing.T) {
 	var message homieMessage.HomieMessage
 	message, _ = homieMessage.Extract(mqtt.NewMessage(
-		"devices/u1234/implementation/Version",
+		"devices/u1234/implementation/version",
 		"cookiebotOS_3.1",
 	), "devices/")
 	esp := New("u1", "devices/")
