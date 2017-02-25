@@ -8,13 +8,14 @@ import (
 )
 
 type esp8266 struct {
+	parentId  string
 	version   string
 	ota       bool
 	baseTopic string
 }
 
-func New(_ string, baseTopic string) *esp8266 {
-	return &esp8266{"", false, baseTopic}
+func New(parent string, baseTopic string) *esp8266 {
+	return &esp8266{parent, "", false, baseTopic}
 }
 
 func (e *esp8266) GetName() string {
