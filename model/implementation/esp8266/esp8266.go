@@ -56,9 +56,9 @@ func (e *esp8266) Reset() {
 
 func (e *esp8266) Set(property string, value string) {
 	switch property {
-	case "Version":
+	case "version":
 		e.Version = value
-	case "Ota":
+	case "ota":
 		boolValue, err := strconv.ParseBool(value)
 		if err == nil {
 			e.Ota = boolValue
