@@ -61,5 +61,5 @@ func (c *GhOTAProvider) GetLatest() ota.Firmware {
 		log.Debug("Found release: latest is " + releases.GetTagName())
 
 	}
-	return &firmware{id: c.Id(), version: releases.GetName(), repo: repoInfo}
+	return &firmware{id: c.Id(), version: releases.GetTagName(), repo: repoInfo}
 }
