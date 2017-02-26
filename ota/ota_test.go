@@ -64,7 +64,7 @@ func TestAddFirmware(t *testing.T) {
 
 func TestIsUpToDate(t *testing.T) {
 	firmwares["mock"] = &MockProvider{id: "mock"}
-	if uptodate, _ := IsUpToDate("mock", "1.0.1"); uptodate {
+	if uptodate, _ := IsUpToDate("mock", "1.0.1"); !uptodate {
 		t.Error("should have detected current version were the latest")
 	}
 	if  uptodate, _ := IsUpToDate("mock", "1.0.0"); uptodate {
