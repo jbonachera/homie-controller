@@ -46,7 +46,7 @@ func getGithubInfo(firmware string) repoInfo {
 	infos := map[string]repoInfo{
 		"vx-intercom-sensor": {
 			owner: "jbonachera",
-			repo:  "homie-intercom-sensor",
+			repo:  "homie-intercom",
 		},
 	}
 	return infos[firmware]
@@ -58,7 +58,7 @@ func (c *GhOTAProvider) GetLatest() ota.Firmware {
 	if err != nil {
 		log.Error("could not fetch releases from github: " + err.Error())
 	} else {
-		log.Info("Found release")
+		log.Debug("Found release: latest is " + releases.GetTagName())
 
 	}
 	return &firmware{id: c.Id(), version: releases.GetName(), repo: repoInfo}
