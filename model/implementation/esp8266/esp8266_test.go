@@ -14,7 +14,7 @@ func TestEsp8266_GetName(t *testing.T) {
 }
 func TestEsp8266_Set(t *testing.T) {
 	esp := New("u1", "devices/")
-	esp.Set("ota", "true")
+	esp.Set("ota/enabled", "true")
 	if !esp.Ota {
 		t.Error("setting Ota property failed: wanted true, go", esp.Ota)
 	}
