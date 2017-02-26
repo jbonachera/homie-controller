@@ -53,3 +53,11 @@ func LastVersion(firmware string) string {
 	}
 	return firmwareProvider.GetLatest().Version()
 }
+
+func LastFirmware(name string) (Firmware, error) {
+	firmwareProvider, ok := firmwares[name]
+	if !ok {
+		return nil, errors.New("firmware not found")
+	}
+	return firmwareProvider.GetLatest(), nil
+}

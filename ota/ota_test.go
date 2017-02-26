@@ -81,3 +81,10 @@ func TestLastVersion(t *testing.T) {
 		t.Error("could not get last version")
 	}
 }
+
+func TestLastFirmware(t *testing.T) {
+	firmwares["mock"] = &MockProvider{id: "mock"}
+	if firmware, _ := LastFirmware("mock"); firmware.Version() != "1.0.1" {
+		t.Error("could not get last version")
+	}
+}
