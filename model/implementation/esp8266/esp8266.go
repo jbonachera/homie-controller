@@ -22,14 +22,16 @@ type esp8266 struct {
 	baseTopic        string
 	MessagePublisher messagePublisherHandler `json:"-"`
 	ActionHandlers   map[string]func()       `json:"-"`
+	OTARunning       bool                    `json:"-"`
 }
 
 type messagePublisherHandler func(message homieMessage.HomieMessage)
 
 func New(parent string, baseTopic string) *esp8266 {
-	esp := &esp8266{parent, "", "", false, []string{}, config{}, baseTopic, messaging.PublishMessage, map[string]func(){}}
+	esp := &esp8266{parent, "", "", false, []string{}, config{}, baseTopic, messaging.PublishMessage, map[string]func(){}, false}
 	actionHandlers := map[string]func(){
-		"reset": esp.Reset,
+		"reset":   esp.Reset,
+		"upgrade": esp.StartOTA,
 	}
 	actions := make([]string, len(actionHandlers))
 
@@ -45,6 +47,13 @@ func New(parent string, baseTopic string) *esp8266 {
 }
 
 func (e *esp8266) Do(action string) error {
+	parentDevice, err := device.Get(e.parentId)
+	if err != nil {
+		return errors.New("device not found. aborting command execution.")
+	}
+	if !parentDevice.Online {
+		return errors.New("device is offline")
+	}
 	if handler := e.ActionHandlers[action]; handler != nil {
 		handler()
 		return nil
@@ -117,4 +126,57 @@ func (e *esp8266) MessageHandler(message homieMessage.HomieMessage) {
 	}
 	propertyName := topicComponents[1]
 	e.Set(propertyName, message.Payload)
+}
+
+func (e *esp8266) StartOTA() {
+	if e.OTARunning {
+		log.Error("OTA is already running")
+		return
+	}
+	parentDevice, err := device.Get(e.parentId)
+	if err != nil {
+		log.Error("parent device not found. not starting OTA.")
+		return
+	}
+	firmware, err := ota.LastFirmware(parentDevice.Fw.Name)
+	if err != nil {
+		log.Error("error while fetching firmware: " + err.Error())
+		return
+	}
+	if ota.IsVersionGreater(parentDevice.Fw.Version, firmware.Version()) {
+		log.Error("local version is more up-to-date than remote version. aborting.")
+		return
+	}
+
+	messaging.AddHandler(e.baseTopic+e.parentId+"/$implementation/ota/status", func(message homieMessage.HomieMessage) {
+		defer messaging.DelSubscription(e.baseTopic + e.parentId + "/$implementation/ota/status")
+		switch message.Payload {
+		case "403":
+			{
+				log.Error("OTA is disabled on device")
+				e.OTARunning = false
+			}
+		case "400":
+			{
+				log.Error("device " + e.parentId + "said the checksum was malformed. aborting OTA")
+				e.OTARunning = false
+			}
+		case "202":
+			{
+				log.Debug("device accepted to start OTA")
+			}
+		case "304":
+			{
+				log.Debug("device is already up to date")
+				e.OTARunning = false
+			}
+		}
+	})
+	message, err := homieMessage.New(e.parentId, e.baseTopic, "$implementation/ota/checksum", firmware.Checksum())
+	if err != nil {
+		log.Error("error while creating message for device: " + err.Error())
+		messaging.DelSubscription(e.baseTopic + e.parentId + "/$implementation/ota/status")
+	} else {
+		messaging.PublishMessage(message)
+	}
 }
