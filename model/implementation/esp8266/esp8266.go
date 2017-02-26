@@ -102,7 +102,7 @@ func (e *esp8266) GetProperties() []string {
 func (e *esp8266) MessageHandler(message homieMessage.HomieMessage) {
 	// Will be bound to devices/<id>/implementation/#
 
-	topicComponents := strings.Split(message.Path, "/")
+	topicComponents := strings.SplitN(message.Path, "/", 2)
 	if len(topicComponents) < 2 {
 		return
 	}

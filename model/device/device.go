@@ -87,10 +87,12 @@ func (d *Device) MQTTNodeHandler(message homieMessage.HomieMessage) {
 			if err != nil {
 				log.Error(err.Error())
 			} else {
-				d.registrator(d.BaseTopic+d.Id+"/$implementation/+", func(message homieMessage.HomieMessage) {
-					log.Debug("(device: " + d.Name + ") (implementation: " + d.Implementation.GetName() + ") " + message.Path + " → " + message.Payload)
-					d.Implementation.MessageHandler(message)
-				})
+				for _, topic := range []string{d.BaseTopic + d.Id + "/$implementation/+", d.BaseTopic + d.Id + "/$implementation/ota/+"} {
+					d.registrator(topic, func(message homieMessage.HomieMessage) {
+						log.Debug("(device: " + d.Id + ") (implementation: " + d.Implementation.GetName() + ") " + message.Path + " → " + message.Payload)
+						d.Implementation.MessageHandler(message)
+					})
+				}
 			}
 
 		} else {
@@ -118,7 +120,7 @@ func (d *Device) MQTTNodeHandler(message homieMessage.HomieMessage) {
 					for _, property := range properties {
 						log.Debug("adding property " + property + " to node " + nodeName + " for device " + message.Id)
 						d.registrator(d.BaseTopic+d.Id+"/"+nodeName+"/"+property, func(message homieMessage.HomieMessage) {
-							log.Debug("(device: " + d.Name + ") (node: " + d.Nodes[nodeName].GetName() + ") " + message.Path + " → " + message.Payload)
+							log.Debug("(device: " + d.Id + ") (node: " + d.Nodes[nodeName].GetName() + ") " + message.Path + " → " + message.Payload)
 							d.Nodes[nodeName].MessageHandler(message)
 						})
 					}
