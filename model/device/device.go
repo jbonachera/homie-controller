@@ -87,7 +87,12 @@ func (d *Device) MQTTNodeHandler(message homieMessage.HomieMessage) {
 			if err != nil {
 				log.Error(err.Error())
 			} else {
-				d.registrator(d.BaseTopic+d.Id+"/$implementation/+", d.Implementation.MessageHandler)
+				d.registrator(d.BaseTopic+d.Id+"/$implementation/+", func(message homieMessage.HomieMessage) {
+					topicComponents := strings.Split(message.Path, "/")
+					property := topicComponents[1]
+					log.Debug("(device: " + d.Name + ") set property " + property + " to " + message.Payload + " for implementation " + d.Implementation.GetName())
+					d.Implementation.MessageHandler(message)
+				})
 			}
 
 		} else {
