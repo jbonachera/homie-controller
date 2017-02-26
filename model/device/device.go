@@ -115,6 +115,8 @@ func (d *Device) MQTTNodeHandler(message homieMessage.HomieMessage) {
 					for _, property := range properties {
 						log.Debug("adding property " + property + " to node " + nodeName + " for device " + message.Id)
 						d.registrator(d.BaseTopic+d.Id+"/"+nodeName+"/"+property, func(message homieMessage.HomieMessage) {
+							topicComponents := strings.Split(message.Path, "/")
+							property := topicComponents[1]
 							log.Debug("(device: " + d.Name + ") set property " + property + " to " + message.Payload + " for node " + d.Nodes[nodeName].GetName())
 							d.Nodes[nodeName].MessageHandler(message)
 						})
