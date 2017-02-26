@@ -43,7 +43,11 @@ func IsUpToDate(firmware string, current_version string) (bool, error) {
 	if !ok {
 		return false, errors.New("firmware not found in OTA")
 	}
-	return version.Compare(current_version, firmwareProvider.GetLatest().Version(), ">="), nil
+	return IsVersionGreater(current_version, firmwareProvider.GetLatest().Version()), nil
+}
+
+func IsVersionGreater(local string, remote string) bool {
+	return version.Compare(local, remote, ">=")
 }
 
 func LastVersion(firmware string) string {
