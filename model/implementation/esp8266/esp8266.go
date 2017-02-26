@@ -69,7 +69,7 @@ func (e *esp8266) Reset() {
 }
 
 func (e *esp8266) checkOTA() {
-	log.Debug("checking if parentDevice " + e.parentId + " is up to date")
+	log.Debug("checking if device " + e.parentId + " is up to date")
 	parentDevice, err := device.Get(e.parentId)
 	if err != nil {
 		log.Error("device " + e.parentId + " not found")
