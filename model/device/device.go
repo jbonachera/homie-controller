@@ -87,7 +87,7 @@ func (d *Device) MQTTNodeHandler(message homieMessage.HomieMessage) {
 			if err != nil {
 				log.Error(err.Error())
 			} else {
-				for _, topic := range []string{d.BaseTopic + d.Id + "/$implementation/+", d.BaseTopic + d.Id + "/$implementation/ota/+"} {
+				for _, topic := range []string{d.BaseTopic + d.Id + "/$implementation/+", d.BaseTopic + d.Id + "/$implementation/ota/enabled"} {
 					d.registrator(topic, func(message homieMessage.HomieMessage) {
 						log.Debug("(device: " + d.Id + ") (implementation: " + d.Implementation.GetName() + ") " + message.Path + " → " + message.Payload)
 						d.Implementation.MessageHandler(message)
