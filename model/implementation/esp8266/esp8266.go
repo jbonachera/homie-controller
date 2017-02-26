@@ -77,6 +77,7 @@ func (e *esp8266) checkOTA() {
 		if upToDate {
 		} else {
 			log.Info("device " + e.parentId + " is outdated!")
+			parentDevice.Fw.UpgradeAvailable = true
 		}
 
 	}

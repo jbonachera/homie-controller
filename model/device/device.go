@@ -21,9 +21,10 @@ type DeviceStats struct {
 }
 
 type DeviceFirmware struct {
-	Name     string `json:"name"`
-	Version  string `json:"version"`
-	Checksum string `json:"checksum"`
+	Name             string `json:"name"`
+	Version          string `json:"version"`
+	Checksum         string `json:"checksum"`
+	UpgradeAvailable bool   `json:"upgrade_available"`
 }
 
 type Device struct {
@@ -44,7 +45,7 @@ type HandlerRegistrator func(topic string, callback messaging.CallbackHandler)
 
 func New(id string, baseTopic string) *Device {
 	return &Device{id, false, "", "", "",
-		DeviceStats{0, 0, 0}, DeviceFirmware{"", "", ""},
+		DeviceStats{0, 0, 0}, DeviceFirmware{"", "", "", false},
 		nil, map[string]node.Type{}, baseTopic, messaging.AddHandler}
 }
 func (d *Device) SetRegistrator(handler HandlerRegistrator) {
