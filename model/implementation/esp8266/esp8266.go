@@ -4,7 +4,9 @@ import (
 	"errors"
 	"github.com/jbonachera/homie-controller/log"
 	"github.com/jbonachera/homie-controller/messaging"
+	"github.com/jbonachera/homie-controller/model/device"
 	"github.com/jbonachera/homie-controller/model/homieMessage"
+	"github.com/jbonachera/homie-controller/ota"
 	"strconv"
 	"strings"
 )
@@ -62,14 +64,34 @@ func (e *esp8266) Reset() {
 	e.MessagePublisher(message)
 }
 
+func (e *esp8266) checkOTA() {
+	log.Debug("checking if parentDevice " + e.parentId + " is up to date")
+	parentDevice, err := device.Get(e.parentId)
+	if err != nil {
+		log.Error("parent parentDevice " + e.parentId + " not found")
+	} else if uptodate, err := ota.IsUpToDate(parentDevice.Fw.Name, parentDevice.Fw.Version); err != nil {
+		log.Debug("parentDevice " + e.parentId + " is running a firmware (" + parentDevice.Fw.Name + ") which is not managed by OTA")
+	} else if uptodate {
+		log.Debug("parentDevice " + e.parentId + " is uptodate")
+	} else {
+		log.Info("parentDevice " + e.parentId + " is outdated!")
+	}
+}
+
 func (e *esp8266) Set(property string, value string) {
 	switch property {
 	case "version":
 		e.Version = value
-	case "ota":
+		if e.Ota {
+			e.checkOTA()
+		}
+	case "ota/enabled":
 		boolValue, err := strconv.ParseBool(value)
 		if err == nil {
 			e.Ota = boolValue
+			if e.Ota && e.Version != "" {
+				e.checkOTA()
+			}
 		}
 	}
 }
@@ -84,7 +106,6 @@ func (e *esp8266) MessageHandler(message homieMessage.HomieMessage) {
 	if len(topicComponents) < 2 {
 		return
 	}
-	log.Debug("received update: " + topicComponents[1] + " to " + message.Payload)
 	propertyName := topicComponents[1]
 	e.Set(propertyName, message.Payload)
 }
