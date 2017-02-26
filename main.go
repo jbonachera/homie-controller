@@ -11,10 +11,12 @@ import (
 	_ "github.com/jbonachera/homie-controller/model/node/type/humidity"
 	_ "github.com/jbonachera/homie-controller/model/node/type/intercom"
 	_ "github.com/jbonachera/homie-controller/model/node/type/temperature"
+	_ "github.com/jbonachera/homie-controller/ota/github_releases"
 	"os"
 	"os/signal"
 
 	"github.com/jbonachera/homie-controller/model/device"
+	"github.com/jbonachera/homie-controller/ota"
 )
 
 var VERSION = "0.1"
@@ -25,6 +27,8 @@ func main() {
 	log.Info("starting homie-controller version " + VERSION)
 	sigc := make(chan os.Signal, 1)
 	signal.Notify(sigc, os.Interrupt, os.Kill)
+
+	ota.AddFirmware("vx-intercom-sensor", "github_release")
 
 	broker := config.Get("mqtt_broker")
 	influxdb_server := config.Get("influxdb_server")
