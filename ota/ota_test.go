@@ -74,3 +74,10 @@ func TestIsUpToDate(t *testing.T) {
 		t.Error("should have detected version were greater than the latest: got 1.0.1 > 1.0.2")
 	}
 }
+
+func TestLastVersion(t *testing.T) {
+	firmwares["mock"] = &MockProvider{id: "mock"}
+	if LastVersion("mock") != "1.0.1" {
+		t.Error("could not get last version")
+	}
+}

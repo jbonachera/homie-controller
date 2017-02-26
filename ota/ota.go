@@ -45,3 +45,11 @@ func IsUpToDate(firmware string, current_version string) (bool, error) {
 	}
 	return version.Compare(current_version, firmwareProvider.GetLatest().Version(), ">="), nil
 }
+
+func LastVersion(firmware string) string {
+	firmwareProvider, ok := firmwares[firmware]
+	if !ok {
+		return "unknown"
+	}
+	return firmwareProvider.GetLatest().Version()
+}
