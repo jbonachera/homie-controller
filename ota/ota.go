@@ -1,9 +1,7 @@
 package ota
 
 import (
-	"github.com/jbonachera/homie-controller/log"
-	"github.com/jbonachera/homie-controller/messaging"
-	"github.com/jbonachera/homie-controller/model/homieMessage"
+	"errors"
 	"github.com/mcuadros/go-version"
 )
 
@@ -40,6 +38,10 @@ func AddFirmware(name string, provider string) {
 	firmwares[name] = factories[provider].New(name)
 }
 
-func IsUpToDate(firmware string, current_version string) bool {
-	return version.Compare(current_version, firmwares[firmware].GetLatest().Version(), ">=")
+func IsUpToDate(firmware string, current_version string) (bool, error) {
+	firmwareProvider, ok := firmwares[firmware]
+	if !ok {
+		return false, errors.New("firmware not found in OTA")
+	}
+	return version.Compare(current_version, firmwareProvider.GetLatest().Version(), ">="), nil
 }
