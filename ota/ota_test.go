@@ -61,3 +61,16 @@ func TestAddFirmware(t *testing.T) {
 		t.Error("firmware was not correctly registered")
 	}
 }
+
+func TestIsUpToDate(t *testing.T) {
+	firmwares["mock"] = &MockProvider{id: "mock"}
+	if !IsUpToDate("mock", "1.0.1") {
+		t.Error("should have detected current version were the latest")
+	}
+	if IsUpToDate("mock", "1.0.0") {
+		t.Error("should have detected current version were not the latest: got 1.0.1 > 1.0.0")
+	}
+	if !IsUpToDate("mock", "1.0.2") {
+		t.Error("should have detected version were greater than the latest: got 1.0.1 > 1.0.2")
+	}
+}
