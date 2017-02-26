@@ -1,6 +1,9 @@
 package ota
 
 import (
+	"github.com/jbonachera/homie-controller/log"
+	"github.com/jbonachera/homie-controller/messaging"
+	"github.com/jbonachera/homie-controller/model/homieMessage"
 	"github.com/mcuadros/go-version"
 )
 

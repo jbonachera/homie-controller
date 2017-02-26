@@ -3,8 +3,7 @@ package github_releases
 type firmware struct {
 	id      string
 	version string
-	owner   string
-	repo    string
+	repo    repoInfo
 }
 
 func (f *firmware) Name() string {

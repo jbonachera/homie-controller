@@ -1,8 +1,6 @@
 package github_releases
 
 import (
-	"context"
-	"github.com/google/go-github/github"
 	"github.com/jbonachera/homie-controller/ota"
 )
 
@@ -19,5 +17,5 @@ func (f *Factory) Id() string {
 }
 
 func (f *Factory) New(name string) ota.FirmwareProvider {
-	return &GhOTAProvider{id: name, client: github.NewClient(nil), ctx: context.Background()}
+	return &GhOTAProvider{id: name, releaseProvider: GetDefaultGHClient()}
 }
