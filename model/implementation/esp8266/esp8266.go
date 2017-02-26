@@ -1,6 +1,7 @@
 package esp8266
 
 import (
+	"encoding/json"
 	"errors"
 	"github.com/jbonachera/homie-controller/log"
 	"github.com/jbonachera/homie-controller/messaging"
@@ -17,6 +18,7 @@ type esp8266 struct {
 	Version          string   `json:"version"`
 	Ota              bool     `json:"ota"`
 	Actions          []string `json:"actions"`
+	Config           config   `json:"config"`
 	baseTopic        string
 	MessagePublisher messagePublisherHandler `json:"-"`
 	ActionHandlers   map[string]func()       `json:"-"`
@@ -25,7 +27,7 @@ type esp8266 struct {
 type messagePublisherHandler func(message homieMessage.HomieMessage)
 
 func New(parent string, baseTopic string) *esp8266 {
-	esp := &esp8266{parent, "", "", false, []string{}, baseTopic, messaging.PublishMessage, map[string]func(){}}
+	esp := &esp8266{parent, "", "", false, []string{}, config{}, baseTopic, messaging.PublishMessage, map[string]func(){}}
 	actionHandlers := map[string]func(){
 		"reset": esp.Reset,
 	}
@@ -84,6 +86,10 @@ func (e *esp8266) Set(property string, value string) {
 		e.Version = value
 		if e.Ota {
 			e.checkOTA()
+		}
+	case "config":
+		if err := json.Unmarshal([]byte(value), &e.Config); err != nil {
+			log.Error("error while parsing device config: " + err.Error())
 		}
 	case "ota/enabled":
 		boolValue, err := strconv.ParseBool(value)
