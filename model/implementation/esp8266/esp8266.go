@@ -16,9 +16,7 @@ type esp8266 struct {
 	parentId         string
 	Name             string
 	Version          string   `json:"version"`
-	LastVersion      string   `json:"last_version"`
 	Ota              bool     `json:"ota"`
-	UpToDate         bool     `json:"up_to_date"`
 	Actions          []string `json:"actions"`
 	Config           config   `json:"config"`
 	baseTopic        string
@@ -29,7 +27,7 @@ type esp8266 struct {
 type messagePublisherHandler func(message homieMessage.HomieMessage)
 
 func New(parent string, baseTopic string) *esp8266 {
-	esp := &esp8266{parent, "", "", "", false, true, []string{}, config{}, baseTopic, messaging.PublishMessage, map[string]func(){}}
+	esp := &esp8266{parent, "", "", false, []string{}, config{}, baseTopic, messaging.PublishMessage, map[string]func(){}}
 	actionHandlers := map[string]func(){
 		"reset": esp.Reset,
 	}
@@ -76,12 +74,9 @@ func (e *esp8266) checkOTA() {
 	} else if uptodate, err := ota.IsUpToDate(parentDevice.Fw.Name, parentDevice.Fw.Version); err != nil {
 		log.Debug("device " + e.parentId + " is running a firmware (" + parentDevice.Fw.Name + ") which is not managed by OTA")
 	} else {
-		e.LastVersion = ota.LastVersion(parentDevice.Fw.Name)
 		if uptodate {
-			e.UpToDate = true
 		} else {
 			log.Info("device " + e.parentId + " is outdated!")
-			e.UpToDate = false
 		}
 
 	}
