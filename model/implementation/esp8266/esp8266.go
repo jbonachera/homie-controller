@@ -71,10 +71,10 @@ func (e *esp8266) checkOTA() {
 	parentDevice, err := device.Get(e.parentId)
 	if err != nil {
 		log.Error("device " + e.parentId + " not found")
-	} else if uptodate, err := ota.IsUpToDate(parentDevice.Fw.Name, parentDevice.Fw.Version); err != nil {
+	} else if upToDate, err := ota.IsUpToDate(parentDevice.Fw.Name, parentDevice.Fw.Version); err != nil {
 		log.Debug("device " + e.parentId + " is running a firmware (" + parentDevice.Fw.Name + ") which is not managed by OTA")
 	} else {
-		if uptodate {
+		if upToDate {
 		} else {
 			log.Info("device " + e.parentId + " is outdated!")
 		}
