@@ -37,13 +37,13 @@ type HomieMessage struct {
 	Path      string
 }
 
-func New(id string, baseTopic string, path string, payload string) (HomieMessage, error){
-	if !strings.HasSuffix(baseTopic, "/"){
+func New(id string, baseTopic string, path string, payload string) (HomieMessage, error) {
+	if !strings.HasSuffix(baseTopic, "/") {
 		baseTopic = baseTopic + "/"
 	}
 
 	topic := baseTopic + id + "/" + path
-	return HomieMessage{Topic:topic,Path:path,BaseTopic:baseTopic,Id:id,Payload:payload}, nil
+	return HomieMessage{Topic: topic, Path: path, BaseTopic: baseTopic, Id: id, Payload: payload}, nil
 }
 
 func Extract(m HomieExtractableMessage, baseTopic string) (HomieMessage, error) {

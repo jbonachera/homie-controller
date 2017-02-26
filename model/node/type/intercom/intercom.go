@@ -1,10 +1,10 @@
 package intercom
 
 import (
+	"github.com/jbonachera/homie-controller/log"
 	"github.com/jbonachera/homie-controller/model/homieMessage"
 	"github.com/jbonachera/homie-controller/model/metric"
 	"strings"
-	"github.com/jbonachera/homie-controller/log"
 )
 
 var nodeType string = "intercom"
@@ -12,11 +12,11 @@ var nodeType string = "intercom"
 type IntercomNode struct {
 	name      string
 	baseTopic string
-	Nodetype  string  `json:"type"`
-	Unit      string  `json:"unit"`
-	Ringing   bool `json:"ringing"`
-	Room      string  `json:"room"`
-	ParentId string `json:"-"`
+	Nodetype  string `json:"type"`
+	Unit      string `json:"unit"`
+	Ringing   bool   `json:"ringing"`
+	Room      string `json:"room"`
+	ParentId  string `json:"-"`
 }
 
 func (t IntercomNode) GetName() string {

@@ -11,7 +11,7 @@ type mockImplementation struct {
 func (e *mockImplementation) GetName() string {
 	return "mock"
 }
-func (e *mockImplementation) Do(action string) error{
+func (e *mockImplementation) Do(action string) error {
 	return nil
 }
 func (e *mockImplementation) Set(property string, value string) {

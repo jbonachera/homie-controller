@@ -8,7 +8,7 @@ import (
 type TemperatureFactory struct{}
 
 func (TemperatureFactory) New(name string, parent string, baseTopic string) node.Type {
-	return &TemperatureNode{name, baseTopic, "temperature", "c", 0.0, "",time.Time{}, parent}
+	return &TemperatureNode{name, baseTopic, "temperature", "c", 0.0, "", time.Time{}, parent}
 }
 
 func init() {

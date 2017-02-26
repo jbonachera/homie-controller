@@ -4,10 +4,10 @@ import (
 	MQTT "github.com/jbonachera/homie-controller/messaging"
 	"github.com/jbonachera/homie-controller/mocks/mqtt"
 	"github.com/jbonachera/homie-controller/model/homieMessage"
-	_ "github.com/jbonachera/homie-controller/model/node/type/temperature"
-	"testing"
-	"github.com/jbonachera/homie-controller/model/search"
 	"github.com/jbonachera/homie-controller/model/node"
+	_ "github.com/jbonachera/homie-controller/model/node/type/temperature"
+	"github.com/jbonachera/homie-controller/model/search"
+	"testing"
 )
 
 func TestNew(t *testing.T) {
@@ -75,11 +75,11 @@ func TestDevice_Match(t *testing.T) {
 	opts := search.Options{Terms: searchTerms}
 	device := New("u1234", "devices/")
 	device.Online = false
-	if device.Match(opts){
+	if device.Match(opts) {
 		t.Error("device should not match the requested search")
 	}
 	device.Online = true
-	if !device.Match(opts){
+	if !device.Match(opts) {
 		t.Error("device should match the requested search")
 	}
 
@@ -90,11 +90,11 @@ func TestDevice_Match2(t *testing.T) {
 	}
 	opts := search.Options{Terms: searchTerms}
 	device := New("u1234", "devices/")
-	if device.Match(opts){
+	if device.Match(opts) {
 		t.Error("device should not match the requested search")
 	}
-	device.Nodes["temperature"],_ = node.New("temperature", "temperature", "u1", "devices/")
-	if !device.Match(opts){
+	device.Nodes["temperature"], _ = node.New("temperature", "temperature", "u1", "devices/")
+	if !device.Match(opts) {
 		t.Error("device should match the requested search")
 	}
 
@@ -102,26 +102,26 @@ func TestDevice_Match2(t *testing.T) {
 
 func TestDevice_Match3(t *testing.T) {
 	searchTerms := map[string]string{
-		"type": "temperature",
+		"type":   "temperature",
 		"online": "true",
 	}
 	opts := search.Options{Terms: searchTerms}
 	device := New("u1234", "devices/")
 	device.Online = false
-	if device.Match(opts){
+	if device.Match(opts) {
 		t.Error("device should not match the requested search")
 	}
 	device.Online = true
-	if device.Match(opts){
+	if device.Match(opts) {
 		t.Error("device should not match the requested search")
 	}
-	device.Nodes["temperature"],_ = node.New("temperature", "temperature", "u1", "devices/")
+	device.Nodes["temperature"], _ = node.New("temperature", "temperature", "u1", "devices/")
 	device.Online = false
-	if device.Match(opts){
+	if device.Match(opts) {
 		t.Error("device should not match the requested search")
 	}
 	device.Online = true
-	if !device.Match(opts){
+	if !device.Match(opts) {
 		t.Error("device should match the requested search")
 	}
 

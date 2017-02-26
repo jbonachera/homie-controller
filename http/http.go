@@ -5,15 +5,15 @@ import (
 	"github.com/husobee/vestigo"
 	"github.com/jbonachera/homie-controller/log"
 	"github.com/jbonachera/homie-controller/model/device"
-	"net/http"
 	"github.com/jbonachera/homie-controller/model/search"
+	"net/http"
 )
 
 var router = vestigo.NewRouter()
 
 type statusMessage struct {
-	Error bool `json:"error"`
-	Msg string `json:"msg"`
+	Error bool   `json:"error"`
+	Msg   string `json:"msg"`
 }
 
 func Start() {
@@ -45,11 +45,11 @@ func PostImplementationActionHandler(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(404)
 	} else {
 		action := vestigo.Param(r, "action")
-		log.Info("will send "+action + " command to device "+name)
+		log.Info("will send " + action + " command to device " + name)
 		err := myDevice.Implementation.Do(action)
 		if err != nil {
-			log.Info("command failed: "+err.Error())
-			json.NewEncoder(w).Encode(statusMessage{Error: true, Msg: "command said: "+err.Error()})
+			log.Info("command failed: " + err.Error())
+			json.NewEncoder(w).Encode(statusMessage{Error: true, Msg: "command said: " + err.Error()})
 		} else {
 			log.Info("command sent")
 			json.NewEncoder(w).Encode(statusMessage{Error: false, Msg: "command sent"})
@@ -72,7 +72,7 @@ func SearchDevicesHandler(w http.ResponseWriter, r *http.Request) {
 		json.NewEncoder(w).Encode(devices)
 	} else {
 		devices_id := []string{}
-		for id := range devices{
+		for id := range devices {
 			devices_id = append(devices_id, id)
 		}
 		json.NewEncoder(w).Encode(devices_id)

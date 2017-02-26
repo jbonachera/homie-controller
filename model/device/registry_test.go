@@ -4,10 +4,10 @@ import (
 	MQTT "github.com/jbonachera/homie-controller/messaging"
 	"github.com/jbonachera/homie-controller/mocks/mqtt"
 	"github.com/jbonachera/homie-controller/model/homieMessage"
+	"github.com/jbonachera/homie-controller/model/search"
 	"strconv"
 	"sync"
 	"testing"
-	"github.com/jbonachera/homie-controller/model/search"
 )
 
 var baseTopic string = "devices/"
@@ -220,7 +220,7 @@ func TestSearch(t *testing.T) {
 		"online": "true",
 	}
 	matched := Search(search.Options{Terms: searchTerms})
-	if len(matched) != 2{
+	if len(matched) != 2 {
 		t.Error("device search failed")
 	}
 }

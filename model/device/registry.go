@@ -5,8 +5,8 @@ import (
 	"github.com/jbonachera/homie-controller/log"
 	"github.com/jbonachera/homie-controller/messaging"
 	"github.com/jbonachera/homie-controller/model/homieMessage"
-	"sync"
 	"github.com/jbonachera/homie-controller/model/search"
+	"sync"
 )
 
 type RegistrationHandler struct {
@@ -84,7 +84,7 @@ func OnlineCallback(message homieMessage.HomieMessage) {
 		device.Set("$online", message.Payload)
 	}
 	if message.Payload == "true" {
-		log.Debug("device " + message.Id+ " came back to life")
+		log.Debug("device " + message.Id + " came back to life")
 		device.Set("$online", "true")
 
 	} else {
@@ -99,7 +99,7 @@ func GetAll() map[string]*Device {
 	return registry.devices
 }
 
-func Search(opts search.Options) map[string]*Device{
+func Search(opts search.Options) map[string]*Device {
 
 	results := map[string]*Device{}
 	for id, device := range registry.devices {

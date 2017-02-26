@@ -46,15 +46,15 @@ func TestMQTTHandler(t *testing.T) {
 func TestEsp8266_Reset(t *testing.T) {
 	esp := New("u1", "devices/")
 	messages := []homieMessage.HomieMessage{}
-	esp.MessagePublisher = func(message homieMessage.HomieMessage){
+	esp.MessagePublisher = func(message homieMessage.HomieMessage) {
 		messages = append(messages, message)
 	}
 	esp.Reset()
-	if messages[0].Payload != "true"{
-		t.Error("message payload was wrong: got "+messages[0].Payload+", wanted true")
+	if messages[0].Payload != "true" {
+		t.Error("message payload was wrong: got " + messages[0].Payload + ", wanted true")
 	}
 	topic := "devices/u1/$implementation/reset"
-	if messages[0].Topic != topic{
-		t.Error("message payload was wrong: got "+messages[0].Topic+", wanted "+topic)
+	if messages[0].Topic != topic {
+		t.Error("message payload was wrong: got " + messages[0].Topic + ", wanted " + topic)
 	}
 }

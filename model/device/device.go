@@ -115,7 +115,7 @@ func (d *Device) MQTTNodeHandler(message homieMessage.HomieMessage) {
 					for _, property := range properties {
 						log.Debug("adding property " + property + " to node " + nodeName + " for device " + message.Id)
 						d.registrator(d.BaseTopic+d.Id+"/"+nodeName+"/"+property, func(message homieMessage.HomieMessage) {
-							log.Debug("(device: "+d.Name+") set property " + property + " to " + message.Payload + " for node " + d.Nodes[nodeName].GetName())
+							log.Debug("(device: " + d.Name + ") set property " + property + " to " + message.Payload + " for node " + d.Nodes[nodeName].GetName())
 							d.Nodes[nodeName].MessageHandler(message)
 						})
 					}
@@ -134,16 +134,16 @@ func (d *Device) GetPoint() *metric.Metric {
 	return metric.New("system", map[string]string{"id": d.Id, "name": d.Name}, map[string]interface{}{"signal": d.Stats.Signal, "uptime": d.Stats.Uptime, "sensors_count": len(d.Nodes)})
 }
 
-func (d *Device)Match(opts search.Options) bool {
+func (d *Device) Match(opts search.Options) bool {
 	match := false
-	if term , ok:= opts.Terms["online"]; ok {
+	if term, ok := opts.Terms["online"]; ok {
 		if (term == "true") == d.Online {
 			match = true
-		}else {
+		} else {
 			return false
 		}
 	}
-	if term , ok:= opts.Terms["type"]; ok {
+	if term, ok := opts.Terms["type"]; ok {
 		type_matched := false
 		for name := range d.Nodes {
 			if name == term {
@@ -157,7 +157,6 @@ func (d *Device)Match(opts search.Options) bool {
 			match = type_matched
 		}
 	}
-
 
 	return match
 }

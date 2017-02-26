@@ -1,29 +1,29 @@
 package esp8266
 
 import (
+	"errors"
 	"github.com/jbonachera/homie-controller/log"
+	"github.com/jbonachera/homie-controller/messaging"
 	"github.com/jbonachera/homie-controller/model/homieMessage"
 	"strconv"
 	"strings"
-	"github.com/jbonachera/homie-controller/messaging"
-	"errors"
 )
 
 type esp8266 struct {
 	parentId         string
-	Name 		 string
-	Version          string `json:"version"`
-	Ota              bool `json:"ota"`
-	Actions		 []string `json:"actions"`
+	Name             string
+	Version          string   `json:"version"`
+	Ota              bool     `json:"ota"`
+	Actions          []string `json:"actions"`
 	baseTopic        string
 	MessagePublisher messagePublisherHandler `json:"-"`
-	ActionHandlers   map[string]func() `json:"-"`
+	ActionHandlers   map[string]func()       `json:"-"`
 }
 
 type messagePublisherHandler func(message homieMessage.HomieMessage)
 
 func New(parent string, baseTopic string) *esp8266 {
-	esp := &esp8266{parent, "","", false, []string{},baseTopic, messaging.PublishMessage,map[string]func(){}}
+	esp := &esp8266{parent, "", "", false, []string{}, baseTopic, messaging.PublishMessage, map[string]func(){}}
 	actionHandlers := map[string]func(){
 		"reset": esp.Reset,
 	}
@@ -40,12 +40,12 @@ func New(parent string, baseTopic string) *esp8266 {
 	return esp
 }
 
-func (e *esp8266) Do(action string) error{
+func (e *esp8266) Do(action string) error {
 	if handler := e.ActionHandlers[action]; handler != nil {
 		handler()
 		return nil
 	} else {
-		return errors.New("method not found: "+action)
+		return errors.New("method not found: " + action)
 	}
 }
 

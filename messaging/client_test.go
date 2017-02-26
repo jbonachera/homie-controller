@@ -43,7 +43,7 @@ func TestPublishMessage(t *testing.T) {
 	mock := mqtt.NewMockClient(true, "old/topic")
 	broker = messagingBroker{mock, "devices/", true}
 	topic := "devices/u1/implementation/reset"
-	PublishMessage(homieMessage.HomieMessage{Id:"u1", Payload:"true",BaseTopic:"devices/",Path:"$implementation/reset", Topic:topic})
+	PublishMessage(homieMessage.HomieMessage{Id: "u1", Payload: "true", BaseTopic: "devices/", Path: "$implementation/reset", Topic: topic})
 	if mock.PublishedMessage[0].Topic() != topic {
 		t.Error("did not published to MQTT broker")
 	}
@@ -55,7 +55,7 @@ func TestPublishState(t *testing.T) {
 	mock := mqtt.NewMockClient(true, "old/topic")
 	broker = messagingBroker{mock, "devices/", true}
 	topic := "devices/u1/implementation/reset"
-	PublishState(homieMessage.HomieMessage{Id:"u1", Payload:"true",BaseTopic:"devices/",Path:"$implementation/reset", Topic:topic})
+	PublishState(homieMessage.HomieMessage{Id: "u1", Payload: "true", BaseTopic: "devices/", Path: "$implementation/reset", Topic: topic})
 	if mock.PublishedMessage[0].Topic() != topic {
 		t.Error("did not published to MQTT broker")
 	}

@@ -41,7 +41,7 @@ func TestNew(t *testing.T) {
 		t.Error("message creation failed")
 	}
 	if message.Topic != "devices/u1/$online" {
-		t.Error("message did not have the right topic: wanted devices/u1/$online, got "+message.Topic)
+		t.Error("message did not have the right topic: wanted devices/u1/$online, got " + message.Topic)
 	}
 }
 

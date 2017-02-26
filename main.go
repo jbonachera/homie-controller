@@ -9,8 +9,8 @@ import (
 	"github.com/jbonachera/homie-controller/messaging"
 	_ "github.com/jbonachera/homie-controller/model/implementation/esp8266"
 	_ "github.com/jbonachera/homie-controller/model/node/type/humidity"
-	_ "github.com/jbonachera/homie-controller/model/node/type/temperature"
 	_ "github.com/jbonachera/homie-controller/model/node/type/intercom"
+	_ "github.com/jbonachera/homie-controller/model/node/type/temperature"
 	"os"
 	"os/signal"
 
