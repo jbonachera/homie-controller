@@ -1,8 +1,11 @@
 package github_releases
 
 import (
+	"bytes"
 	"github.com/jbonachera/homie-controller/log"
 	"github.com/jbonachera/homie-controller/ota"
+	"io"
+	"strings"
 )
 
 type repoInfo struct {
@@ -13,6 +16,7 @@ type repoInfo struct {
 type GhOTAProvider struct {
 	id              string
 	releaseProvider ghClient
+	version         map[string]*firmware
 }
 
 func (c *GhOTAProvider) Id() string {
@@ -29,14 +33,63 @@ func getGithubInfo(firmware string) repoInfo {
 	return infos[firmware]
 }
 
+func (c *GhOTAProvider) GetVersion(version string) ota.Firmware {
+	repoInfo := getGithubInfo(c.Id())
+	if wantedFirmware, ok := c.version[version]; ok {
+		return wantedFirmware
+	} else {
+		releases, err := c.releaseProvider.GetReleaseByTag(repoInfo.owner, repoInfo.repo, version)
+		if err != nil {
+			log.Error("could not fetch releases from github: " + err.Error())
+			return &firmware{id: c.Id(), version: "unknown", repo: repoInfo, checksum: "", payload: []byte{}}
+		}
+		var checksum string
+		var payload []byte
+		for _, asset := range releases.Assets {
+			if asset.GetName() == repoInfo.repo+".md5" {
+				log.Debug("will fetch asset " + asset.GetName())
+				reader, err := c.releaseProvider.DownloadReleaseAsset(repoInfo.owner, repoInfo.repo, asset.GetID())
+				if err != nil {
+					log.Error(err.Error())
+				} else if reader != nil {
+					checksum = fetchFromReader(reader, asset.GetSize()).String()
+					checksum = strings.Split(checksum, " ")[0]
+				}
+			} else if asset.GetName() == repoInfo.repo {
+				log.Debug("will fetch asset " + asset.GetName())
+				reader, err := c.releaseProvider.DownloadReleaseAsset(repoInfo.owner, repoInfo.repo, asset.GetID())
+				if err != nil {
+					log.Error(err.Error())
+				} else if reader != nil {
+					payload = fetchFromReader(reader, asset.GetSize()).Bytes()
+				}
+			}
+		}
+		c.version[releases.GetTagName()] = &firmware{id: c.Id(), version: releases.GetTagName(), repo: repoInfo, checksum: checksum, payload: payload}
+
+		return c.version[releases.GetTagName()]
+	}
+}
+
+
 func (c *GhOTAProvider) GetLatest() ota.Firmware {
 	repoInfo := getGithubInfo(c.Id())
 	releases, err := c.releaseProvider.GetLatestRelease(repoInfo.owner, repoInfo.repo)
 	if err != nil {
 		log.Error("could not fetch releases from github: " + err.Error())
+		return &firmware{id: c.Id(), version: "unknown", repo: repoInfo, checksum: "", payload: []byte{}}
 	} else {
 		log.Debug("Found release: latest is " + releases.GetTagName())
 
 	}
-	return &firmware{id: c.Id(), version: releases.GetTagName(), repo: repoInfo}
+	return c.GetVersion(releases.GetTagName())
+
+}
+
+func fetchFromReader(reader io.ReadCloser, size int) *bytes.Buffer {
+	buf := new(bytes.Buffer)
+	buf.Grow(size)
+	buf.ReadFrom(reader)
+	reader.Close()
+	return buf
 }

@@ -1,9 +1,11 @@
 package github_releases
 
 type firmware struct {
-	id      string
-	version string
-	repo    repoInfo
+	id       string
+	version  string
+	checksum string
+	repo     repoInfo
+	payload  []byte
 }
 
 func (f *firmware) Name() string {
@@ -15,9 +17,9 @@ func (f *firmware) Version() string {
 }
 
 func (f *firmware) Checksum() string {
-	return ""
+	return f.checksum
 }
 
 func (f *firmware) Payload() []byte {
-	return []byte{}
+	return f.payload
 }

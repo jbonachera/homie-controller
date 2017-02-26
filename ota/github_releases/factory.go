@@ -17,5 +17,5 @@ func (f *Factory) Id() string {
 }
 
 func (f *Factory) New(name string) ota.FirmwareProvider {
-	return &GhOTAProvider{id: name, releaseProvider: GetDefaultGHClient()}
+	return &GhOTAProvider{id: name, releaseProvider: GetDefaultGHClient(), version:map[string]*firmware{}}
 }
