@@ -32,10 +32,12 @@ func Start(brokerHost string, client_id string, mqttBaseTopic string) {
 	}
 }
 
-func mqttPublish(topic string, qos byte, retained bool, payload string) {
+func mqttPublish(topic string, qos byte, retained bool, payload interface{}) {
 	broker.c.Publish(topic, qos, retained, payload)
 }
-
+func PublishFile(topic string, payload interface{}) {
+	mqttPublish(topic, 1, false, payload)
+}
 func PublishMessage(message homieMessage.HomieMessage) {
 	mqttPublish(message.Topic, 1, false, message.Payload)
 }
