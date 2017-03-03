@@ -10,6 +10,7 @@ import (
 	"github.com/jbonachera/homie-controller/ota"
 	"strconv"
 	"strings"
+	"time"
 )
 
 type esp8266 struct {
@@ -23,12 +24,13 @@ type esp8266 struct {
 	MessagePublisher messagePublisherHandler `json:"-"`
 	ActionHandlers   map[string]func()       `json:"-"`
 	OTARunning       bool                    `json:"-"`
+	OTALastUpdate    time.Time               `json:"-"`
 }
 
 type messagePublisherHandler func(message homieMessage.HomieMessage)
 
 func New(parent string, baseTopic string) *esp8266 {
-	esp := &esp8266{parent, "", "", false, []string{}, config{}, baseTopic, messaging.PublishMessage, map[string]func(){}, false}
+	esp := &esp8266{parent, "", "", false, []string{}, config{}, baseTopic, messaging.PublishMessage, map[string]func(){}, false, time.Time{}}
 	actionHandlers := map[string]func(){
 		"reset":   esp.Reset,
 		"upgrade": esp.StartOTA,
@@ -128,54 +130,97 @@ func (e *esp8266) MessageHandler(message homieMessage.HomieMessage) {
 	e.Set(propertyName, message.Payload)
 }
 
+func (e *esp8266) checkOTATimeout() {
+	for e.OTARunning {
+		time.Sleep(5 * time.Second)
+		log.Debug("checking if OTA timed out...")
+		if time.Since(e.OTALastUpdate) > 5*time.Second {
+			log.Error("OTA timeout")
+			e.AbortOTA()
+			break
+		}
+	}
+}
+
+func (e *esp8266) AbortOTA() {
+	log.Error("aborting OTA")
+	messaging.DelSubscription(e.baseTopic + e.parentId + "/$implementation/ota/status")
+	e.OTARunning = false
+}
+
 func (e *esp8266) StartOTA() {
 	if e.OTARunning {
 		log.Error("OTA is already running")
 		return
 	}
+	e.OTARunning = true
+	e.OTALastUpdate = time.Now()
+	go e.checkOTATimeout()
 	parentDevice, err := device.Get(e.parentId)
 	if err != nil {
-		log.Error("parent device not found. not starting OTA.")
+		log.Error("parent device not found.")
+		e.AbortOTA()
 		return
 	}
 	firmware, err := ota.LastFirmware(parentDevice.Fw.Name)
 	if err != nil {
 		log.Error("error while fetching firmware: " + err.Error())
+		e.AbortOTA()
 		return
 	}
 	if ota.IsVersionGreater(parentDevice.Fw.Version, firmware.Version()) {
-		log.Error("local version is more up-to-date than remote version. aborting.")
+		log.Error("local version is more up-to-date than remote version.")
+		e.AbortOTA()
 		return
 	}
 
 	messaging.AddHandler(e.baseTopic+e.parentId+"/$implementation/ota/status", func(message homieMessage.HomieMessage) {
-		defer messaging.DelSubscription(e.baseTopic + e.parentId + "/$implementation/ota/status")
-		switch message.Payload {
+		parts := strings.SplitN(message.Payload, " ", 2)
+		statusCode, payload := parts[0], ""
+		if len(parts) > 1 {
+			payload = parts[1]
+		}
+		e.OTALastUpdate = time.Now()
+		switch statusCode {
+		case "200":
+			{
+				log.Info("OTA successfull")
+				messaging.DelSubscription(e.baseTopic + e.parentId + "/$implementation/ota/status")
+				e.OTARunning = false
+			}
 		case "403":
 			{
 				log.Error("OTA is disabled on device")
-				e.OTARunning = false
+				e.AbortOTA()
 			}
 		case "400":
 			{
-				log.Error("device " + e.parentId + "said the checksum was malformed. aborting OTA")
-				e.OTARunning = false
+				log.Error("device " + e.parentId + "said the checksum was malformed.")
+				e.AbortOTA()
 			}
 		case "202":
 			{
-				log.Debug("device accepted to start OTA")
+				log.Info("device " + e.parentId + " accepted to start OTA")
+				firmwareTopic := e.baseTopic + e.parentId + "/$implementation/ota/firmware"
+				log.Debug("publishing firmware to " + firmwareTopic)
+				messaging.PublishFile(firmwareTopic, firmware.Payload())
+
 			}
 		case "304":
 			{
 				log.Debug("device is already up to date")
-				e.OTARunning = false
+				e.AbortOTA()
+			}
+		case "206":
+			{
+				log.Debug("device is receveing firmware: " + payload)
 			}
 		}
 	})
 	message, err := homieMessage.New(e.parentId, e.baseTopic, "$implementation/ota/checksum", firmware.Checksum())
 	if err != nil {
 		log.Error("error while creating message for device: " + err.Error())
-		messaging.DelSubscription(e.baseTopic + e.parentId + "/$implementation/ota/status")
+		e.AbortOTA()
 	} else {
 		messaging.PublishMessage(message)
 	}
