@@ -204,7 +204,7 @@ func (e *esp8266) StartOTA() {
 			}
 		case "206":
 			{
-				log.Info("device is receveing firmware: " + payload)
+				log.Debug("device is receveing firmware: " + payload)
 			}
 		}
 	})
