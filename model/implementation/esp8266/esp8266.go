@@ -84,31 +84,10 @@ func (e *esp8266) Reset() {
 	e.MessagePublisher(message)
 }
 
-func (e *esp8266) checkOTA() {
-	log.Debug("checking if device " + e.parentId + " is up to date")
-	parentDevice, err := device.Get(e.parentId)
-	if err != nil {
-		log.Error("device " + e.parentId + " not found")
-	} else if upToDate, err := ota.IsUpToDate(parentDevice.Fw.Name, parentDevice.Fw.Version); err != nil {
-		log.Debug("device " + e.parentId + " is running a firmware (" + parentDevice.Fw.Name + ") which is not managed by OTA")
-	} else {
-		if !upToDate {
-			log.Info("device " + e.parentId + " is outdated!")
-			parentDevice.Fw.UpgradeAvailable = true
-		} else {
-			parentDevice.Fw.UpgradeAvailable = false
-		}
-
-	}
-}
-
 func (e *esp8266) Set(property string, value string) {
 	switch property {
 	case "version":
 		e.Version = value
-		if e.Ota {
-			e.checkOTA()
-		}
 	case "config":
 		if err := json.Unmarshal([]byte(value), &e.Config); err != nil {
 			log.Error("error while parsing device config: " + err.Error())
@@ -117,9 +96,6 @@ func (e *esp8266) Set(property string, value string) {
 		boolValue, err := strconv.ParseBool(value)
 		if err == nil {
 			e.Ota = boolValue
-			if e.Ota && e.Version != "" {
-				e.checkOTA()
-			}
 		}
 	}
 }

@@ -12,6 +12,7 @@ import (
 	"github.com/jbonachera/homie-controller/messaging"
 	"github.com/jbonachera/homie-controller/model/implementation"
 	"github.com/jbonachera/homie-controller/model/search"
+	"github.com/jbonachera/homie-controller/ota"
 )
 
 type DeviceStats struct {
@@ -70,10 +71,20 @@ func (d *Device) Set(prop string, value string) {
 		d.Stats.Interval, _ = strconv.Atoi(value)
 	case "$fw/name":
 		d.Fw.Name = value
+		d.checkUpdate()
 	case "$fw/version":
 		d.Fw.Version = value
+		d.checkUpdate()
 	case "$fw/checksum":
 		d.Fw.Checksum = value
+	}
+}
+
+func (d *Device) checkUpdate() {
+	if d.Fw.Name != "" && d.Fw.Version != "" {
+		if updateToDate, err := ota.IsUpToDate(d.Fw.Name, d.Fw.Version); err == nil {
+			d.Fw.UpgradeAvailable = !updateToDate
+		}
 	}
 }
 
