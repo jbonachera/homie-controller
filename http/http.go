@@ -7,6 +7,7 @@ import (
 	"github.com/jbonachera/homie-controller/model/device"
 	"github.com/jbonachera/homie-controller/model/search"
 	"github.com/jbonachera/homie-controller/ota"
+	"github.com/rs/cors"
 	"net/http"
 )
 
@@ -25,10 +26,12 @@ func Start() {
 	router.Get("/firmware/:firmware", GetFirmwareHandler)
 	router.Get("/firmware/:firmware/download", DownloadFirmwareHandler)
 	log.Info("starting HTTP API")
-	log.Error(http.ListenAndServe(":8989", router).Error())
+	handler := cors.Default().Handler(router)
+	log.Error(http.ListenAndServe(":8989", handler).Error())
 }
 
 func GetDeviceHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
 	name := vestigo.Param(r, "name")
 	myDevice, err := device.Get(name)
 	if err != nil {
@@ -39,6 +42,7 @@ func GetDeviceHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func GetFirmwareHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
 	name := vestigo.Param(r, "firmware")
 	firmware, err := ota.LastFirmware(name)
 	if err != nil {
@@ -55,6 +59,7 @@ func GetFirmwareHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func DownloadFirmwareHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
 	name := vestigo.Param(r, "firmware")
 	firmware, err := ota.LastFirmware(name)
 	if err != nil {
@@ -66,10 +71,13 @@ func DownloadFirmwareHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func ListDevicesHandler(w http.ResponseWriter, _ *http.Request) {
-	json.NewEncoder(w).Encode(device.List())
+
+	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(200)
+	json.NewEncoder(w).Encode(device.List())
 }
 func PostImplementationActionHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
 	name := vestigo.Param(r, "name")
 	myDevice, err := device.Get(name)
 	if err != nil {
@@ -89,6 +97,7 @@ func PostImplementationActionHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func SearchDevicesHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
 	expand := r.URL.Query().Get("expand") == "true"
 	decoder := json.NewDecoder(r.Body)
 	var opts search.Options
@@ -98,6 +107,7 @@ func SearchDevicesHandler(w http.ResponseWriter, r *http.Request) {
 		json.NewEncoder(w).Encode(statusMessage{Error: true, Msg: err.Error()})
 		return
 	}
+
 	devices := device.Search(opts)
 	if expand {
 		json.NewEncoder(w).Encode(devices)
