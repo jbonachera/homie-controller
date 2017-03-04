@@ -13,6 +13,12 @@ import (
 	"time"
 )
 
+const (
+	OTANotRunning        = iota
+	OTARequested         = iota
+	OTAReceivingFirmware = iota
+)
+
 type esp8266 struct {
 	parentId         string
 	Name             string
@@ -24,13 +30,14 @@ type esp8266 struct {
 	MessagePublisher messagePublisherHandler `json:"-"`
 	ActionHandlers   map[string]func()       `json:"-"`
 	OTARunning       bool                    `json:"-"`
+	OTAStep          int                     `json:"-"`
 	OTALastUpdate    time.Time               `json:"-"`
 }
 
 type messagePublisherHandler func(message homieMessage.HomieMessage)
 
 func New(parent string, baseTopic string) *esp8266 {
-	esp := &esp8266{parent, "", "", false, []string{}, config{}, baseTopic, messaging.PublishMessage, map[string]func(){}, false, time.Time{}}
+	esp := &esp8266{parent, "", "", false, []string{}, config{}, baseTopic, messaging.PublishMessage, map[string]func(){}, false, OTANotRunning, time.Time{}}
 	actionHandlers := map[string]func(){
 		"reset":   esp.Reset,
 		"upgrade": esp.StartOTA,
@@ -146,6 +153,7 @@ func (e *esp8266) AbortOTA() {
 	log.Error("aborting OTA")
 	messaging.DelSubscription(e.baseTopic + e.parentId + "/$implementation/ota/status")
 	e.OTARunning = false
+	e.OTAStep = OTANotRunning
 }
 
 func (e *esp8266) StartOTA() {
@@ -184,9 +192,12 @@ func (e *esp8266) StartOTA() {
 		switch statusCode {
 		case "200":
 			{
-				log.Info("OTA successfull")
-				messaging.DelSubscription(e.baseTopic + e.parentId + "/$implementation/ota/status")
-				e.OTARunning = false
+				if e.OTAStep >= OTAReceivingFirmware {
+					log.Info("OTA successfull")
+					messaging.DelSubscription(e.baseTopic + e.parentId + "/$implementation/ota/status")
+					e.OTARunning = false
+					e.OTAStep = OTANotRunning
+				}
 			}
 		case "403":
 			{
@@ -200,10 +211,13 @@ func (e *esp8266) StartOTA() {
 			}
 		case "202":
 			{
-				log.Info("device " + e.parentId + " accepted to start OTA")
-				firmwareTopic := e.baseTopic + e.parentId + "/$implementation/ota/firmware"
-				log.Debug("publishing firmware to " + firmwareTopic)
-				messaging.PublishFile(firmwareTopic, firmware.Payload())
+				if e.OTAStep >= OTARequested {
+					log.Info("device " + e.parentId + " accepted to start OTA")
+					firmwareTopic := e.baseTopic + e.parentId + "/$implementation/ota/firmware"
+					log.Debug("publishing firmware to " + firmwareTopic)
+					e.OTAStep = OTAReceivingFirmware
+					messaging.PublishFile(firmwareTopic, firmware.Payload())
+				}
 
 			}
 		case "304":
@@ -213,7 +227,7 @@ func (e *esp8266) StartOTA() {
 			}
 		case "206":
 			{
-				log.Debug("device is receveing firmware: " + payload)
+				log.Info("device is receveing firmware: " + payload)
 			}
 		}
 	})
@@ -222,6 +236,7 @@ func (e *esp8266) StartOTA() {
 		log.Error("error while creating message for device: " + err.Error())
 		e.AbortOTA()
 	} else {
+		e.OTAStep = OTARequested
 		messaging.PublishMessage(message)
 	}
 }
