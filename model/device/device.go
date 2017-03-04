@@ -163,6 +163,12 @@ func (d *Device) Match(opts search.Options) bool {
 			match = type_matched
 		}
 	}
-
+	if term, ok := opts.Terms["outdated"]; ok {
+		if d.Fw.UpgradeAvailable == (term == "true") {
+			match = true
+		} else {
+			return false
+		}
+	}
 	return match
 }
