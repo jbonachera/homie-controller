@@ -8,6 +8,7 @@ import (
 	"github.com/jbonachera/homie-controller/model/device"
 	"github.com/jbonachera/homie-controller/model/homieMessage"
 	"github.com/jbonachera/homie-controller/ota"
+	"sort"
 	"strconv"
 	"strings"
 	"time"
@@ -52,6 +53,7 @@ func New(parent string, baseTopic string) *esp8266 {
 	esp.Name = esp.GetName()
 	esp.ActionHandlers = actionHandlers
 	esp.Actions = actions
+	sort.Slice(esp.Actions, func(i, j int) bool { return i < j })
 	return esp
 }
 
