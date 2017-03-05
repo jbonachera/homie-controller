@@ -52,7 +52,7 @@ func PublishPoint(metric *influxdb.Point) {
 		if err != nil {
 			log.Error("Error: " + err.Error())
 		} else {
-			log.Debug("metrics sent to influxdb server")
+			log.Debug("metrics sent to influxdb server: " + metric.Name())
 		}
 	} else {
 		log.Info("would have send metric to InfluxDB: " + metric.Name())
