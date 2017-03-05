@@ -70,11 +70,20 @@ func DownloadFirmwareHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func ListDevicesHandler(w http.ResponseWriter, _ *http.Request) {
-
+func ListDevicesHandler(w http.ResponseWriter, r *http.Request) {
+	expand := r.URL.Query().Get("expand") == "true"
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(200)
-	json.NewEncoder(w).Encode(device.List())
+	if expand {
+		devicesMap := device.GetAll()
+		var deviceList []*device.Device
+		for _, dev := range devicesMap {
+			deviceList = append(deviceList, dev)
+		}
+		json.NewEncoder(w).Encode(deviceList)
+	} else {
+		json.NewEncoder(w).Encode(device.List())
+	}
 }
 func PostImplementationActionHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
