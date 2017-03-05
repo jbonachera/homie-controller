@@ -9,6 +9,7 @@ import (
 	"github.com/jbonachera/homie-controller/ota"
 	"github.com/rs/cors"
 	"net/http"
+	"sort"
 )
 
 var router = vestigo.NewRouter()
@@ -80,6 +81,7 @@ func ListDevicesHandler(w http.ResponseWriter, r *http.Request) {
 		for _, dev := range devicesMap {
 			deviceList = append(deviceList, dev)
 		}
+		sort.Slice(deviceList, func(i, j int) bool { return deviceList[i].Id < deviceList[j].Id })
 		json.NewEncoder(w).Encode(deviceList)
 	} else {
 		json.NewEncoder(w).Encode(device.List())
