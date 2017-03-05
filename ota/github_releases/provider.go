@@ -29,9 +29,17 @@ func getGithubInfo(firmware string) repoInfo {
 			owner: "jbonachera",
 			repo:  "homie-intercom",
 		},
+		"vx-temperature-sensor": {
+			owner: "jbonachera",
+			repo:  "homie-sensor",
+		},
 		"temperature-sensor": {
 			owner: "jbonachera",
 			repo:  "homie-sensor",
+		},
+		"mock": {
+			owner: "mock",
+			repo:  "mock",
 		},
 	}
 	return infos[firmware]
