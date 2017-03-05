@@ -29,6 +29,7 @@ func main() {
 	signal.Notify(sigc, os.Interrupt, os.Kill)
 
 	ota.AddFirmware("intercom", "github_release")
+	ota.AddFirmware("vx-temperature-sensor", "github_release")
 	ota.AddFirmware("temperature-sensor", "github_release")
 
 	broker := config.Get("mqtt_broker")
