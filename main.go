@@ -19,7 +19,7 @@ import (
 	"github.com/jbonachera/homie-controller/ota"
 )
 
-var VERSION = "0.1"
+var VERSION = "0.0.2"
 var baseTopic string = "devices/"
 
 func main() {
