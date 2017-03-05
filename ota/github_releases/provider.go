@@ -25,9 +25,13 @@ func (c *GhOTAProvider) Id() string {
 
 func getGithubInfo(firmware string) repoInfo {
 	infos := map[string]repoInfo{
-		"vx-intercom-sensor": {
+		"intercom": {
 			owner: "jbonachera",
 			repo:  "homie-intercom",
+		},
+		"temperature-sensor": {
+			owner: "jbonachera",
+			repo:  "homie-sensor",
 		},
 	}
 	return infos[firmware]
@@ -40,7 +44,7 @@ func (c *GhOTAProvider) GetVersion(version string) ota.Firmware {
 	} else {
 		releases, err := c.releaseProvider.GetReleaseByTag(repoInfo.owner, repoInfo.repo, version)
 		if err != nil {
-			log.Error("could not fetch releases from github: " + err.Error())
+			log.Error("could not fetch releases from github for firmware " + c.Id() + ": " + err.Error())
 			return &firmware{id: c.Id(), version: "unknown", repo: repoInfo, checksum: "", payload: []byte{}}
 		}
 		var checksum string
@@ -71,12 +75,11 @@ func (c *GhOTAProvider) GetVersion(version string) ota.Firmware {
 	}
 }
 
-
 func (c *GhOTAProvider) GetLatest() ota.Firmware {
 	repoInfo := getGithubInfo(c.Id())
 	releases, err := c.releaseProvider.GetLatestRelease(repoInfo.owner, repoInfo.repo)
 	if err != nil {
-		log.Error("could not fetch releases from github: " + err.Error())
+		log.Error("could not fetch releases from github for firmware " + c.Id() + ": " + err.Error())
 		return &firmware{id: c.Id(), version: "unknown", repo: repoInfo, checksum: "", payload: []byte{}}
 	} else {
 		log.Debug("Found release: latest is " + releases.GetTagName())
