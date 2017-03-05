@@ -53,7 +53,7 @@ func New(parent string, baseTopic string) *esp8266 {
 	esp.Name = esp.GetName()
 	esp.ActionHandlers = actionHandlers
 	esp.Actions = actions
-	sort.Slice(esp.Actions, func(i, j int) bool { return i < j })
+	sort.Slice(esp.Actions, func(i, j int) bool { return esp.Actions[i] < esp.Actions[j] })
 	return esp
 }
 
