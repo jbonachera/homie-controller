@@ -16,8 +16,31 @@ type messagingBroker struct {
 }
 
 var broker messagingBroker
+var publishChan chan mqttMessage
+var subChan chan subMessage
+var unsubChan chan string
+var done chan bool
+var routines int
 
-func Start(brokerHost string, client_id string, mqttBaseTopic string) {
+type mqttMessage struct {
+	Topic   string
+	Qos     byte
+	Retain  bool
+	Payload interface{}
+}
+
+type subMessage struct {
+	Topic    string
+	Qos      byte
+	Callback MQTT.MessageHandler
+}
+
+func Start(brokerHost string, client_id string, mqttBaseTopic string, kill chan bool) {
+	publishChan = make(chan mqttMessage, 10)
+	subChan = make(chan subMessage, 10)
+	unsubChan = make(chan string, 10)
+	routines = 0
+
 	opts := MQTT.NewClientOptions().AddBroker("tcp://" + brokerHost + ":1883")
 	opts.SetClientID(client_id)
 	broker = messagingBroker{MQTT.NewClient(opts), mqttBaseTopic, false}
@@ -30,35 +53,88 @@ func Start(brokerHost string, client_id string, mqttBaseTopic string) {
 			broker.connected = true
 		}
 	}
+	go unqueuePublish()
+	routines++
+	go unqueueSub()
+	routines++
+	go unqueueUnsub()
+	routines++
+	select {
+	case <-kill:
+		for i := 0; i < routines; i++ {
+			done <- true
+		}
+	}
+	log.Debug("messaging process finished")
 }
 
-func mqttPublish(topic string, qos byte, retained bool, payload interface{}) {
-	broker.c.Publish(topic, qos, retained, payload)
+func mqttPublish(msg mqttMessage) {
+	publishChan <- msg
 }
 func PublishFile(topic string, payload interface{}) {
-	mqttPublish(topic, 1, false, payload)
+	mqttPublish(mqttMessage{topic, 1, false, payload})
 }
 func PublishMessage(message homieMessage.HomieMessage) {
-	mqttPublish(message.Topic, 1, false, message.Payload)
+	mqttPublish(mqttMessage{message.Topic, 1, false, message.Payload})
 }
 func PublishState(message homieMessage.HomieMessage) {
-	mqttPublish(message.Topic, 1, true, message.Payload)
+	mqttPublish(mqttMessage{message.Topic, 1, true, message.Payload})
+}
+
+func unqueueSub() {
+	log.Debug("Starting MQTT subscribing queue")
+	run := true
+	for run {
+		select {
+		case msg := <-subChan:
+			broker.c.Subscribe(msg.Topic, msg.Qos, msg.Callback)
+		case <-done:
+			run = false
+			break
+		}
+	}
+	log.Debug("Finished MQTT subscribing queue")
+}
+
+func unqueueUnsub() {
+	log.Debug("Starting MQTT unsubscribing queue")
+	run := true
+	for run {
+		select {
+		case msg := <-unsubChan:
+			broker.c.Unsubscribe(msg)
+		case <-done:
+			run = false
+			break
+		}
+	}
+	log.Debug("Finished MQTT unsubscribing queue")
+
+}
+
+func unqueuePublish() {
+	log.Debug("Starting MQTT publishing queue")
+	run := true
+	for run {
+		select {
+		case msg := <-publishChan:
+			log.Info("publishing to " + msg.Topic)
+			broker.c.Publish(msg.Topic, msg.Qos, msg.Retain, msg.Payload)
+		case <-done:
+			run = false
+			break
+		}
+	}
+	log.Debug("Finished MQTT publishing queue")
+
 }
 func DelSubscription(topic string) {
-	for !broker.connected {
-		log.Info("waiting for MQTT connection to start..")
-		time.Sleep(2 * time.Second)
-	}
 	log.Debug("Unsubscribing to " + topic)
-	broker.c.Unsubscribe(topic)
+	unsubChan <- topic
 }
 func AddSubscription(topic string, qos byte, callback MQTT.MessageHandler) {
-	for !broker.connected {
-		log.Info("waiting for MQTT connection to start..")
-		time.Sleep(2 * time.Second)
-	}
 	log.Debug("Subscribing to " + topic)
-	broker.c.Subscribe(topic, qos, callback)
+	subChan <- subMessage{Topic: topic, Qos: qos, Callback: callback}
 }
 
 func AddHandler(topic string, callback CallbackHandler) {
