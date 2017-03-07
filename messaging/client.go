@@ -35,10 +35,17 @@ type subMessage struct {
 	Callback MQTT.MessageHandler
 }
 
-func Start(brokerHost string, client_id string, mqttBaseTopic string, kill chan bool) {
-	publishChan = make(chan mqttMessage, 10)
-	subChan = make(chan subMessage, 10)
-	unsubChan = make(chan string, 10)
+func Stop() {
+	for i := 0; i < routines; i++ {
+		done <- true
+	}
+}
+
+func Start(brokerHost string, client_id string, mqttBaseTopic string) {
+	publishChan = make(chan mqttMessage, 20)
+	subChan = make(chan subMessage, 20)
+	unsubChan = make(chan string, 20)
+	done = make(chan bool, 1)
 	routines = 0
 
 	opts := MQTT.NewClientOptions().AddBroker("tcp://" + brokerHost + ":1883")
@@ -59,13 +66,9 @@ func Start(brokerHost string, client_id string, mqttBaseTopic string, kill chan 
 	routines++
 	go unqueueUnsub()
 	routines++
-	select {
-	case <-kill:
-		for i := 0; i < routines; i++ {
-			done <- true
-		}
-	}
-	log.Debug("messaging process finished")
+
+	routines++
+
 }
 
 func mqttPublish(msg mqttMessage) {
