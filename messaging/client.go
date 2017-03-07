@@ -121,7 +121,7 @@ func unqueuePublish() {
 	for run {
 		select {
 		case msg := <-publishChan:
-			log.Info("publishing to " + msg.Topic)
+			log.Debug("publishing to " + msg.Topic)
 			broker.c.Publish(msg.Topic, msg.Qos, msg.Retain, msg.Payload)
 		case <-done:
 			run = false
