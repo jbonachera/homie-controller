@@ -1,6 +1,8 @@
 package github_releases
 
 import (
+	"github.com/jbonachera/homie-controller/messaging"
+	"github.com/jbonachera/homie-controller/model/homieMessage"
 	"github.com/jbonachera/homie-controller/ota"
 )
 
@@ -17,5 +19,7 @@ func (f *Factory) Id() string {
 }
 
 func (f *Factory) New(name string) ota.FirmwareProvider {
-	return &GhOTAProvider{id: name, releaseProvider: GetDefaultGHClient(), version:map[string]*firmware{}}
+	messaging.PublishState(homieMessage.HomieMessage{Topic: "devices/controller/" + name + "/provider", Payload: f.Id()})
+	messaging.PublishState(homieMessage.HomieMessage{Topic: "devices/controller/" + name + "/$type", Payload: "firmwareProvider"})
+	return &GhOTAProvider{id: name, releaseProvider: GetDefaultGHClient(), version: map[string]*firmware{}}
 }

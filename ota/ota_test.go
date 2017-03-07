@@ -57,15 +57,14 @@ func (m *MockFactory) New(name string, brand string) FirmwareProvider {
 
 func TestRegisterFactory(t *testing.T) {
 	factory := &MockFactory{id: "mockFactory"}
-	RegisterFactory("mock", "mockBrand", factory)
-	if factories["mockBrand"]["mock"].Id() != "mockFactory" {
+	RegisterFactory("mock", factory)
+	if factories["mock"].Id() != "mockFactory" {
 		t.Error("could not register a new factory")
 	}
 }
 
 func TestAddFirmware(t *testing.T) {
-	factories["mockBrand"] = map[string]FirmwareFactory{}
-	factories["mockBrand"]["mock"] = &MockFactory{id: "mockFactory"}
+	factories["mock"] = &MockFactory{id: "mockFactory"}
 	AddFirmware("mockFirmware", "mockBrand", "mock")
 	if _, ok := firmwares["mockBrand"]["mockFirmware"]; !ok {
 		t.Error("firmware was not registered")

@@ -3,6 +3,8 @@ package github_releases
 import (
 	"bytes"
 	"github.com/jbonachera/homie-controller/log"
+	"github.com/jbonachera/homie-controller/messaging"
+	"github.com/jbonachera/homie-controller/model/homieMessage"
 	"github.com/jbonachera/homie-controller/ota"
 	"io"
 	"strings"
@@ -78,7 +80,12 @@ func (c *GhOTAProvider) GetVersion(version string) ota.Firmware {
 			}
 		}
 		c.version[releases.GetTagName()] = &firmware{id: c.Id(), version: releases.GetTagName(), repo: repoInfo, checksum: checksum, payload: payload}
-
+		c.version[releases.GetTagName()].Announce()
+		versionString := "unit,provider"
+		for version := range c.version {
+			versionString = versionString + "," + version
+		}
+		messaging.PublishState(homieMessage.HomieMessage{Topic: "devices/controller/" + c.Id() + "/$properties", Payload: versionString})
 		return c.version[releases.GetTagName()]
 	}
 }
@@ -93,7 +100,9 @@ func (c *GhOTAProvider) GetLatest() ota.Firmware {
 		log.Debug("Found release: latest is " + releases.GetTagName())
 
 	}
-	return c.GetVersion(releases.GetTagName())
+	fw := c.GetVersion(releases.GetTagName())
+	messaging.PublishState(homieMessage.HomieMessage{Topic: "devices/controller/" + fw.Name() + "/$latest", Payload: fw.Version()})
+	return fw
 
 }
 
