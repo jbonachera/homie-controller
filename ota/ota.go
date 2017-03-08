@@ -44,6 +44,7 @@ func RegisterFactory(name string, provider FirmwareFactory) {
 func AddFirmware(name string, provider string) {
 	if firmware, present := factories[provider]; present {
 		firmwares[name] = firmware.New(name)
+		go firmwares[name].GetLatest()
 	}
 }
 
@@ -94,7 +95,6 @@ func Start() {
 	messaging.PublishState(homieMessage.HomieMessage{Topic: "devices/controller/$online", Payload: "true"})
 	messaging.PublishState(homieMessage.HomieMessage{Topic: "devices/controller/$name", Payload: "controller"})
 	messaging.PublishState(homieMessage.HomieMessage{Topic: "devices/controller/$homie", Payload: "2.0.0"})
-
 	go func() {
 		run := true
 		for run {

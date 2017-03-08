@@ -21,5 +21,7 @@ func (f *Factory) Id() string {
 func (f *Factory) New(name string) ota.FirmwareProvider {
 	messaging.PublishState(homieMessage.HomieMessage{Topic: "devices/controller/" + name + "/provider", Payload: f.Id()})
 	messaging.PublishState(homieMessage.HomieMessage{Topic: "devices/controller/" + name + "/$type", Payload: "firmwareProvider"})
+	messaging.PublishState(homieMessage.HomieMessage{Topic: "devices/controller/" + name + "/unit", Payload: "md5"})
+
 	return &GhOTAProvider{id: name, releaseProvider: GetDefaultGHClient(), version: map[string]*firmware{}}
 }

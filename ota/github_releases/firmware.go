@@ -29,8 +29,8 @@ func (f *firmware) Payload() []byte {
 	return f.payload
 }
 func (f *firmware) Announce() {
-	nodePath := "devices/controller/" + f.Name() + "/"
-	implemPath := "devices/controller/$implementation/firmware/" + f.Name() + "/"
+	nodePath := "devices/controller/" + f.Name()
+	implemPath := "devices/controller/$implementation/firmware/" + f.Name()
 	messaging.PublishState(homieMessage.HomieMessage{Topic: nodePath + "/" + f.Version(), Payload: f.Checksum()})
 	messaging.AddHandler(nodePath+"/"+f.Version()+"/get", func(message homieMessage.HomieMessage) {
 		if message.Payload == "true" {

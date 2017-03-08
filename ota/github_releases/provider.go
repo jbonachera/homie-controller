@@ -81,11 +81,17 @@ func (c *GhOTAProvider) GetVersion(version string) ota.Firmware {
 		}
 		c.version[releases.GetTagName()] = &firmware{id: c.Id(), version: releases.GetTagName(), repo: repoInfo, checksum: checksum, payload: payload}
 		c.version[releases.GetTagName()].Announce()
-		versionString := "unit,provider"
+		versionString := ""
+		propertiesString := "versions,unit,provider,latest"
 		for version := range c.version {
-			versionString = versionString + "," + version
+			if len(versionString) > 0 {
+				versionString = versionString + "," + version
+			} else {
+				versionString = version
+			}
 		}
-		messaging.PublishState(homieMessage.HomieMessage{Topic: "devices/controller/" + c.Id() + "/$properties", Payload: versionString})
+		messaging.PublishState(homieMessage.HomieMessage{Topic: "devices/controller/" + c.Id() + "/versions", Payload: versionString})
+		messaging.PublishState(homieMessage.HomieMessage{Topic: "devices/controller/" + c.Id() + "/$properties", Payload: propertiesString + "," + versionString})
 		return c.version[releases.GetTagName()]
 	}
 }
@@ -101,7 +107,7 @@ func (c *GhOTAProvider) GetLatest() ota.Firmware {
 
 	}
 	fw := c.GetVersion(releases.GetTagName())
-	messaging.PublishState(homieMessage.HomieMessage{Topic: "devices/controller/" + fw.Name() + "/$latest", Payload: fw.Version()})
+	messaging.PublishState(homieMessage.HomieMessage{Topic: "devices/controller/" + fw.Name() + "/latest", Payload: fw.Version()})
 	return fw
 
 }
