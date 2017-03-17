@@ -6,6 +6,7 @@ import (
 	"github.com/jbonachera/homie-controller/messaging"
 	"github.com/jbonachera/homie-controller/model/homieMessage"
 	"github.com/jbonachera/homie-controller/ota"
+	"github.com/jbonachera/homie-controller/ota/persistentCache"
 	"io"
 	"strings"
 )
@@ -61,22 +62,45 @@ func (c *GhOTAProvider) GetVersion(version string) ota.Firmware {
 		var payload []byte
 		for _, asset := range releases.Assets {
 			if asset.GetName() == repoInfo.repo+".md5" {
-				log.Debug("will fetch asset " + asset.GetName())
-				reader, err := c.releaseProvider.DownloadReleaseAsset(repoInfo.owner, repoInfo.repo, asset.GetID())
-				if err != nil {
-					log.Error(err.Error())
-				} else if reader != nil {
-					checksum = fetchFromReader(reader, asset.GetSize()).String()
-					checksum = strings.Split(checksum, " ")[0]
+				key := c.Id() + "-" + version + "-" + asset.GetName()
+
+				log.Debug("will fetch asset " + key)
+				checkumBuffer, cacheError := persistentCache.Get(key)
+				if cacheError != nil {
+					log.Debug(cacheError.Error())
+					reader, err := c.releaseProvider.DownloadReleaseAsset(repoInfo.owner, repoInfo.repo, asset.GetID())
+					if err != nil {
+						log.Error(err.Error())
+					} else {
+						if reader != nil {
+							checkumBuffer = fetchFromReader(reader, asset.GetSize())
+							if cacheError = persistentCache.Set(key, checkumBuffer); cacheError != nil {
+								log.Error(cacheError.Error())
+							}
+						}
+					}
 				}
+				checksumString := checkumBuffer.String()
+				checksum = strings.Split(checksumString, " ")[0]
+
 			} else if asset.GetName() == repoInfo.repo {
-				log.Debug("will fetch asset " + asset.GetName())
-				reader, err := c.releaseProvider.DownloadReleaseAsset(repoInfo.owner, repoInfo.repo, asset.GetID())
-				if err != nil {
-					log.Error(err.Error())
-				} else if reader != nil {
-					payload = fetchFromReader(reader, asset.GetSize()).Bytes()
+				key := c.Id() + "-" + version + "-" + asset.GetName()
+
+				log.Debug("will fetch asset " + key)
+				payloadBuffer, cacheError := persistentCache.Get(key)
+				if cacheError != nil {
+					log.Debug(cacheError.Error())
+					reader, err := c.releaseProvider.DownloadReleaseAsset(repoInfo.owner, repoInfo.repo, asset.GetID())
+					if err != nil {
+						log.Error(err.Error())
+					} else if reader != nil {
+						payloadBuffer = fetchFromReader(reader, asset.GetSize())
+						if cacheError = persistentCache.Set(key, payloadBuffer); cacheError != nil {
+							log.Error(cacheError.Error())
+						}
+					}
 				}
+				payload = payloadBuffer.Bytes()
 			}
 		}
 		c.version[releases.GetTagName()] = &firmware{id: c.Id(), version: releases.GetTagName(), repo: repoInfo, checksum: checksum, payload: payload}
@@ -96,6 +120,17 @@ func (c *GhOTAProvider) GetVersion(version string) ota.Firmware {
 	}
 }
 
+func (c *GhOTAProvider) GetLastFive() {
+	log.Debug("will fetch last 5 releases of " + c.Id())
+	repoInfo := getGithubInfo(c.Id())
+	releases, err := c.releaseProvider.GetReleases(repoInfo.owner, repoInfo.repo)
+	if err != nil {
+		log.Error("could not fetch releases from github for firmware " + c.Id() + ": " + err.Error())
+	}
+	for _, release := range releases {
+		c.GetVersion(release.GetTagName())
+	}
+}
 func (c *GhOTAProvider) GetLatest() ota.Firmware {
 	repoInfo := getGithubInfo(c.Id())
 	releases, err := c.releaseProvider.GetLatestRelease(repoInfo.owner, repoInfo.repo)

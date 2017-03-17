@@ -5,6 +5,7 @@ import (
 	"github.com/jbonachera/homie-controller/log"
 	"github.com/jbonachera/homie-controller/messaging"
 	"github.com/jbonachera/homie-controller/model/homieMessage"
+	"github.com/jbonachera/homie-controller/ota/persistentCache"
 	"github.com/mcuadros/go-version"
 	"time"
 )
@@ -45,8 +46,8 @@ func RegisterFactory(name string, provider FirmwareFactory) {
 func AddFirmware(name string, provider string) {
 	if firmware, present := factories[provider]; present {
 		firmwares[name] = firmware.New(name)
-		go firmwares[name].GetLatest()
-		go firmwares[name].GetLastFive()
+		firmwares[name].GetLatest()
+		firmwares[name].GetLastFive()
 	}
 }
 
@@ -84,8 +85,8 @@ func LastFirmware(firmware string) (Firmware, error) {
 func Refresh() {
 	for _, provider := range firmwares {
 		log.Info("fetching last version of firmware " + provider.Id())
-		go provider.GetLatest()
-		go provider.GetLastFive()
+		provider.GetLatest()
+		provider.GetLastFive()
 	}
 }
 
@@ -95,6 +96,7 @@ func Stop() {
 
 func Start() {
 	done = make(chan bool, 1)
+	persistentCache.Start()
 	messaging.PublishState(homieMessage.HomieMessage{Topic: "devices/controller/$online", Payload: "true"})
 	messaging.PublishState(homieMessage.HomieMessage{Topic: "devices/controller/$name", Payload: "controller"})
 	messaging.PublishState(homieMessage.HomieMessage{Topic: "devices/controller/$homie", Payload: "2.0.0"})
