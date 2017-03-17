@@ -11,6 +11,7 @@ import (
 )
 
 type ghClient interface {
+	GetReleases(owner string, repo string) ([]*github.RepositoryRelease, error)
 	GetLatestRelease(owner string, repo string) (*github.RepositoryRelease, error)
 	GetReleaseByTag(owner string, repo string, tag string) (*github.RepositoryRelease, error)
 	DownloadReleaseAsset(owner, repo string, id int) (rc io.ReadCloser, err error)
@@ -43,10 +44,16 @@ func (c *defaultGhClient) GetReleaseByTag(owner string, repo string, tag string)
 	return release, err
 }
 
+func (c *defaultGhClient) GetReleases(owner string, repo string) ([]*github.RepositoryRelease, error) {
+	releases, _, err := c.client.Repositories.ListReleases(c.ctx, owner, repo, &github.ListOptions{Page: 1, PerPage: 10})
+	return releases, err
+}
+
 func (c *defaultGhClient) GetLatestRelease(owner string, repo string) (*github.RepositoryRelease, error) {
 	release, _, err := c.client.Repositories.GetLatestRelease(c.ctx, owner, repo)
 	return release, err
 }
+
 func (c *defaultGhClient) DownloadReleaseAsset(owner, repo string, id int) (rc io.ReadCloser, err error) {
 	release, redirect, err := c.client.Repositories.DownloadReleaseAsset(c.ctx, owner, repo, id)
 	if err != nil {

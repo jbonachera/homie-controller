@@ -25,6 +25,7 @@ type Firmware interface {
 type FirmwareProvider interface {
 	Id() string
 	GetLatest() Firmware
+	GetLastFive()
 }
 
 type FirmwareFactory interface {
@@ -45,6 +46,7 @@ func AddFirmware(name string, provider string) {
 	if firmware, present := factories[provider]; present {
 		firmwares[name] = firmware.New(name)
 		go firmwares[name].GetLatest()
+		go firmwares[name].GetLastFive()
 	}
 }
 
@@ -83,6 +85,7 @@ func Refresh() {
 	for _, provider := range firmwares {
 		log.Info("fetching last version of firmware " + provider.Id())
 		go provider.GetLatest()
+		go provider.GetLastFive()
 	}
 }
 
