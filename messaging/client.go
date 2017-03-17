@@ -5,6 +5,7 @@ import (
 	"github.com/jbonachera/homie-controller/log"
 	"github.com/jbonachera/homie-controller/model/homieMessage"
 	"time"
+	"github.com/jbonachera/homie-controller/config"
 )
 
 type CallbackHandler func(message homieMessage.HomieMessage)
@@ -49,6 +50,9 @@ func Start(brokerHost string, client_id string, mqttBaseTopic string) {
 	routines = 0
 
 	opts := MQTT.NewClientOptions().AddBroker("tcp://" + brokerHost + ":1883")
+	if config.Get("MQTT_ONLINE_TOPIC") != "" {
+		opts = opts.SetWill(config.Get("MQTT_ONLINE_TOPIC"), "false", 0, true)
+	}
 	opts.SetClientID(client_id)
 	broker = messagingBroker{MQTT.NewClient(opts), mqttBaseTopic, false}
 	for !broker.connected {
