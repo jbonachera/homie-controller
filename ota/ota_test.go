@@ -28,19 +28,18 @@ func (f *MockFirmware) Payload() []byte {
 }
 
 type MockProvider struct {
-	id    string
-	brand string
+	id string
 }
 
 func (m *MockProvider) GetLatest() Firmware {
 	return &MockFirmware{}
 }
-func (m *MockProvider) Id() string {
-	return m.id
+
+func (m *MockProvider) GetLastFive() {
 }
 
-func (m *MockProvider) Brand() string {
-	return m.brand
+func (m *MockProvider) Id() string {
+	return m.id
 }
 
 type MockFactory struct {
@@ -51,8 +50,8 @@ func (m *MockFactory) Id() string {
 	return m.id
 }
 
-func (m *MockFactory) New(name string, brand string) FirmwareProvider {
-	return &MockProvider{id: name, brand: brand}
+func (m *MockFactory) New(name string) FirmwareProvider {
+	return &MockProvider{id: name}
 }
 
 func TestRegisterFactory(t *testing.T) {
@@ -65,44 +64,44 @@ func TestRegisterFactory(t *testing.T) {
 
 func TestAddFirmware(t *testing.T) {
 	factories["mock"] = &MockFactory{id: "mockFactory"}
-	AddFirmware("mockFirmware", "mockBrand", "mock")
-	if _, ok := firmwares["mockBrand"]["mockFirmware"]; !ok {
+	AddFirmware("mockFirmware", "mock")
+	if _, ok := firmwares["mockFirmware"]; !ok {
 		t.Error("firmware was not registered")
-	} else if firmwares["mockBrand"]["mockFirmware"].Id() != "mockFirmware" {
+	} else if firmwares["mockFirmware"].Id() != "mockFirmware" {
 		t.Error("firmware was not correctly registered")
 	}
 }
 
 func TestIsUpToDate(t *testing.T) {
-	firmwares["mockBrand"] = map[string]FirmwareProvider{
+	firmwares = map[string]FirmwareProvider{
 		"mock": &MockProvider{id: "mock"},
 	}
 
-	if uptodate, _ := IsUpToDate("mock", "mockBrand", "1.0.1"); !uptodate {
+	if uptodate, _ := IsUpToDate("mock", "1.0.1"); !uptodate {
 		t.Error("should have detected current version were the latest")
 	}
-	if uptodate, _ := IsUpToDate("mock", "mockBrand", "1.0.0"); uptodate {
+	if uptodate, _ := IsUpToDate("mock", "1.0.0"); uptodate {
 		t.Error("should have detected current version were not the latest: got 1.0.1 > 1.0.0")
 	}
-	if uptodate, _ := IsUpToDate("mock", "mockBrand", "1.0.2"); !uptodate {
+	if uptodate, _ := IsUpToDate("mock", "1.0.2"); !uptodate {
 		t.Error("should have detected version were greater than the latest: got 1.0.1 > 1.0.2")
 	}
 }
 
 func TestLastVersion(t *testing.T) {
-	firmwares["mockBrand"] = map[string]FirmwareProvider{
+	firmwares = map[string]FirmwareProvider{
 		"mock": &MockProvider{id: "mock"},
 	}
-	if LastVersion("mock", "mockBrand") != "1.0.1" {
+	if LastVersion("mock") != "1.0.1" {
 		t.Error("could not get last version")
 	}
 }
 
 func TestLastFirmware(t *testing.T) {
-	firmwares["mockBrand"] = map[string]FirmwareProvider{
+	firmwares = map[string]FirmwareProvider{
 		"mock": &MockProvider{id: "mock"},
 	}
-	if firmware, _ := LastFirmware("mock", "mockBrand"); firmware.Version() != "1.0.1" {
+	if firmware, _ := LastFirmware("mock"); firmware.Version() != "1.0.1" {
 		t.Error("could not get last version")
 	}
 }

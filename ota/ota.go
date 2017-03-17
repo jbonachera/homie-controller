@@ -85,8 +85,8 @@ func LastFirmware(firmware string) (Firmware, error) {
 func Refresh() {
 	for _, provider := range firmwares {
 		log.Info("fetching last version of firmware " + provider.Id())
-		provider.GetLatest()
-		provider.GetLastFive()
+		go provider.GetLatest()
+		go provider.GetLastFive()
 	}
 }
 
