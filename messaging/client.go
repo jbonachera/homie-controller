@@ -2,10 +2,10 @@ package messaging
 
 import (
 	MQTT "github.com/eclipse/paho.mqtt.golang"
+	"github.com/jbonachera/homie-controller/config"
 	"github.com/jbonachera/homie-controller/log"
 	"github.com/jbonachera/homie-controller/model/homieMessage"
 	"time"
-	"github.com/jbonachera/homie-controller/config"
 )
 
 type CallbackHandler func(message homieMessage.HomieMessage)
@@ -42,19 +42,13 @@ func Stop() {
 	}
 }
 
-func Start(brokerHost string, client_id string, mqttBaseTopic string) {
+func startChannels() {
 	publishChan = make(chan mqttMessage, 20)
 	subChan = make(chan subMessage, 20)
 	unsubChan = make(chan string, 20)
 	done = make(chan bool, 1)
 	routines = 0
 
-	opts := MQTT.NewClientOptions().AddBroker("tcp://" + brokerHost + ":1883")
-	if config.Get("MQTT_ONLINE_TOPIC") != "" {
-		opts = opts.SetWill(config.Get("MQTT_ONLINE_TOPIC"), "false", 0, true)
-	}
-	opts.SetClientID(client_id)
-	broker = messagingBroker{MQTT.NewClient(opts), mqttBaseTopic, false}
 	for !broker.connected {
 		if token := broker.c.Connect(); token.Wait() && token.Error() != nil {
 			log.Error("could not connect to MQTT.")
@@ -70,9 +64,19 @@ func Start(brokerHost string, client_id string, mqttBaseTopic string) {
 	routines++
 	go unqueueUnsub()
 	routines++
-
 	routines++
 
+}
+
+func Start(brokerHost string, client_id string, mqttBaseTopic string) {
+
+	opts := MQTT.NewClientOptions().AddBroker("tcp://" + brokerHost + ":1883")
+	if config.Get("MQTT_ONLINE_TOPIC") != "" {
+		opts = opts.SetWill(config.Get("MQTT_ONLINE_TOPIC"), "false", 0, true)
+	}
+	opts.SetClientID(client_id)
+	broker = messagingBroker{MQTT.NewClient(opts), mqttBaseTopic, false}
+	startChannels()
 }
 
 func mqttPublish(msg mqttMessage) {

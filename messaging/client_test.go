@@ -13,6 +13,7 @@ func callback(_ MQTT.Client, _ MQTT.Message) {}
 func TestAddSubscription(t *testing.T) {
 	mock := mqtt.NewMockClient(true, "old/topic")
 	broker = messagingBroker{mock, "devices/", true}
+	startChannels()
 	AddSubscription("devices/bah/+", 0, callback)
 	time.Sleep(300 * time.Millisecond)
 	if mock.Topic != "devices/bah/+" {
@@ -23,6 +24,7 @@ func TestAddSubscription(t *testing.T) {
 func TestDelSubscription(t *testing.T) {
 	mock := mqtt.NewMockClient(true, "old/topic")
 	broker = messagingBroker{mock, "devices/", true}
+	startChannels()
 	AddSubscription("devices/bah/+", 0, callback)
 	DelSubscription("devices/bah/+")
 	if mock.Topic == "devices/bah/+" {
@@ -32,7 +34,9 @@ func TestDelSubscription(t *testing.T) {
 func TestAddHandler(t *testing.T) {
 	mock := mqtt.NewMockClient(true, "old/topic")
 	broker = messagingBroker{mock, "devices/", true}
+	startChannels()
 	AddHandler("devices/bah/+", func(message homieMessage.HomieMessage) {})
+	time.Sleep(10 * time.Millisecond)
 	if mock.Topic != "devices/bah/+" {
 		t.Error("could not add handler")
 	}
@@ -42,8 +46,10 @@ func TestAddHandler(t *testing.T) {
 func TestPublishMessage(t *testing.T) {
 	mock := mqtt.NewMockClient(true, "old/topic")
 	broker = messagingBroker{mock, "devices/", true}
+	startChannels()
 	topic := "devices/u1/implementation/reset"
 	PublishMessage(homieMessage.HomieMessage{Id: "u1", Payload: "true", BaseTopic: "devices/", Path: "$implementation/reset", Topic: topic})
+	time.Sleep(10 * time.Millisecond)
 	if mock.PublishedMessage[0].Topic() != topic {
 		t.Error("did not published to MQTT broker")
 	}
@@ -54,8 +60,10 @@ func TestPublishMessage(t *testing.T) {
 func TestPublishState(t *testing.T) {
 	mock := mqtt.NewMockClient(true, "old/topic")
 	broker = messagingBroker{mock, "devices/", true}
+	startChannels()
 	topic := "devices/u1/implementation/reset"
 	PublishState(homieMessage.HomieMessage{Id: "u1", Payload: "true", BaseTopic: "devices/", Path: "$implementation/reset", Topic: topic})
+	time.Sleep(10 * time.Millisecond)
 	if mock.PublishedMessage[0].Topic() != topic {
 		t.Error("did not published to MQTT broker")
 	}
