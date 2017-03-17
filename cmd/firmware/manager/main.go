@@ -27,7 +27,6 @@ func main() {
 	ota.Start()
 
 	ota.AddFirmware("intercom", "github_release")
-	ota.AddFirmware("vx-temperature-sensor", "github_release")
 	ota.AddFirmware("temperature-sensor", "github_release")
 	log.Debug("main process initialiszed")
 
