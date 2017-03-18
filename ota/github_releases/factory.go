@@ -26,6 +26,7 @@ func (f *Factory) New(name string) ota.FirmwareProvider {
 	messaging.AddHandler("devices/controller/"+name+"/refresh/set", func(message homieMessage.HomieMessage) {
 		if message.Payload == "true" {
 			provider.GetLastFive()
+			provider.GetLatest()
 			messaging.PublishState(homieMessage.HomieMessage{Topic: "devices/controller/" + name + "/refresh/set", Payload: "false"})
 		}
 	})
