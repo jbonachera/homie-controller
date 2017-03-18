@@ -8,6 +8,7 @@ import (
 	"github.com/jbonachera/homie-controller/model/homieMessage"
 	"github.com/jbonachera/homie-controller/ota/persistentCache"
 	"github.com/mcuadros/go-version"
+	"strconv"
 	"time"
 )
 
@@ -97,7 +98,7 @@ func Stop() {
 }
 
 func PublishStats() {
-	messaging.PublishState(homieMessage.HomieMessage{Topic: "devices/controller/$stats/uptime", Payload: time.Since(bootTime).String()})
+	messaging.PublishState(homieMessage.HomieMessage{Topic: "devices/controller/$stats/uptime", Payload: strconv.Itoa(int(time.Since(bootTime).Seconds()))})
 	messaging.PublishState(homieMessage.HomieMessage{Topic: "devices/controller/$stats/signal", Payload: "100"})
 }
 
