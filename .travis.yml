@@ -1,10 +1,7 @@
 sudo: required
-language: go
-go:
-  - master
+language: c
 services:
   - docker
-
 script:
   - make
   - docker build -t jbonachera/homie-controller:$TRAVIS_COMMIT . ;
