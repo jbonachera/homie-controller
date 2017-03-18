@@ -3,9 +3,5 @@ FROM jbonachera/arch
 ENV GOPATH /usr/local/src/go
 RUN pacman -S --noconfirm go git
 RUN mkdir -p $GOPATH/src/github.com/jbonachera
-COPY . $GOPATH/src/github.com/jbonachera/homie-controller
 WORKDIR $GOPATH/src/github.com/jbonachera/homie-controller
-RUN go get ./... && go test ./... && go build
-RUN mv homie-controller /usr/local/bin/homie-controller && \
-    mv scripts/* /usr/local/bin/
-CMD /usr/local/bin/homie-controller
+CMD go get ./... && go test ./... && go build -o release/homie-controller
