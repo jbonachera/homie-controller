@@ -24,6 +24,7 @@ var baseTopic string = "devices/"
 
 func main() {
 	log.SetLogLevel(config.Get("LOG_LEVEL"))
+	config.Set("version", VERSION)
 	log.Info("starting homie-controller version " + VERSION)
 	sigc := make(chan os.Signal, 1)
 	signal.Notify(sigc, os.Interrupt, os.Kill)

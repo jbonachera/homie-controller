@@ -2,6 +2,7 @@ package ota
 
 import (
 	"errors"
+	"github.com/jbonachera/homie-controller/config"
 	"github.com/jbonachera/homie-controller/log"
 	"github.com/jbonachera/homie-controller/messaging"
 	"github.com/jbonachera/homie-controller/model/homieMessage"
@@ -14,6 +15,7 @@ var firmwares map[string]FirmwareProvider
 var factories map[string]FirmwareFactory
 
 var done chan bool
+var bootTime time.Time
 
 type Firmware interface {
 	Name() string
@@ -94,12 +96,22 @@ func Stop() {
 	done <- true
 }
 
+func PublishStats() {
+	messaging.PublishState(homieMessage.HomieMessage{Topic: "devices/controller/$stats/uptime", Payload: time.Since(bootTime).String()})
+	messaging.PublishState(homieMessage.HomieMessage{Topic: "devices/controller/$stats/signal", Payload: "100"})
+}
+
 func Start() {
 	done = make(chan bool, 1)
 	persistentCache.Start()
+	bootTime = time.Now()
 	messaging.PublishState(homieMessage.HomieMessage{Topic: "devices/controller/$online", Payload: "true"})
 	messaging.PublishState(homieMessage.HomieMessage{Topic: "devices/controller/$name", Payload: "controller"})
 	messaging.PublishState(homieMessage.HomieMessage{Topic: "devices/controller/$homie", Payload: "2.0.0"})
+	messaging.PublishState(homieMessage.HomieMessage{Topic: "devices/controller/$stats/interval", Payload: "10"})
+	messaging.PublishState(homieMessage.HomieMessage{Topic: "devices/controller/$fw/name", Payload: "homie-controller"})
+	messaging.PublishState(homieMessage.HomieMessage{Topic: "devices/controller/$fw/version", Payload: config.Get("version")})
+
 	go func() {
 		run := true
 		for run {
@@ -107,6 +119,8 @@ func Start() {
 			case <-done:
 				run = false
 				break
+			case <-time.After(10 * time.Second):
+				go PublishStats()
 			case <-time.After(24 * time.Hour):
 				go Refresh()
 				break

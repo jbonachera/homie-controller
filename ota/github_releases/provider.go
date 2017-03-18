@@ -106,7 +106,7 @@ func (c *GhOTAProvider) GetVersion(version string) ota.Firmware {
 		c.version[releases.GetTagName()] = &firmware{id: c.Id(), version: releases.GetTagName(), repo: repoInfo, checksum: checksum, payload: payload}
 		c.version[releases.GetTagName()].Announce()
 		versionString := ""
-		propertiesString := "versions,unit,provider,latest"
+		propertiesString := "refresh:settable,versions,unit,provider,latest"
 		for version := range c.version {
 			if len(versionString) > 0 {
 				versionString = versionString + "," + version
