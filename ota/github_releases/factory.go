@@ -23,10 +23,10 @@ func (f *Factory) New(name string) ota.FirmwareProvider {
 	messaging.PublishState(homieMessage.HomieMessage{Topic: "devices/controller/" + name + "/provider", Payload: f.Id()})
 	messaging.PublishState(homieMessage.HomieMessage{Topic: "devices/controller/" + name + "/$type", Payload: "firmwareProvider"})
 	messaging.PublishState(homieMessage.HomieMessage{Topic: "devices/controller/" + name + "/unit", Payload: "md5"})
-	messaging.AddHandler("devices/controller/"+name+"/refesh/set", func(message homieMessage.HomieMessage) {
+	messaging.AddHandler("devices/controller/"+name+"/refresh/set", func(message homieMessage.HomieMessage) {
 		if message.Payload == "true" {
 			provider.GetLastFive()
-			messaging.PublishState(homieMessage.HomieMessage{Topic: "devices/controller/" + name + "/refesh/set", Payload: "false"})
+			messaging.PublishState(homieMessage.HomieMessage{Topic: "devices/controller/" + name + "/refresh/set", Payload: "false"})
 		}
 	})
 
