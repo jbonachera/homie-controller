@@ -47,6 +47,10 @@ func (mc *MockClient) Disconnect(quiesce uint) {
 	return
 }
 
+func (mc *MockClient) AddRoute(topic string, callback MQTT.MessageHandler) {
+
+}
+
 func (mc *MockClient) Publish(topic string, qos byte, retained bool, payload interface{}) MQTT.Token {
 	payload_string := payload.(string)
 	mc.PublishedMessage = append(mc.PublishedMessage, MessageMock{topic: topic, payload: payload_string, retain: retained})
