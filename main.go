@@ -10,6 +10,7 @@ import (
 	_ "github.com/jbonachera/homie-controller/model/implementation/esp8266"
 	_ "github.com/jbonachera/homie-controller/model/node/type/humidity"
 	_ "github.com/jbonachera/homie-controller/model/node/type/intercom"
+	_ "github.com/jbonachera/homie-controller/model/node/type/system"
 	_ "github.com/jbonachera/homie-controller/model/node/type/temperature"
 	_ "github.com/jbonachera/homie-controller/ota/github_releases"
 	"os"
