@@ -16,6 +16,8 @@ type WeatherSensorNode struct {
 	name            string
 	baseTopic       string
 	Nodetype        string    `json:"type"`
+	Rssi            int       `json:"rssi"`
+	Uptime          int       `json:"uptime"`
 	HumidityPercent float64   `json:"humidity"`
 	Temperature     float64   `json:"temperature"`
 	Pressure        float64   `json:"pressure"`
@@ -32,7 +34,7 @@ func (t WeatherSensorNode) GetType() string {
 	return nodeType
 }
 func (t WeatherSensorNode) GetProperties() []string {
-	return []string{"humidity", "temperature", "room", "pressure", "battery"}
+	return []string{"humidity", "temperature", "room", "pressure", "battery", "rssi", "uptime"}
 }
 func (t WeatherSensorNode) GetPoint() *metric.Metric {
 	return metric.New("weather", map[string]string{"room": t.Room, "sensor": t.name},
@@ -41,6 +43,8 @@ func (t WeatherSensorNode) GetPoint() *metric.Metric {
 			"temperature": t.Temperature,
 			"pressure":    t.Pressure,
 			"battery":     t.BatteryVoltage,
+			"rssi":        t.Rssi,
+			"uptime":      t.Uptime,
 		})
 }
 
@@ -100,6 +104,32 @@ func (t *WeatherSensorNode) MessageHandler(message homieMessage.HomieMessage) {
 				influxdb.PublishMetric(metric.New("battery", map[string]string{"room": t.Room, "sensor": t.name},
 					map[string]interface{}{
 						"battery": t.BatteryVoltage,
+					}))
+			}
+		}
+	case "uptime":
+		seconds64, err := strconv.ParseInt(message.Payload, 10, 1)
+		if err == nil {
+			seconds := int(seconds64)
+			t.Uptime = seconds
+			t.LastUpdate = time.Now()
+			if influxdb.Ready() {
+				influxdb.PublishMetric(metric.New("uptime", map[string]string{"room": t.Room, "sensor": t.name},
+					map[string]interface{}{
+						"seconds": t.Uptime,
+					}))
+			}
+		}
+	case "rssi":
+		rssi64, err := strconv.ParseInt(message.Payload, 10, 1)
+		if err == nil {
+			rssi := int(rssi64)
+			t.Rssi = rssi
+			t.LastUpdate = time.Now()
+			if influxdb.Ready() {
+				influxdb.PublishMetric(metric.New("rssi", map[string]string{"room": t.Room, "sensor": t.name},
+					map[string]interface{}{
+						"strength": t.Rssi,
 					}))
 			}
 		}
