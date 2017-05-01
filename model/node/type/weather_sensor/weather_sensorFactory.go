@@ -9,7 +9,7 @@ type WeatherSensorFactory struct{}
 
 func (WeatherSensorFactory) New(name string, parent string, baseTopic string) node.Type {
 	return &WeatherSensorNode{name: name, baseTopic: baseTopic,
-		Nodetype:        "humidity",
+		Nodetype:        "weather_controller",
 		Temperature:     0,
 		Pressure:        0,
 		BatteryVoltage:  0,
