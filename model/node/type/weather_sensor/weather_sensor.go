@@ -119,6 +119,8 @@ func (t *WeatherSensorNode) MessageHandler(message homieMessage.HomieMessage) {
 						"seconds": t.Uptime,
 					}))
 			}
+		} else {
+			log.Error(err.Error())
 		}
 	case "rssi":
 		rssi64, err := strconv.ParseInt(message.Payload, 10, 1)
@@ -132,6 +134,8 @@ func (t *WeatherSensorNode) MessageHandler(message homieMessage.HomieMessage) {
 						"strength": t.Rssi,
 					}))
 			}
+		} else {
+			log.Error(err.Error())
 		}
 
 	}
