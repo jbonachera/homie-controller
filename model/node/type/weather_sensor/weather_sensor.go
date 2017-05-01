@@ -108,7 +108,7 @@ func (t *WeatherSensorNode) MessageHandler(message homieMessage.HomieMessage) {
 			}
 		}
 	case "uptime":
-		seconds64, err := strconv.ParseInt(message.Payload, 10, 1)
+		seconds64, err := strconv.ParseInt(message.Payload, 10, 32)
 		if err == nil {
 			seconds := int(seconds64)
 			t.Uptime = seconds
@@ -123,7 +123,7 @@ func (t *WeatherSensorNode) MessageHandler(message homieMessage.HomieMessage) {
 			log.Error(err.Error())
 		}
 	case "rssi":
-		rssi64, err := strconv.ParseInt(message.Payload, 10, 1)
+		rssi64, err := strconv.ParseInt(message.Payload, 10, 32)
 		if err == nil {
 			rssi := int(rssi64)
 			t.Rssi = rssi
