@@ -62,7 +62,7 @@ func (t *WeatherSensorNode) MessageHandler(message homieMessage.HomieMessage) {
 			if influxdb.Ready() {
 				influxdb.PublishMetric(metric.New("humidity", map[string]string{"room": t.Room, "sensor": t.name},
 					map[string]interface{}{
-						"humidity": t.HumidityPercent,
+						"percent": t.HumidityPercent,
 					}))
 			}
 		}
@@ -74,7 +74,7 @@ func (t *WeatherSensorNode) MessageHandler(message homieMessage.HomieMessage) {
 			if influxdb.Ready() {
 				influxdb.PublishMetric(metric.New("temperature", map[string]string{"room": t.Room, "sensor": t.name},
 					map[string]interface{}{
-						"temperature": t.Temperature,
+						"degrees": t.Temperature,
 					}))
 			}
 		}
